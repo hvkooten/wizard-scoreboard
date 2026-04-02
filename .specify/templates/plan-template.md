@@ -31,7 +31,10 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Confirm use of latest stable versions of .NET MAUI and .NET SDK
+- Plan includes Test-Driven Development with unit tests achieving >80% coverage
+- UI implementation specified in C# code only (no XAML)
+- Architecture design follows simplicity principles without unnecessary abstractions
 
 ## Project Structure
 
