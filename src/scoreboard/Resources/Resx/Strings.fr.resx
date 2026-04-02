@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Settings" xml:space="preserve"><value>Paramètres</value></data>
+  <data name="Rules" xml:space="preserve"><value>Règles</value></data>
+  <data name="Highscore" xml:space="preserve"><value>Meilleur score</value></data>
+  <data name="Scoreboard" xml:space="preserve"><value>Feuille de score</value></data>
+  <data name="StartGame" xml:space="preserve"><value>Démarrer le jeu</value></data>
+  <data name="EndGame" xml:space="preserve"><value>Terminer le jeu</value></data>
+  <data name="SelectLanguage" xml:space="preserve"><value>Choisir la langue</value></data>
+  <data name="Players" xml:space="preserve"><value>Joueurs</value></data>
+  <data name="CreatorGroup" xml:space="preserve"><value>Créer un groupe</value></data>
+  <data name="ShowRules" xml:space="preserve"><value>Voir les règles</value></data>
+</root>

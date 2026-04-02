@@ -67,4 +67,4 @@ description: "Task list for Wizard Scoreboard App implementation"
 
 - Houd architectuur eenvoudig: service-klassen + viewmodel per pagina + minimal DI
 - “show picture during loading”: use lokale vector/FontIcon of `ActivityIndicator` (geen auteursrecht afbeelding)
-- Volg constitutie: geen XAML UI-structuur, maar kan in code opgebouwd worden (of minimal XAML als boilerplate, met expliciete switch naar C# viewcomponenten)
+- Volg constitutie: UI volledig in C# (geen XAML, geen boilerplate XAML toegestaan)
