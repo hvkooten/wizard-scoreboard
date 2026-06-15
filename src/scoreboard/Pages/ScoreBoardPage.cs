@@ -15,9 +15,12 @@ public class ScoreBoardPage : ContentPage
     // Live-updated UI elements
     private Label statusLabel;
     private Grid scoreGrid;
+    private Grid headerGrid;
+    private Grid footerGrid;
     private Button startButton;
     private Button endButton;
     private Button nextRoundButton;
+    private ScrollView scoreboardScrollView;
 
     // Palette for header colours
     private static readonly Color HeaderBg   = Color.FromArgb("#1a3a5c");
@@ -46,6 +49,8 @@ public class ScoreBoardPage : ContentPage
         };
 
         scoreGrid = new Grid();
+        headerGrid = new Grid();
+        footerGrid = new Grid();
 
         startButton     = new Button { Text = Localization.GetString("StartGame") };
         endButton       = new Button { Text = Localization.GetString("EndGame") };
@@ -61,24 +66,54 @@ public class ScoreBoardPage : ContentPage
             Children = { startButton, nextRoundButton, endButton }
         };
 
-        Content = new ScrollView
+        scoreboardScrollView = new ScrollView 
+        { 
+            BackgroundColor = Colors.White,
+            Padding = new Thickness(12)
+        };
+        scoreboardScrollView.Content = scoreGrid;
+
+        // Grid with fixed top controls, fixed table header, scrollable rounds, fixed footer
+        var mainGrid = new Grid
         {
-            Content = new StackLayout
+            RowDefinitions =
             {
-                Padding = 12,
-                Spacing = 8,
-                Children = { statusLabel, scoreGrid, buttonRow }
+                new RowDefinition { Height = GridLength.Auto },
+                new RowDefinition { Height = GridLength.Auto },
+                new RowDefinition { Height = GridLength.Star },
+                new RowDefinition { Height = GridLength.Auto },
             }
         };
+
+        var headerStack = new StackLayout
+        {
+            Padding = 12,
+            Spacing = 8,
+            BackgroundColor = Colors.White,
+            Children = { statusLabel, buttonRow }
+        };
+
+        mainGrid.Add(headerStack, 0, 0);
+        mainGrid.Add(headerGrid, 0, 1);
+        mainGrid.Add(scoreboardScrollView, 0, 2);
+        mainGrid.Add(footerGrid, 0, 3);
+
+        Content = mainGrid;
 
         RefreshUI();
     }
 
     private void RefreshUI()
     {
+        headerGrid.Children.Clear();
+        headerGrid.RowDefinitions.Clear();
+        headerGrid.ColumnDefinitions.Clear();
         scoreGrid.Children.Clear();
         scoreGrid.RowDefinitions.Clear();
         scoreGrid.ColumnDefinitions.Clear();
+        footerGrid.Children.Clear();
+        footerGrid.RowDefinitions.Clear();
+        footerGrid.ColumnDefinitions.Clear();
 
         var hasAvailableGroup = groupService.GetSelectedGroup() != null || groupService.GetGroups().Any();
         var hasSession = currentSession != null;
@@ -114,18 +149,21 @@ public class ScoreBoardPage : ContentPage
 
         // ── Column definitions ────────────────────────────────────────────
         // Col 0 = Rnd, Col 1 = Dealer, Col 2..N = players
-        scoreGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = 36 });  // Rnd
-        scoreGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = 36 });  // Dealer / trump
-        foreach (var _ in players)
-            scoreGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+        foreach (var grid in new[] { headerGrid, scoreGrid, footerGrid })
+        {
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 36 });  // Rnd
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 36 });  // Dealer / trump
+            foreach (var _ in players)
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+        }
 
         // ── Header row ────────────────────────────────────────────────────
-        scoreGrid.RowDefinitions.Add(new RowDefinition { Height = 36 });
-        AddHeaderCell(scoreGrid, Localization.GetString("RoundHeader"), 0, 0);
-        AddHeaderCell(scoreGrid, TrumpHeaderSymbol(), 0, 1);  // column label
+        headerGrid.RowDefinitions.Add(new RowDefinition { Height = 36 });
+        AddHeaderCell(headerGrid, Localization.GetString("RoundHeader"), 0, 0);
+        AddHeaderCell(headerGrid, TrumpHeaderSymbol(), 0, 1);  // column label
         for (var c = 0; c < players.Count; c++)
         {
-            AddHeaderCell(scoreGrid, players[c].Name, 0, 2 + c,
+            AddHeaderCell(headerGrid, players[c].Name, 0, 2 + c,
                 isDealer: players[c].Id == dealer.Id && currentSession.CurrentRound > 0);
         }
 
@@ -204,25 +242,48 @@ public class ScoreBoardPage : ContentPage
             }
         }
 
-        // ── Total row (if at least 1 round done) ─────────────────────────
-        if (currentSession.Rounds.Any())
+        // ── Total row (always visible) ────────────────────────────────────
+        footerGrid.RowDefinitions.Add(new RowDefinition { Height = 32 });
+
+        var totHdr = MakeLabel(Localization.GetString("TotalHeader"),
+            bold: true, fontSize: 13, center: true, bg: TotalBg);
+        footerGrid.Add(totHdr, 0, 0);
+        Grid.SetColumnSpan(totHdr, 2);
+
+        for (var c = 0; c < players.Count; c++)
         {
-            var totalRow = scoreGrid.RowDefinitions.Count;
-            scoreGrid.RowDefinitions.Add(new RowDefinition { Height = 32 });
-
-            var totHdr = MakeLabel(Localization.GetString("TotalHeader"),
-                bold: true, fontSize: 13, center: true, bg: TotalBg);
-            scoreGrid.Add(totHdr, 0, totalRow);
-            Grid.SetColumnSpan(totHdr, 2);
-
-            for (var c = 0; c < players.Count; c++)
-            {
-                var total = runningTotals[players[c].Id];
-                AddCell(scoreGrid, total.ToString(), totalRow, 2 + c,
-                    bold: true, center: true,
-                    color: total >= 0 ? WinFg : LoseFg, bg: TotalBg);
-            }
+            var total = runningTotals[players[c].Id];
+            AddCell(footerGrid, total.ToString(), 0, 2 + c,
+                bold: true, center: true,
+                color: total >= 0 ? WinFg : LoseFg, bg: TotalBg);
         }
+
+        // Auto-scroll to center the latest played round only when content overflows.
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            await Task.Delay(100);
+            var viewportHeight = scoreboardScrollView.Height;
+
+            if (viewportHeight <= 0 || currentSession.CurrentRound <= 0)
+            {
+                return;
+            }
+
+            const double roundHeight = 50; // 22 + 28
+            var contentHeight = currentSession.MaxRounds * roundHeight;
+            if (contentHeight <= viewportHeight)
+            {
+                return;
+            }
+
+            var lastPlayedRound = currentSession.CurrentRound;
+            var roundCenterY = ((lastPlayedRound - 1) * roundHeight) + (roundHeight / 2);
+            var desiredY = roundCenterY - (viewportHeight / 2);
+            var maxScrollY = Math.Max(0, contentHeight - viewportHeight);
+            var targetY = Math.Max(0, Math.Min(desiredY, maxScrollY));
+
+            await scoreboardScrollView.ScrollToAsync(0, targetY, false);
+        });
     }
 
     // ── Cell helpers ──────────────────────────────────────────────────────
@@ -585,6 +646,7 @@ public class ScoreBoardPage : ContentPage
         var trumpOptions = trumpPaletteService.GetTrumpLabels();
         int trumpSelectionIndex = 0;
         var bidEntries = new Dictionary<Guid, Entry>();
+        Entry? dealerBidEntry = null;
 
         var scroll = new ScrollView { BackgroundColor = Colors.White };
         var population = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = Colors.White };
@@ -640,6 +702,19 @@ public class ScoreBoardPage : ContentPage
                 dealerWarningLabel.Text = string.Format(
                     Localization.GetString("DealerCannotBidTemplate"),
                     forbiddenText);
+
+                if (dealerBidEntry != null)
+                {
+                    var dealerBid = int.TryParse(dealerBidEntry.Text, out var parsedBid) ? parsedBid : -1;
+                    var isForbidden = forbiddenBids.Contains(dealerBid);
+                    dealerBidEntry.BackgroundColor = isForbidden
+                        ? Color.FromArgb("#ffe5e5")
+                        : Colors.White;
+                }
+            }
+            else if (dealerBidEntry != null)
+            {
+                dealerBidEntry.BackgroundColor = Colors.White;
             }
         }
         
@@ -687,6 +762,10 @@ public class ScoreBoardPage : ContentPage
             };
             bidEntry.TextChanged += (s, e) => UpdateBidTotal();
             bidEntries[player.Id] = bidEntry;
+            if (isDealer)
+            {
+                dealerBidEntry = bidEntry;
+            }
 
             var playerLabel = new Label
             {
