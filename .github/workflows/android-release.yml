@@ -11,20 +11,23 @@ permissions:
 jobs:
   build-android-release:
     runs-on: windows-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
-      - name: Cache NuGet and MAUI workload
-        uses: actions/cache@v4
+      - name: Restore NuGet and MAUI workload cache
+        id: cache-maui
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.nuget/packages
@@ -107,13 +110,26 @@ jobs:
             artifacts/wizard-scoreboard-android-v${{ steps.version.outputs.display_version }}.apk
             artifacts/wizard-scoreboard-android.apk
 
+      - name: Save NuGet and MAUI workload cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.nuget/packages
+            ~/.dotnet/packs
+            ~/.dotnet/sdk-manifests
+            ~/.dotnet/workloadmetadata
+          key: ${{ steps.cache-maui.outputs.cache-primary-key }}
+
   update-version-page:
     runs-on: ubuntu-latest
     needs: build-android-release
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout default branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.repository.default_branch }}
 
