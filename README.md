@@ -1,7 +1,7 @@
 # Wizard Scoreboard
 
-[![CI](https://github.com/NodSol/wizard-scoreboard/actions/workflows/ci.yml/badge.svg)](https://github.com/NodSol/wizard-scoreboard/actions/workflows/ci.yml)
-[![Android Release](https://github.com/NodSol/wizard-scoreboard/actions/workflows/android-release.yml/badge.svg)](https://github.com/NodSol/wizard-scoreboard/actions/workflows/android-release.yml)
+[![CI](https://github.com/hvkooten/wizard-scoreboard/actions/workflows/ci.yml/badge.svg)](https://github.com/hvkooten/wizard-scoreboard/actions/workflows/ci.yml)
+[![Android Release](https://github.com/hvkooten/wizard-scoreboard/actions/workflows/android-release.yml/badge.svg)](https://github.com/hvkooten/wizard-scoreboard/actions/workflows/android-release.yml)
 
 Wizard Scoreboard is a .NET MAUI app for tracking points in the Wizard card game.
 
@@ -15,7 +15,7 @@ Wizard Scoreboard is a .NET MAUI app for tracking points in the Wizard card game
 
 ## Android Download
 
-- Latest APK: [Download the latest Android build](https://github.com/NodSol/wizard-scoreboard/releases/latest/download/wizard-scoreboard-android.apk)
+- Latest APK: [Download the latest Android build](https://github.com/hvkooten/wizard-scoreboard/releases/latest/download/wizard-scoreboard-android.apk)
 - Version history: [Version overview](VERSION_OVERVIEW.md)
 
 ## How To Install On Android
