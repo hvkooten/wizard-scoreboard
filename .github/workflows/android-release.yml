@@ -1,0 +1,143 @@
+name: Android Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-android-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+
+      - name: Validate tag version is higher than source version
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          if ($tag.StartsWith("v")) { $tag = $tag.Substring(1) }
+
+          if ($tag -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Tag '$tag' is not a valid SemVer (major.minor.patch)."
+          }
+
+          $proj = "src/scoreboard/WizardScoreboard.csproj"
+          [xml]$xml = Get-Content $proj
+          $currentDisplayVersion = $xml.Project.PropertyGroup.ApplicationDisplayVersion | Select-Object -First 1
+          if ([string]::IsNullOrWhiteSpace($currentDisplayVersion)) {
+            throw "ApplicationDisplayVersion not found in $proj"
+          }
+
+          $tagVersion = [version]$tag
+          $currentVersion = [version]$currentDisplayVersion
+
+          if ($tagVersion -le $currentVersion) {
+            throw "Tag version $tagVersion must be higher than current source version $currentVersion"
+          }
+
+          $parts = $tag.Split('.')
+          $versionCode = ([int]$parts[0] * 10000) + ([int]$parts[1] * 100) + [int]$parts[2]
+
+          "display_version=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "version_code=$versionCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Restore app
+        run: dotnet restore src/scoreboard/WizardScoreboard.csproj
+
+      - name: Publish Android APK
+        shell: pwsh
+        run: |
+          dotnet publish src/scoreboard/WizardScoreboard.csproj `
+            -f net10.0-android `
+            -c Release `
+            -p:AndroidPackageFormats=apk `
+            -p:ApplicationDisplayVersion=${{ steps.version.outputs.display_version }} `
+            -p:ApplicationVersion=${{ steps.version.outputs.version_code }} `
+            --no-restore
+
+      - name: Collect APK artifact
+        id: artifact
+        shell: pwsh
+        run: |
+          $apk = Get-ChildItem -Path src/scoreboard/bin/Release/net10.0-android -Filter *.apk -Recurse | Select-Object -First 1
+          if (-not $apk) {
+            throw "APK output not found."
+          }
+
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          $versioned = "artifacts/wizard-scoreboard-android-v${{ steps.version.outputs.display_version }}.apk"
+          $latest = "artifacts/wizard-scoreboard-android.apk"
+          Copy-Item $apk.FullName $versioned -Force
+          Copy-Item $apk.FullName $latest -Force
+
+      - name: Create GitHub release and upload APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Wizard Scoreboard ${{ github.ref_name }}
+          files: |
+            artifacts/wizard-scoreboard-android-v${{ steps.version.outputs.display_version }}.apk
+            artifacts/wizard-scoreboard-android.apk
+
+  update-version-page:
+    runs-on: ubuntu-latest
+    needs: build-android-release
+
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Update version source and overview page
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          DATE="$(date -u +%Y-%m-%d)"
+          VERSION_CODE=$(echo "$TAG" | awk -F. '{ print ($1*10000)+($2*100)+$3 }')
+
+          # Update source version so repository reflects released Android version.
+          sed -i -E "s#<ApplicationDisplayVersion>[^<]+</ApplicationDisplayVersion>#<ApplicationDisplayVersion>${TAG}</ApplicationDisplayVersion>#" src/scoreboard/WizardScoreboard.csproj
+          sed -i -E "s#<ApplicationVersion>[^<]+</ApplicationVersion>#<ApplicationVersion>${VERSION_CODE}</ApplicationVersion>#" src/scoreboard/WizardScoreboard.csproj
+
+          ENTRY="- [v${TAG}](https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${TAG}) - [Download APK](https://github.com/${GITHUB_REPOSITORY}/releases/download/v${TAG}/wizard-scoreboard-android.apk) (${DATE})"
+
+          if ! grep -Fq "releases/tag/v${TAG}" VERSION_OVERVIEW.md; then
+            TMP_FILE="$(mktemp)"
+            {
+              head -n 5 VERSION_OVERVIEW.md
+              echo "$ENTRY"
+              tail -n +6 VERSION_OVERVIEW.md
+            } > "$TMP_FILE"
+            mv "$TMP_FILE" VERSION_OVERVIEW.md
+          fi
+
+      - name: Commit and push updates
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/scoreboard/WizardScoreboard.csproj VERSION_OVERVIEW.md
+          git commit -m "docs: add release v${GITHUB_REF_NAME#v} to version overview"
+          git push
