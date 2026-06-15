@@ -24,6 +24,7 @@ public class SettingsPage : ContentPage
     private readonly ITrumpPaletteService trumpPaletteService;
     private readonly Picker languagePicker;
     private readonly Picker trumpPalettePicker;
+    private readonly HorizontalStackLayout trumpPalettePreviewLayout;
     private readonly Picker bidTotalRulePicker;
     private readonly Picker groupPicker;
     private int selectedPlayerCount = 6;
@@ -79,8 +80,12 @@ public class SettingsPage : ContentPage
             }
         };
 
-        trumpPalettePicker = new Picker { Title = "Trump color style" };
-        trumpPalettePicker.Title = Localization.GetString("TrumpColorStyleTitle");
+        trumpPalettePicker = new Picker { Title = string.Empty };
+        trumpPalettePreviewLayout = new HorizontalStackLayout
+        {
+            Spacing = 8,
+            VerticalOptions = LayoutOptions.Center
+        };
         trumpPalettePicker.Items.Add(Localization.GetString("TrumpPaletteCards"));
         trumpPalettePicker.Items.Add(Localization.GetString("TrumpPaletteColors"));
         trumpPalettePicker.SelectedIndex = trumpPaletteService.GetMode() == TrumpPaletteMode.FourColors ? 1 : 0;
@@ -88,19 +93,26 @@ public class SettingsPage : ContentPage
         {
             var mode = trumpPalettePicker.SelectedIndex == 1 ? TrumpPaletteMode.FourColors : TrumpPaletteMode.CardSuits;
             trumpPaletteService.SetMode(mode);
+            UpdateTrumpPalettePreview(mode);
         };
 
-        var colorIconsRow = new HorizontalStackLayout
+        var trumpStyleHeaderRow = new HorizontalStackLayout
         {
             Spacing = 8,
+            VerticalOptions = LayoutOptions.Center,
             Children =
             {
-                CreateColorIcon(Colors.Red),
-                CreateColorIcon(Colors.Yellow),
-                CreateColorIcon(Colors.Green),
-                CreateColorIcon(Colors.Blue)
+                new Label
+                {
+                    Text = Localization.GetString("TrumpColorStyleTitle"),
+                    FontAttributes = FontAttributes.Bold,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    HorizontalOptions = LayoutOptions.Start
+                },
+                trumpPalettePreviewLayout
             }
         };
+        UpdateTrumpPalettePreview(trumpPaletteService.GetMode());
 
         // Bid total rule start round setting
         bidTotalRulePicker = new Picker { Title = Localization.GetString("BidTotalRuleStartRound") };
@@ -169,8 +181,8 @@ public class SettingsPage : ContentPage
                 Children =
                 {
                     languagePicker,
+                    trumpStyleHeaderRow,
                     trumpPalettePicker,
-                    colorIconsRow,
                     bidTotalRulePicker,
                     groupPicker,
                     groupNameEntry,
@@ -289,6 +301,48 @@ public class SettingsPage : ContentPage
             Padding = 0,
             StrokeShape = new RoundRectangle { CornerRadius = 14 }
         };
+    }
+
+    private static View CreateSuitIcon(string symbol, Color color)
+    {
+        return new Border
+        {
+            WidthRequest = 28,
+            HeightRequest = 28,
+            BackgroundColor = Colors.White,
+            Stroke = Colors.Black,
+            StrokeThickness = 1,
+            Padding = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = 14 },
+            Content = new Label
+            {
+                Text = symbol,
+                TextColor = color,
+                FontAttributes = FontAttributes.Bold,
+                FontSize = 15,
+                HorizontalTextAlignment = TextAlignment.Center,
+                VerticalTextAlignment = TextAlignment.Center
+            }
+        };
+    }
+
+    private void UpdateTrumpPalettePreview(TrumpPaletteMode mode)
+    {
+        trumpPalettePreviewLayout.Children.Clear();
+
+        if (mode == TrumpPaletteMode.FourColors)
+        {
+            trumpPalettePreviewLayout.Children.Add(CreateColorIcon(Colors.Red));
+            trumpPalettePreviewLayout.Children.Add(CreateColorIcon(Colors.Yellow));
+            trumpPalettePreviewLayout.Children.Add(CreateColorIcon(Colors.Green));
+            trumpPalettePreviewLayout.Children.Add(CreateColorIcon(Colors.Blue));
+            return;
+        }
+
+        trumpPalettePreviewLayout.Children.Add(CreateSuitIcon("♥", Colors.Red));
+        trumpPalettePreviewLayout.Children.Add(CreateSuitIcon("♦", Color.FromArgb("#e05000")));
+        trumpPalettePreviewLayout.Children.Add(CreateSuitIcon("♣", Colors.DarkGreen));
+        trumpPalettePreviewLayout.Children.Add(CreateSuitIcon("♠", Colors.DarkBlue));
     }
 
     private void RebuildPlayerNameInputs()
@@ -455,6 +509,8 @@ public class SettingsPage : ContentPage
             return;
         }
 
+        var previousCount = selectedPlayerCount;
+
         // Flush visible text into cache
         FlushVisibleEntriesToCache();
 
@@ -467,6 +523,17 @@ public class SettingsPage : ContentPage
 
         // Reduce player count and rebuild
         selectedPlayerCount--;
+
+        // Keep default bid-rule round aligned with group size after delete.
+        if (bidTotalRuleStartRoundValue == previousCount)
+        {
+            bidTotalRuleStartRoundValue = selectedPlayerCount;
+            if (bidTotalRulePicker.SelectedIndex != bidTotalRuleStartRoundValue)
+            {
+                bidTotalRulePicker.SelectedIndex = bidTotalRuleStartRoundValue;
+            }
+        }
+
         ApplyPlayerCountButtonStyles();
         _skipFlushOnNextRebuild = true;
         RebuildPlayerNameInputs(null);
@@ -475,7 +542,19 @@ public class SettingsPage : ContentPage
 
     private void SetPlayerCount(int count)
     {
+        var previousCount = selectedPlayerCount;
         selectedPlayerCount = count;
+
+        // Keep default bid-rule round aligned with group size.
+        if (bidTotalRuleStartRoundValue == previousCount)
+        {
+            bidTotalRuleStartRoundValue = count;
+            if (bidTotalRulePicker.SelectedIndex != bidTotalRuleStartRoundValue)
+            {
+                bidTotalRulePicker.SelectedIndex = bidTotalRuleStartRoundValue;
+            }
+        }
+
         ApplyPlayerCountButtonStyles();
         RebuildPlayerNameInputs();
     }
