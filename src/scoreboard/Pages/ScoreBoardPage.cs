@@ -355,7 +355,11 @@ public class ScoreBoardPage : ContentPage
 
         groupService.SetSelectedGroup(group.Id);
 
-        currentSession = scoreService.StartGame(group);
+        var selectedPlayers = await SelectPlayersAsync(group);
+        if (selectedPlayers == null)
+            return;
+
+        currentSession = scoreService.StartGame(group, selectedPlayers);
         await DisplayRoundPopupAsync();
         RefreshUI();
     }
@@ -368,6 +372,114 @@ public class ScoreBoardPage : ContentPage
             currentSession = null;
             RefreshUI();
         }
+    }
+
+    private async Task<List<Player>?> SelectPlayersAsync(Group group)
+    {
+        var allPlayers = group.Players.OrderBy(p => p.Order).ToList();
+
+        // All groups have exactly as many players as configured — only show popup when >3
+        if (allPlayers.Count <= 3)
+            return allPlayers;
+
+        var prefKey = $"player_sel_v1_{group.Id}";
+        var savedRaw = Preferences.Default.Get(prefKey, string.Empty);
+        var savedIds = savedRaw
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => Guid.TryParse(s, out var g) ? g : Guid.Empty)
+            .Where(g => g != Guid.Empty)
+            .ToHashSet();
+
+        var selected = new HashSet<Guid>(
+            savedIds.Count >= 3 && savedIds.All(id => allPlayers.Any(p => p.Id == id))
+                ? savedIds
+                : allPlayers.Select(p => p.Id));
+
+        var toggleButtons = new Dictionary<Guid, Button>();
+        var countLabel = new Label
+        {
+            FontSize = 14,
+            HorizontalTextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 8, 0, 0)
+        };
+        var startBtn = new Button { Text = Localization.GetString("StartGame") };
+
+        void UpdateUI()
+        {
+            countLabel.Text = string.Format(Localization.GetString("SelectedPlayersLabel"), selected.Count);
+            startBtn.IsEnabled = selected.Count >= 3;
+        }
+
+        void ApplyStyle(Button btn, bool isOn)
+        {
+            btn.BackgroundColor = isOn ? Color.FromArgb("#1a3a5c") : Color.FromArgb("#e0e8f0");
+            btn.TextColor = isOn ? Colors.White : Color.FromArgb("#1a3a5c");
+        }
+
+        var layout = new StackLayout { Spacing = 10, Padding = new Thickness(16, 16) };
+        layout.Children.Add(new Label
+        {
+            Text = Localization.GetString("SelectPlayersTitle"),
+            FontSize = 18,
+            FontAttributes = FontAttributes.Bold,
+            HorizontalTextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 0, 0, 8)
+        });
+
+        foreach (var player in allPlayers)
+        {
+            var btn = new Button
+            {
+                Text = player.Name,
+                HeightRequest = 44,
+                CornerRadius = 8,
+                FontSize = 16
+            };
+            ApplyStyle(btn, selected.Contains(player.Id));
+            var capturedId = player.Id;
+            btn.Clicked += (s, e) =>
+            {
+                if (selected.Contains(capturedId))
+                {
+                    if (selected.Count > 3)
+                    {
+                        selected.Remove(capturedId);
+                        ApplyStyle(btn, false);
+                    }
+                }
+                else
+                {
+                    selected.Add(capturedId);
+                    ApplyStyle(btn, true);
+                }
+                UpdateUI();
+            };
+            toggleButtons[player.Id] = btn;
+            layout.Children.Add(btn);
+        }
+
+        layout.Children.Add(countLabel);
+        layout.Children.Add(startBtn);
+        UpdateUI();
+
+        var modal = new ContentPage { Content = new ScrollView { Content = layout } };
+        var tcs = new TaskCompletionSource<List<Player>?>();
+
+        startBtn.Clicked += (s, e) =>
+        {
+            Preferences.Default.Set(prefKey, string.Join(',', selected.Select(id => id.ToString())));
+            var result = allPlayers.Where(p => selected.Contains(p.Id)).ToList();
+            tcs.TrySetResult(result);
+        };
+
+        modal.Disappearing += (s, e) => tcs.TrySetResult(null);
+
+        await Navigation.PushModalAsync(modal);
+        var players = await tcs.Task;
+        if (Navigation.ModalStack.Contains(modal))
+            await Navigation.PopModalAsync();
+
+        return players;
     }
 
     private async Task StartNextRoundAsync()
@@ -406,8 +518,8 @@ public class ScoreBoardPage : ContentPage
         int trumpSelectionIndex = 0;
         var bidEntries = new Dictionary<Guid, Entry>();
 
-        var scroll = new ScrollView();
-        var population = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12) };
+        var scroll = new ScrollView { BackgroundColor = Colors.White };
+        var population = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = Colors.White };
         scroll.Content = population;
 
         // Header: round number
@@ -423,6 +535,33 @@ public class ScoreBoardPage : ContentPage
         population.Children.Add(new Label { Text = Localization.GetString("Trump"), FontAttributes = FontAttributes.Bold });
         var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector();
         population.Children.Add(trumpSelectorView);
+
+        // Dealer bid total warning (if rule is active and dealer is in round)
+        var dealerWarningLabel = new Label
+        {
+            FontSize = 14,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = Colors.DarkRed,
+            HorizontalTextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 8, 0, 0),
+            IsVisible = currentRoundNumber >= currentSession.BidTotalRuleStartRound
+        };
+        
+        void UpdateDealerWarning()
+        {
+            if (currentRoundNumber >= currentSession.BidTotalRuleStartRound)
+            {
+                dealerWarningLabel.Text = string.Format(
+                    Localization.GetString("DealerCannotBidTemplate"),
+                    currentRoundNumber);
+            }
+        }
+        
+        if (dealerWarningLabel.IsVisible)
+        {
+            population.Children.Add(dealerWarningLabel);
+            UpdateDealerWarning();
+        }
 
         // Live bid total
         var totalBidsLabel = new Label
@@ -451,8 +590,18 @@ public class ScoreBoardPage : ContentPage
         foreach (var player in entryOrder)
         {
             var isDealer = player.Id == dealerForEntry.Id;
-            var playerRow = new HorizontalStackLayout { Spacing = 10 };
-            playerRow.Children.Add(new Label
+            var bidEntry = new Entry
+            {
+                Keyboard = Keyboard.Numeric,
+                Text = "0",
+                WidthRequest = 52,
+                Placeholder = $"0–{currentRoundNumber}",
+                HorizontalTextAlignment = TextAlignment.Center
+            };
+            bidEntry.TextChanged += (s, e) => UpdateBidTotal();
+            bidEntries[player.Id] = bidEntry;
+
+            var playerLabel = new Label
             {
                 Text = isDealer
                     ? $"{player.Name} ★ {Localization.GetString("DealerLabel")}"
@@ -460,19 +609,10 @@ public class ScoreBoardPage : ContentPage
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
                 TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
                 VerticalTextAlignment = TextAlignment.Center,
-                WidthRequest = 140
-            });
-            var bidEntry = new Entry
-            {
-                Keyboard = Keyboard.Numeric,
-                Text = "0",
-                WidthRequest = 80,
-                Placeholder = $"0–{currentRoundNumber}"
+                HorizontalOptions = LayoutOptions.FillAndExpand
             };
-            bidEntry.TextChanged += (s, e) => UpdateBidTotal();
-            bidEntries[player.Id] = bidEntry;
-            playerRow.Children.Add(bidEntry);
-            population.Children.Add(playerRow);
+
+            population.Children.Add(CreateStepperRow(playerLabel, bidEntry, 0, currentRoundNumber));
         }
 
         population.Children.Add(totalBidsLabel);
@@ -485,7 +625,7 @@ public class ScoreBoardPage : ContentPage
         };
         population.Children.Add(doneButton);
 
-        var modal = new ContentPage { Content = scroll };
+        var modal = new ContentPage { Content = scroll, BackgroundColor = Colors.White };
         var tcs = new TaskCompletionSource<bool>();
 
         doneButton.Clicked += async (s, e) =>
@@ -515,7 +655,7 @@ public class ScoreBoardPage : ContentPage
 
             var totalBids = bidEntries.Values.Sum(entry =>
                 int.TryParse(entry.Text, out var bid) ? bid : 0);
-            if (totalBids == currentRoundNumber)
+            if (currentRoundNumber >= currentSession.BidTotalRuleStartRound && totalBids == currentRoundNumber)
             {
                 await DisplayAlertAsync(
                     Localization.GetString("ErrorTitle"),
@@ -553,9 +693,12 @@ public class ScoreBoardPage : ContentPage
         }
 
         // --- Actuals popup ---
+        var (trumpSymbol, trumpFgColor, trumpBgColor) = GetTrumpDisplayInfo(trump);
+        var lightBg = GetTrumpColor(trump);
+
         var actualEntries = new Dictionary<Guid, Entry>();
-        var scrollActuals = new ScrollView();
-        var popActuals = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12) };
+        var scrollActuals = new ScrollView { BackgroundColor = Colors.White };
+        var popActuals = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = Colors.White };
         scrollActuals.Content = popActuals;
         var totalActualsLabel = new Label
         {
@@ -572,6 +715,7 @@ public class ScoreBoardPage : ContentPage
             totalActualsLabel.TextColor = sum == currentSession.CurrentRound ? Colors.DarkGreen : Colors.DarkRed;
         }
 
+        // Round title
         popActuals.Children.Add(new Label
         {
             Text = string.Format(Localization.GetString("RoundPopupTitle"), currentSession.CurrentRound, currentSession.MaxRounds),
@@ -579,6 +723,27 @@ public class ScoreBoardPage : ContentPage
             FontAttributes = FontAttributes.Bold,
             HorizontalTextAlignment = TextAlignment.Center
         });
+
+        // Trump indicator
+        var trumpIndicatorBorder = new Border
+        {
+            BackgroundColor = trumpBgColor,
+            Stroke = Colors.Transparent,
+            StrokeThickness = 0,
+            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 },
+            Padding = new Thickness(20, 10),
+            HorizontalOptions = LayoutOptions.Center,
+            Content = new Label
+            {
+                Text = trumpSymbol,
+                TextColor = trumpFgColor,
+                FontSize = 48,
+                FontAttributes = FontAttributes.Bold,
+                HorizontalTextAlignment = TextAlignment.Center,
+                VerticalTextAlignment = TextAlignment.Center
+            }
+        };
+        popActuals.Children.Add(trumpIndicatorBorder);
 
         popActuals.Children.Add(new Label
         {
@@ -591,28 +756,29 @@ public class ScoreBoardPage : ContentPage
         {
             var bid = bids.GetValueOrDefault(player.Id);
             var isDealer = player.Id == dealerForEntry.Id;
-            var row = new HorizontalStackLayout { Spacing = 10 };
-            row.Children.Add(new Label
-            {
-                Text = isDealer
-                    ? $"{player.Name} ★ {Localization.GetString("DealerLabel")} (bid: {bid})"
-                    : $"{player.Name} (bid: {bid})",
-                FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
-                TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
-                VerticalTextAlignment = TextAlignment.Center,
-                WidthRequest = 160
-            });
             var actualEntry = new Entry
             {
                 Keyboard = Keyboard.Numeric,
                 Text = "0",
-                WidthRequest = 80,
-                Placeholder = $"0\u2013{currentSession.CurrentRound}"
+                WidthRequest = 52,
+                Placeholder = $"0\u2013{currentSession.CurrentRound}",
+                HorizontalTextAlignment = TextAlignment.Center
             };
             actualEntry.TextChanged += (s, e) => UpdateActualsTotal();
             actualEntries[player.Id] = actualEntry;
-            row.Children.Add(actualEntry);
-            popActuals.Children.Add(row);
+
+            var playerLabel = new Label
+            {
+                Text = isDealer
+                    ? $"{player.Name} ★ {Localization.GetString("DealerLabel")} (bod: {bid})"
+                    : $"{player.Name} (bod: {bid})",
+                FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
+                TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
+                VerticalTextAlignment = TextAlignment.Center,
+                HorizontalOptions = LayoutOptions.FillAndExpand
+            };
+
+            popActuals.Children.Add(CreateStepperRow(playerLabel, actualEntry, 0, currentSession.CurrentRound));
         }
 
         popActuals.Children.Add(totalActualsLabel);
@@ -654,7 +820,7 @@ public class ScoreBoardPage : ContentPage
             tcsActuals.SetResult(true);
         };
 
-        await Navigation.PushModalAsync(new ContentPage { Content = scrollActuals });
+        await Navigation.PushModalAsync(new ContentPage { Content = scrollActuals, BackgroundColor = Colors.White });
         await tcsActuals.Task;
         await Navigation.PopModalAsync();
 
@@ -762,6 +928,92 @@ public class ScoreBoardPage : ContentPage
         }
 
         return (row, () => selectedIndex);
+    }
+
+    private static View CreateStepperRow(Label nameLabel, Entry entry, int min, int max)
+    {
+        var minusBtn = new Button
+        {
+            Text = "−",
+            WidthRequest = 40,
+            HeightRequest = 40,
+            CornerRadius = 8,
+            Padding = new Thickness(0),
+            FontSize = 18,
+            BackgroundColor = Color.FromArgb("#e0e8f0"),
+            TextColor = Color.FromArgb("#1a3a5c")
+        };
+        var plusBtn = new Button
+        {
+            Text = "+",
+            WidthRequest = 40,
+            HeightRequest = 40,
+            CornerRadius = 8,
+            Padding = new Thickness(0),
+            FontSize = 18,
+            BackgroundColor = Color.FromArgb("#1a3a5c"),
+            TextColor = Colors.White
+        };
+
+        void Refresh()
+        {
+            int.TryParse(entry.Text, out var v);
+            minusBtn.IsEnabled = v > min;
+            plusBtn.IsEnabled = v < max;
+        }
+
+        minusBtn.Clicked += (s, e) =>
+        {
+            if (int.TryParse(entry.Text, out var v) && v > min)
+                entry.Text = (v - 1).ToString();
+        };
+        plusBtn.Clicked += (s, e) =>
+        {
+            if (int.TryParse(entry.Text, out var v) && v < max)
+                entry.Text = (v + 1).ToString();
+        };
+        entry.TextChanged += (s, e) => Refresh();
+        Refresh();
+
+        var grid = new Grid
+        {
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = GridLength.Auto },
+                new ColumnDefinition { Width = GridLength.Auto },
+                new ColumnDefinition { Width = GridLength.Auto }
+            },
+            ColumnSpacing = 6
+        };
+        grid.Add(nameLabel, 0, 0);
+        grid.Add(minusBtn, 1, 0);
+        grid.Add(entry, 2, 0);
+        grid.Add(plusBtn, 3, 0);
+        return grid;
+    }
+
+    private (string symbol, Color fg, Color bg) GetTrumpDisplayInfo(TrumpSuit trump)
+    {
+        if (trumpPaletteService.GetMode() == TrumpPaletteMode.FourColors)
+        {
+            return trump switch
+            {
+                TrumpSuit.Hearts   => ("●", Colors.White, Colors.Red),
+                TrumpSuit.Diamonds => ("●", Colors.White, Colors.Yellow),
+                TrumpSuit.Clubs    => ("●", Colors.White, Colors.Green),
+                TrumpSuit.Spades   => ("●", Colors.White, Colors.Blue),
+                _                  => ("?", Colors.Gray, Colors.White)
+            };
+        }
+        return trump switch
+        {
+            TrumpSuit.Hearts   => ("♥", Colors.Red,                   Colors.White),
+            TrumpSuit.Diamonds => ("♦", Color.FromArgb("#e05000"),    Colors.White),
+            TrumpSuit.Clubs    => ("♣", Colors.DarkGreen,              Colors.White),
+            TrumpSuit.Spades   => ("♠", Colors.DarkBlue,              Colors.White),
+            _                  => ("?", Colors.Gray,                   Colors.White)
+        };
     }
 
     private Color GetTrumpColor(TrumpSuit trump)

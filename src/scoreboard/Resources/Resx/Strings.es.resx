@@ -21,6 +21,7 @@
   <data name="GroupNameRequired" xml:space="preserve"><value>El nombre del grupo es obligatorio.</value></data>
   <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>El nombre del jugador {0} es obligatorio.</value></data>
   <data name="GroupCreated" xml:space="preserve"><value>Grupo creado</value></data>
+  <data name="GroupUpdated" xml:space="preserve"><value>Grupo actualizado</value></data>
   <data name="PlayerPlaceholder" xml:space="preserve"><value>Jugador {0}</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>No hay juego activo.</value></data>
   <data name="NextRound" xml:space="preserve"><value>Siguiente ronda</value></data>
@@ -28,6 +29,8 @@
   <data name="PlayersLabel" xml:space="preserve"><value>Jugadores:</value></data>
   <data name="PlayerScoreTemplate" xml:space="preserve"><value>{0}. {1}: {2} pts, victorias {3}</value></data>
   <data name="NoGroupsAvailable" xml:space="preserve"><value>No hay grupos disponibles. Crea primero un grupo en configuración.</value></data>
+  <data name="SelectPlayersTitle" xml:space="preserve"><value>Seleccionar jugadores para este juego</value></data>
+  <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} jugadores seleccionados</value></data>
   <data name="GameAlreadyCompleted" xml:space="preserve"><value>El juego ya está completado.</value></data>
   <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Bazas previstas (0..ronda)</value></data>
   <data name="RoundPopupTitle" xml:space="preserve"><value>Ronda {0} de {1}</value></data>
@@ -39,6 +42,7 @@
   <data name="TotalHeader" xml:space="preserve"><value>Total</value></data>
     <data name="TrumpRequiredError" xml:space="preserve"><value>Por favor selecciona un palo de triunfo.</value></data>
     <data name="TotalBidsLabel" xml:space="preserve"><value>Total apuestas: {0} / {1}</value></data>
+    <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>El total de apuestas no puede ser igual al número de ronda ({0}).</value></data>
     <data name="TotalActualsError" xml:space="preserve"><value>El total de bazas ganadas debe ser igual al número de ronda ({0}).</value></data>
   <data name="Trump" xml:space="preserve"><value>Triunfo</value></data>
   <data name="PredictionRangeError" xml:space="preserve"><value>La predicción debe estar dentro del rango.</value></data>
@@ -60,4 +64,6 @@ https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="Blue" xml:space="preserve"><value>Azul</value></data>
   <data name="TotalActualsLabel" xml:space="preserve"><value>Total ganadas: {0} / {1}</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Repartidor</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>¿A partir de qué ronda debe aplicarse la regla de apuesta total?</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Tú (Repartidor) no puedes apostar: {0}</value></data>
 </root>

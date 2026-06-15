@@ -25,7 +25,9 @@ public class SettingsPage : ContentPage
     private readonly Picker languagePicker;
     private readonly Picker trumpPalettePicker;
     private readonly Picker groupPicker;
-    private readonly Picker playerCountPicker;
+    private int selectedPlayerCount = 3;
+    private readonly List<Button> playerCountButtons = new();
+    private readonly HorizontalStackLayout playerCountLayout;
     private readonly Entry groupNameEntry;
     private readonly VerticalStackLayout playerNamesLayout;
     private readonly List<Entry> playerNameEntries = new();
@@ -98,6 +100,23 @@ public class SettingsPage : ContentPage
             }
         };
 
+        // Bid total rule start round setting
+        var bidTotalRulePicker = new Picker { Title = Localization.GetString("BidTotalRuleStartRound") };
+        for (var round = 1; round <= 13; round++)
+        {
+            bidTotalRulePicker.Items.Add(round.ToString());
+        }
+        var savedStartRound = Preferences.Default.Get("bid_total_rule_start_round", 1);
+        bidTotalRulePicker.SelectedIndex = savedStartRound - 1;
+        bidTotalRulePicker.SelectedIndexChanged += (s, e) =>
+        {
+            if (bidTotalRulePicker.SelectedIndex >= 0)
+            {
+                var selectedRound = bidTotalRulePicker.SelectedIndex + 1;
+                Preferences.Default.Set("bid_total_rule_start_round", selectedRound);
+            }
+        };
+
         groupNameEntry = new Entry { Placeholder = Localization.GetString("CreatorGroup") };
         groupNameEntry.TextChanged += (s, e) =>
         {
@@ -111,13 +130,23 @@ public class SettingsPage : ContentPage
         groupPicker = new Picker { Title = "Saved groups" };
         groupPicker.SelectedIndexChanged += GroupPicker_SelectedIndexChanged;
 
-        playerCountPicker = new Picker { Title = Localization.GetString("PlayerCount") };
-        playerCountPicker.Items.Add("3");
-        playerCountPicker.Items.Add("4");
-        playerCountPicker.Items.Add("5");
-        playerCountPicker.Items.Add("6");
-        playerCountPicker.SelectedIndex = 0;
-        playerCountPicker.SelectedIndexChanged += (s, e) => RebuildPlayerNameInputs();
+        playerCountLayout = new HorizontalStackLayout { Spacing = 8 };
+        foreach (var count in new[] { 3, 4, 5, 6 })
+        {
+            var btn = new Button
+            {
+                Text = count.ToString(),
+                WidthRequest = 52,
+                HeightRequest = 44,
+                CornerRadius = 8,
+                FontSize = 16
+            };
+            var capturedCount = count;
+            btn.Clicked += (s, e) => SetPlayerCount(capturedCount);
+            playerCountButtons.Add(btn);
+            playerCountLayout.Children.Add(btn);
+        }
+        ApplyPlayerCountButtonStyles();
 
         playerNamesLayout = new VerticalStackLayout
         {
@@ -141,9 +170,10 @@ public class SettingsPage : ContentPage
                     languagePicker,
                     trumpPalettePicker,
                     colorIconsRow,
+                    bidTotalRulePicker,
                     groupPicker,
                     groupNameEntry,
-                    playerCountPicker,
+                    playerCountLayout,
                     playerNamesLayout,
                     createGroupButton,
                     groupListView
@@ -232,7 +262,10 @@ public class SettingsPage : ContentPage
 
             RefreshGroups();
             groupNameUserEdited = false;
-            await DisplayAlertAsync(Localization.GetString("SuccessTitle"), Localization.GetString("GroupCreated"), Localization.GetString("Ok"));
+            var successMsg = editingGroupId.HasValue
+                ? Localization.GetString("GroupUpdated")
+                : Localization.GetString("GroupCreated");
+            await DisplayAlertAsync(Localization.GetString("SuccessTitle"), successMsg, Localization.GetString("Ok"));
         }
         catch (Exception ex)
         {
@@ -284,6 +317,11 @@ public class SettingsPage : ContentPage
             {
                 allPlayerNames[k] = namesOverride[k];
             }
+            // Clear slots beyond the new group size so stale names from a larger group don't persist.
+            for (var k = namesOverride.Count; k < allPlayerNames.Count; k++)
+            {
+                allPlayerNames[k] = string.Empty;
+            }
         }
 
         playerNameEntries.Clear();
@@ -292,11 +330,7 @@ public class SettingsPage : ContentPage
         // Use backing cache as source so names survive count reductions.
         var sourceNames = allPlayerNames;
 
-        var selectedPlayerCount = 3;
-        if (playerCountPicker.SelectedIndex >= 0 && int.TryParse(playerCountPicker.Items[playerCountPicker.SelectedIndex], out var parsedCount))
-        {
-            selectedPlayerCount = parsedCount;
-        }
+        var selectedPlayerCount = this.selectedPlayerCount;
 
         for (var i = 0; i < selectedPlayerCount; i++)
         {
@@ -333,10 +367,23 @@ public class SettingsPage : ContentPage
             };
             downButton.Clicked += (s, e) => MovePlayerInput(rowIndex, rowIndex + 1);
 
+            var deleteButton = new Button
+            {
+                Text = "✕",
+                WidthRequest = 36,
+                HeightRequest = 36,
+                Padding = new Thickness(0),
+                FontSize = 14,
+                BackgroundColor = Colors.LightCoral,
+                TextColor = Colors.White,
+                IsEnabled = selectedPlayerCount > 3
+            };
+            deleteButton.Clicked += (s, e) => DeletePlayerInput(rowIndex);
+
             var rowLayout = new HorizontalStackLayout
             {
                 Spacing = 6,
-                Children = { upButton, downButton, entry }
+                Children = { upButton, downButton, deleteButton, entry }
             };
 
             var rowBorder = new Border
@@ -397,6 +444,48 @@ public class SettingsPage : ContentPage
         RebuildPlayerNameInputs(null);
     }
 
+    private void DeletePlayerInput(int deleteIndex)
+    {
+        if (deleteIndex < 0 || deleteIndex >= selectedPlayerCount || selectedPlayerCount <= 3)
+        {
+            return;
+        }
+
+        // Flush visible text into cache
+        FlushVisibleEntriesToCache();
+
+        // Shift all names after deleteIndex down by one
+        for (var i = deleteIndex; i < allPlayerNames.Count - 1; i++)
+        {
+            allPlayerNames[i] = allPlayerNames[i + 1];
+        }
+        allPlayerNames[allPlayerNames.Count - 1] = string.Empty;
+
+        // Reduce player count and rebuild
+        selectedPlayerCount--;
+        ApplyPlayerCountButtonStyles();
+        _skipFlushOnNextRebuild = true;
+        RebuildPlayerNameInputs(null);
+        UpdateGroupNameFromPlayers();
+    }
+
+    private void SetPlayerCount(int count)
+    {
+        selectedPlayerCount = count;
+        ApplyPlayerCountButtonStyles();
+        RebuildPlayerNameInputs();
+    }
+
+    private void ApplyPlayerCountButtonStyles()
+    {
+        foreach (var btn in playerCountButtons)
+        {
+            var isSelected = btn.Text == selectedPlayerCount.ToString();
+            btn.BackgroundColor = isSelected ? Color.FromArgb("#1a3a5c") : Color.FromArgb("#e0e8f0");
+            btn.TextColor = isSelected ? Colors.White : Color.FromArgb("#1a3a5c");
+        }
+    }
+
     private void GroupPicker_SelectedIndexChanged(object? sender, EventArgs e)
     {
         var groups = groupService.GetGroups().OrderBy(g => g.CreatedAt).ToList();
@@ -406,7 +495,8 @@ public class SettingsPage : ContentPage
             groupNameUserEdited = false;
             createGroupButton.Text = Localization.GetString("CreatorGroup");
             SetGroupNameFromCode(string.Empty);
-            playerCountPicker.SelectedIndex = 0;
+            SetPlayerCount(3);
+            for (var k = 0; k < allPlayerNames.Count; k++) allPlayerNames[k] = string.Empty;
             RebuildPlayerNameInputs();
             return;
         }
@@ -424,11 +514,7 @@ public class SettingsPage : ContentPage
         createGroupButton.Text = "Save group";
         SetGroupNameFromCode(selected.Name);
 
-        var playerCountIndex = selected.Players.Count - 3;
-        if (playerCountIndex >= 0 && playerCountIndex < playerCountPicker.Items.Count)
-        {
-            playerCountPicker.SelectedIndex = playerCountIndex;
-        }
+        SetPlayerCount(selected.Players.Count);
 
         var orderedNames = selected.Players.OrderBy(p => p.Order).Select(p => p.Name).ToList();
         RebuildPlayerNameInputs(orderedNames);

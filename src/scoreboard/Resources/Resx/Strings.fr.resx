@@ -21,6 +21,7 @@
   <data name="GroupNameRequired" xml:space="preserve"><value>Le nom du groupe est requis.</value></data>
   <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Le nom du joueur {0} est requis.</value></data>
   <data name="GroupCreated" xml:space="preserve"><value>Groupe créé</value></data>
+  <data name="GroupUpdated" xml:space="preserve"><value>Groupe mis à jour</value></data>
   <data name="PlayerPlaceholder" xml:space="preserve"><value>Joueur {0}</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>Aucune partie active.</value></data>
   <data name="NextRound" xml:space="preserve"><value>Tour suivant</value></data>
@@ -28,6 +29,8 @@
   <data name="PlayersLabel" xml:space="preserve"><value>Joueurs :</value></data>
   <data name="PlayerScoreTemplate" xml:space="preserve"><value>{0}. {1} : {2} pts, victoires {3}</value></data>
   <data name="NoGroupsAvailable" xml:space="preserve"><value>Aucun groupe disponible. Créez d'abord un groupe dans les paramètres.</value></data>
+  <data name="SelectPlayersTitle" xml:space="preserve"><value>Sélectionner les joueurs pour cette partie</value></data>
+  <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} joueurs sélectionnés</value></data>
   <data name="GameAlreadyCompleted" xml:space="preserve"><value>La partie est déjà terminée.</value></data>
   <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Plis prévus (0..manche)</value></data>
   <data name="RoundPopupTitle" xml:space="preserve"><value>Manche {0} sur {1}</value></data>
@@ -39,6 +42,7 @@
   <data name="TotalHeader" xml:space="preserve"><value>Total</value></data>
     <data name="TrumpRequiredError" xml:space="preserve"><value>Veuillez sélectionner une couleur d'atout.</value></data>
     <data name="TotalBidsLabel" xml:space="preserve"><value>Total enchères : {0} / {1}</value></data>
+    <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Le total des enchères ne peut pas être égal au numéro de manche ({0}).</value></data>
     <data name="TotalActualsError" xml:space="preserve"><value>Le total des plis remportés doit être égal au numéro de manche ({0}).</value></data>
   <data name="Trump" xml:space="preserve"><value>Atout</value></data>
   <data name="PredictionRangeError" xml:space="preserve"><value>La prédiction doit être dans la plage autorisée.</value></data>
@@ -60,4 +64,6 @@ https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="Blue" xml:space="preserve"><value>Bleu</value></data>
   <data name="TotalActualsLabel" xml:space="preserve"><value>Total remportés : {0} / {1}</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Donneur</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>À partir de quelle manche la règle de mise totale doit-elle s'appliquer?</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Vous (Donneur) ne pouvez pas enchérir: {0}</value></data>
 </root>

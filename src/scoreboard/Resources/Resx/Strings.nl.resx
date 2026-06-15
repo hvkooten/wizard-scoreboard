@@ -21,6 +21,7 @@
   <data name="GroupNameRequired" xml:space="preserve"><value>Groepsnaam is verplicht.</value></data>
   <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Naam voor speler {0} is verplicht.</value></data>
   <data name="GroupCreated" xml:space="preserve"><value>Groep aangemaakt</value></data>
+  <data name="GroupUpdated" xml:space="preserve"><value>Groep bijgewerkt</value></data>
   <data name="PlayerPlaceholder" xml:space="preserve"><value>Speler {0}</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>Geen actief spel.</value></data>
   <data name="NextRound" xml:space="preserve"><value>Volgende ronde</value></data>
@@ -28,6 +29,8 @@
   <data name="PlayersLabel" xml:space="preserve"><value>Spelers:</value></data>
   <data name="PlayerScoreTemplate" xml:space="preserve"><value>{0}. {1}: {2} punten, gewonnen {3}</value></data>
   <data name="NoGroupsAvailable" xml:space="preserve"><value>Geen groepen beschikbaar. Maak eerst een groep in instellingen.</value></data>
+  <data name="SelectPlayersTitle" xml:space="preserve"><value>Selecteer spelers voor dit spel</value></data>
+  <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} spelers geselecteerd</value></data>
   <data name="GameAlreadyCompleted" xml:space="preserve"><value>Spel is al afgerond.</value></data>
   <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Verwachte slagen (0..ronde)</value></data>
   <data name="RoundPopupTitle" xml:space="preserve"><value>Ronde {0} van {1}</value></data>
@@ -39,6 +42,7 @@
   <data name="TotalHeader" xml:space="preserve"><value>Totaal</value></data>
     <data name="TrumpRequiredError" xml:space="preserve"><value>Selecteer een troefkleur.</value></data>
     <data name="TotalBidsLabel" xml:space="preserve"><value>Totaal biedingen: {0} / {1}</value></data>
+    <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Totaal biedingen kan niet gelijk zijn aan het rondenummer ({0}).</value></data>
     <data name="TotalActualsError" xml:space="preserve"><value>Het totaal gewonnen slagen moet gelijk zijn aan het rondenummer ({0}).</value></data>
   <data name="Trump" xml:space="preserve"><value>Troef</value></data>
   <data name="PredictionRangeError" xml:space="preserve"><value>Voorspelling moet binnen bereik liggen.</value></data>
@@ -59,5 +63,5 @@ https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="Green" xml:space="preserve"><value>Groen</value></data>
   <data name="Blue" xml:space="preserve"><value>Blauw</value></data>
   <data name="TotalActualsLabel" xml:space="preserve"><value>Totaal gewonnen: {0} / {1}</value></data>
-  <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>
-</root>
+  <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Vanaf welke ronde geldt de bied-totaal-regel?</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Jij (Croupier) mag niet bieden: {0}</value></data></root>
