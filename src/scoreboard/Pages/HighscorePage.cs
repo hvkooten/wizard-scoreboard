@@ -6,23 +6,26 @@ namespace WizardScoreboard.Pages;
 
 public class HighscorePage : ContentPage
 {
-    private readonly HighscoreService highscoreService;
+    private readonly IHighscoreService highscoreService;
     private readonly IGroupService groupService;
 
-    public HighscorePage()
+    public HighscorePage(IHighscoreService highscoreService, IGroupService groupService)
     {
         Title = Localization.GetString("Highscore");
 
-        highscoreService = new HighscoreService();
-        groupService = new GroupService();
+        this.highscoreService = highscoreService;
+        this.groupService = groupService;
 
-        var refreshButton = new Button { Text = "Refresh" };
-        var listView = new ListView();
+        var refreshButton = new Button { Text = Localization.GetString("Refresh") };
+        var listView = new CollectionView();
 
         refreshButton.Clicked += (s, e) =>
         {
             highscoreService.UpdateHighscores(groupService.GetGroups());
-            listView.ItemsSource = highscoreService.GetHighscores().Select(p => $"{p.Name}: wins={p.Wins}, best={p.HighestScore}").ToList();
+            listView.ItemsSource = highscoreService
+                .GetHighscores()
+                .Select(p => string.Format(Localization.GetString("HighscoreEntryTemplate"), p.Name, p.Wins, p.HighestScore))
+                .ToList();
         };
 
         Content = new StackLayout

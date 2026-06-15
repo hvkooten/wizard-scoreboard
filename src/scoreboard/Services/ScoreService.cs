@@ -85,7 +85,11 @@ public class ScoreService : IScoreService
         {
             var bid = round.BidByPlayer.GetValueOrDefault(player.Id);
             var actual = actuals.GetValueOrDefault(player.Id);
-            var scoreDelta = bid == actual ? 10 + bid * 2 : -Math.Abs(bid - actual) * 5;
+            // Correct: 2 points + 1 point per trick won.
+            // Wrong:   -1 point per trick difference.
+            var scoreDelta = bid == actual
+                ? 2 + actual
+                : -Math.Abs(bid - actual);
             player.CurrentPoints += scoreDelta;
 
             if (player.CurrentPoints > player.HighestScore)

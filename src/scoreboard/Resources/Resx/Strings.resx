@@ -29,4 +29,54 @@
   <data name="Players" xml:space="preserve"><value>Players</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Create Group</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Game Rules</value></data>
+  <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Trump color style</value></data>
+  <data name="TrumpPaletteCards" xml:space="preserve"><value>Card suits (Hearts, Diamonds, Clubs, Spades)</value></data>
+  <data name="TrumpPaletteColors" xml:space="preserve"><value>Colors (Red, Yellow, Green, Blue)</value></data>
+  <data name="PlayerCount" xml:space="preserve"><value>Number of players</value></data>
+  <data name="ErrorTitle" xml:space="preserve"><value>Error</value></data>
+  <data name="SuccessTitle" xml:space="preserve"><value>Success</value></data>
+  <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
+  <data name="Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="GroupNameRequired" xml:space="preserve"><value>Group name is required.</value></data>
+  <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Name for player {0} is required.</value></data>
+  <data name="GroupCreated" xml:space="preserve"><value>Group created</value></data>
+  <data name="PlayerPlaceholder" xml:space="preserve"><value>Player {0}</value></data>
+  <data name="NoActiveGame" xml:space="preserve"><value>No active game.</value></data>
+  <data name="NextRound" xml:space="preserve"><value>Next Round</value></data>
+  <data name="ScoreStatusTemplate" xml:space="preserve"><value>Game: round {0}/{1}, dealer {2}</value></data>
+  <data name="PlayersLabel" xml:space="preserve"><value>Players:</value></data>
+  <data name="PlayerScoreTemplate" xml:space="preserve"><value>{0}. {1}: {2} pts, wins {3}</value></data>
+  <data name="NoGroupsAvailable" xml:space="preserve"><value>No groups available. Create group first in settings.</value></data>
+  <data name="GameAlreadyCompleted" xml:space="preserve"><value>Game already completed.</value></data>
+  <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Predicted tricks (0..round)</value></data>
+  <data name="RoundPopupTitle" xml:space="preserve"><value>Round {0} of {1}</value></data>
+  <data name="BidsPerPlayerLabel" xml:space="preserve"><value>How many tricks per player?</value></data>
+  <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bid for {0} must be between 0 and {1}.</value></data>
+  <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>How many tricks did each player win?</value></data>
+  <data name="RoundHeader" xml:space="preserve"><value>Rnd</value></data>
+  <data name="TrumpHeader" xml:space="preserve"><value>Trump</value></data>
+  <data name="TotalHeader" xml:space="preserve"><value>Total</value></data>
+    <data name="TrumpRequiredError" xml:space="preserve"><value>Please select a trump suit.</value></data>
+    <data name="TotalBidsLabel" xml:space="preserve"><value>Total bids: {0} / {1}</value></data>
+    <data name="TotalActualsError" xml:space="preserve"><value>Total tricks won must equal the round number ({0}).</value></data>
+    <data name="TotalActualsLabel" xml:space="preserve"><value>Total wins: {0} / {1}</value></data>
+  <data name="Trump" xml:space="preserve"><value>Trump</value></data>
+  <data name="PredictionRangeError" xml:space="preserve"><value>Prediction must be inside range.</value></data>
+  <data name="RulesIntro" xml:space="preserve"><value>Wizard game rules are available below.
+If PDF cannot render, use the link.</value></data>
+  <data name="RulesFallback" xml:space="preserve"><value>If PDF does not load, please check the rules at:
+https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
+  <data name="OpenRulesInBrowser" xml:space="preserve"><value>Open rules in browser</value></data>
+  <data name="Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0}: wins={1}, best={2}</value></data>
+  <data name="None" xml:space="preserve"><value>None</value></data>
+  <data name="Hearts" xml:space="preserve"><value>Hearts</value></data>
+  <data name="Diamonds" xml:space="preserve"><value>Diamonds</value></data>
+  <data name="Clubs" xml:space="preserve"><value>Clubs</value></data>
+  <data name="Spades" xml:space="preserve"><value>Spades</value></data>
+  <data name="Red" xml:space="preserve"><value>Red</value></data>
+  <data name="Yellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="Green" xml:space="preserve"><value>Green</value></data>
+  <data name="Blue" xml:space="preserve"><value>Blue</value></data>
+  <data name="DealerLabel" xml:space="preserve"><value>Dealer</value></data>
 </root>

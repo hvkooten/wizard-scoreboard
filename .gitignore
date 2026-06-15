@@ -1,0 +1,65 @@
+# Build artifacts
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+out/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userprefs
+
+# IDE and tooling
+.vs/
+.vscode/
+.idea/
+
+# NuGet
+*.nupkg
+*.snupkg
+*.symbols.nupkg
+packages/
+!**/packages/build/
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+*.cache
+
+# Test and coverage output
+TestResults/
+*.trx
+coverage/
+coverage.*
+
+# .NET MAUI / Xamarin generated and intermediate assets
+**/Resources/Raw/*.g.cs
+**/Platforms/*/bin/
+**/Platforms/*/obj/
+
+# Mac/iOS build artifacts (from MAUI workloads)
+*.app
+*.ipa
+*.dSYM/
+
+# Android build artifacts
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Windows app packaging artifacts
+AppPackages/
+BundleArtifacts/
+
+# MSBuild generated files
+*.AssemblyInfo.cs
+*.GeneratedMSBuildEditorConfig.editorconfig
+*.GlobalUsings.g.cs
+
+# OS files
+.DS_Store
+Thumbs.db

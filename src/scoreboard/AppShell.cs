@@ -1,10 +1,12 @@
 using Microsoft.Maui.Controls;
+using WizardScoreboard.Pages;
+using WizardScoreboard.Resources;
 
 namespace WizardScoreboard;
 
 public class AppShell : Shell
 {
-    public AppShell()
+    public AppShell(SettingsPage settingsPage, RulesPage rulesPage, HighscorePage highscorePage, ScoreBoardPage scoreBoardPage)
     {
         Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
         Routing.RegisterRoute(nameof(RulesPage), typeof(RulesPage));
@@ -17,38 +19,34 @@ public class AppShell : Shell
             {
                 new Tab
                 {
-                    Title = "Instellingen",
-                    IconImageSource = "settings.png",
+                    Title = Localization.GetString("Settings"),
                     Items =
                     {
-                        new ShellContent { Content = new SettingsPage() }
+                        new ShellContent { Content = settingsPage }
                     }
                 },
                 new Tab
                 {
-                    Title = "Spelregels",
-                    IconImageSource = "book.png",
+                    Title = Localization.GetString("Rules"),
                     Items =
                     {
-                        new ShellContent { Content = new RulesPage() }
+                        new ShellContent { Content = rulesPage }
                     }
                 },
                 new Tab
                 {
-                    Title = "Highscore",
-                    IconImageSource = "trophy.png",
+                    Title = Localization.GetString("Highscore"),
                     Items =
                     {
-                        new ShellContent { Content = new HighscorePage() }
+                        new ShellContent { Content = highscorePage }
                     }
                 },
                 new Tab
                 {
-                    Title = "Scoreblok",
-                    IconImageSource = "score.png",
+                    Title = Localization.GetString("Scoreboard"),
                     Items =
                     {
-                        new ShellContent { Content = new ScoreBoardPage() }
+                        new ShellContent { Content = scoreBoardPage }
                     }
                 }
             }

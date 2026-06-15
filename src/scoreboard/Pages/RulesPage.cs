@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.ApplicationModel;
 using WizardScoreboard.Resources;
 
 namespace WizardScoreboard.Pages;
@@ -11,7 +12,7 @@ public class RulesPage : ContentPage
 
         var label = new Label
         {
-            Text = "Wizard game rules are available below.\nIf PDF cannot render, use the link.",
+            Text = Localization.GetString("RulesIntro"),
             Margin = new Thickness(10)
         };
 
@@ -26,9 +27,18 @@ public class RulesPage : ContentPage
 
         var fallback = new Label
         {
-            Text = "If PDF does not load, please check the rules at:\nhttps://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf",
+            Text = Localization.GetString("RulesFallback"),
             TextColor = Colors.Gray,
             Margin = new Thickness(10)
+        };
+
+        var openRulesButton = new Button
+        {
+            Text = Localization.GetString("OpenRulesInBrowser")
+        };
+        openRulesButton.Clicked += async (s, e) =>
+        {
+            await Launcher.OpenAsync("https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf");
         };
 
         Content = new ScrollView
@@ -36,7 +46,7 @@ public class RulesPage : ContentPage
             Content = new StackLayout
             {
                 Padding = 10,
-                Children = { label, webView, fallback }
+                Children = { label, webView, fallback, openRulesButton }
             }
         };
     }

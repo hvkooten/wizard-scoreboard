@@ -9,4 +9,6 @@ public interface IGroupService
     void UpdateGroup(Group group);
     void DeleteGroup(Guid groupId);
     Group? GetGroup(Guid groupId);
+    Group? GetSelectedGroup();
+    void SetSelectedGroup(Guid groupId);
 }
