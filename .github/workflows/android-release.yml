@@ -23,6 +23,18 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: Cache NuGet and MAUI workload
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.nuget/packages
+            ~/.dotnet/packs
+            ~/.dotnet/sdk-manifests
+            ~/.dotnet/workloadmetadata
+          key: ${{ runner.os }}-dotnet10-maui-${{ hashFiles('**/*.csproj', '**/global.json', '.github/workflows/*.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet10-maui-
+
       - name: Install MAUI workload
         run: dotnet workload install maui
 
