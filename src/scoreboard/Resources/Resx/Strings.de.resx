@@ -63,5 +63,13 @@ https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="Green" xml:space="preserve"><value>Grün</value></data>
   <data name="Blue" xml:space="preserve"><value>Blau</value></data>
   <data name="TotalActualsLabel" xml:space="preserve"><value>Gewonnene Gesamtstiche: {0} / {1}</value></data>
-  <data name="DealerLabel" xml:space="preserve"><value>Geber</value></data>  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Ab welcher Runde sollte die Gebotssummenregel gelten?</value></data>
-  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Du (Kartengeber) darfst nicht bieten: {0}</value></data></root>
+  <data name="DealerLabel" xml:space="preserve"><value>Geber</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Ab welcher Runde sollte die Gebotssummenregel gelten?</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Du (Kartengeber) darfst nicht bieten: {0}</value></data>
+  <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spiel beenden?</value></data>
+  <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dieses Spiel lauft noch. Wirklich beenden?</value></data>
+  <data name="Yes" xml:space="preserve"><value>Ja</value></data>
+  <data name="No" xml:space="preserve"><value>Nein</value></data>
+  <data name="GameFinishedTitle" xml:space="preserve"><value>Spiel beendet!</value></data>
+  <data name="WinnerTemplate" xml:space="preserve"><value>Gewinner: {0} mit {1} Punkten</value></data>
+</root>

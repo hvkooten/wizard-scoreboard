@@ -66,4 +66,10 @@ https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Donneur</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>À partir de quelle manche la règle de mise totale doit-elle s'appliquer?</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Vous (Donneur) ne pouvez pas enchérir: {0}</value></data>
+  <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Terminer la partie ?</value></data>
+  <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Cette partie est encore en cours. Voulez-vous l'arrêter ?</value></data>
+  <data name="Yes" xml:space="preserve"><value>Oui</value></data>
+  <data name="No" xml:space="preserve"><value>Non</value></data>
+  <data name="GameFinishedTitle" xml:space="preserve"><value>Partie terminée !</value></data>
+  <data name="WinnerTemplate" xml:space="preserve"><value>Gagnant : {0} avec {1} points</value></data>
 </root>

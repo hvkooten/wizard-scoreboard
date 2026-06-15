@@ -66,4 +66,10 @@ https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Repartidor</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>¿A partir de qué ronda debe aplicarse la regla de apuesta total?</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Tú (Repartidor) no puedes apostar: {0}</value></data>
+  <data name="ConfirmEndGameTitle" xml:space="preserve"><value>¿Finalizar juego?</value></data>
+  <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Este juego sigue en curso. ¿Quieres detenerlo?</value></data>
+  <data name="Yes" xml:space="preserve"><value>Sí</value></data>
+  <data name="No" xml:space="preserve"><value>No</value></data>
+  <data name="GameFinishedTitle" xml:space="preserve"><value>¡Juego terminado!</value></data>
+  <data name="WinnerTemplate" xml:space="preserve"><value>Ganador: {0} con {1} puntos</value></data>
 </root>

@@ -85,4 +85,10 @@ https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Dealer</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>From which round should the bid total rule apply?</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ You (Dealer) cannot bid: {0}</value></data>
+  <data name="ConfirmEndGameTitle" xml:space="preserve"><value>End game?</value></data>
+  <data name="ConfirmEndGameMessage" xml:space="preserve"><value>This game is still in progress. Do you want to stop it?</value></data>
+  <data name="Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="No" xml:space="preserve"><value>No</value></data>
+  <data name="GameFinishedTitle" xml:space="preserve"><value>Game finished!</value></data>
+  <data name="WinnerTemplate" xml:space="preserve"><value>Winner: {0} with {1} points</value></data>
 </root>

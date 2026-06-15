@@ -63,5 +63,13 @@ https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="Green" xml:space="preserve"><value>Groen</value></data>
   <data name="Blue" xml:space="preserve"><value>Blauw</value></data>
   <data name="TotalActualsLabel" xml:space="preserve"><value>Totaal gewonnen: {0} / {1}</value></data>
-  <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Vanaf welke ronde geldt de bied-totaal-regel?</value></data>
-  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Jij (Croupier) mag niet bieden: {0}</value></data></root>
+  <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Vanaf welke ronde geldt de bied-totaal-regel?</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Jij (Croupier) mag niet bieden: {0}</value></data>
+  <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spel beëindigen?</value></data>
+  <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dit spel is nog bezig. Wil je het toch stoppen?</value></data>
+  <data name="Yes" xml:space="preserve"><value>Ja</value></data>
+  <data name="No" xml:space="preserve"><value>Nee</value></data>
+  <data name="GameFinishedTitle" xml:space="preserve"><value>Spel afgelopen!</value></data>
+  <data name="WinnerTemplate" xml:space="preserve"><value>Winnaar: {0} met {1} punten</value></data>
+</root>

@@ -57,7 +57,7 @@ public class ScoreBoardPage : ContentPage
         nextRoundButton = new Button { Text = Localization.GetString("NextRound") };
 
         startButton.Clicked     += async (s, e) => await StartGameAsync();
-        endButton.Clicked       += (s, e) => EndGame();
+        endButton.Clicked       += async (s, e) => await EndGameAsync();
         nextRoundButton.Clicked += async (s, e) => await StartNextRoundAsync();
 
         var buttonRow = new HorizontalStackLayout
@@ -425,14 +425,26 @@ public class ScoreBoardPage : ContentPage
         RefreshUI();
     }
 
-    private void EndGame()
+    private async Task EndGameAsync()
     {
-        if (currentSession != null)
+        if (currentSession == null)
+            return;
+
+        if (currentSession.IsActive && currentSession.CurrentRound < currentSession.MaxRounds)
         {
-            scoreService.EndGame(currentSession);
-            currentSession = null;
-            RefreshUI();
+            var confirm = await DisplayAlertAsync(
+                Localization.GetString("ConfirmEndGameTitle"),
+                Localization.GetString("ConfirmEndGameMessage"),
+                Localization.GetString("Yes"),
+                Localization.GetString("No"));
+
+            if (!confirm)
+                return;
         }
+
+        scoreService.EndGame(currentSession);
+        currentSession = null;
+        RefreshUI();
     }
 
     private async Task<List<Player>?> SelectPlayersAsync(Group group)
@@ -1001,6 +1013,11 @@ public class ScoreBoardPage : ContentPage
         {
             scoreService.FinishRound(currentSession, actuals);
             RefreshUI();
+
+            if (!currentSession.IsActive && currentSession.CurrentRound >= currentSession.MaxRounds)
+            {
+                await ShowGameFinishedCelebrationAsync(currentSession);
+            }
         }
         catch (Exception ex)
         {
@@ -1217,5 +1234,120 @@ public class ScoreBoardPage : ContentPage
             3 => TrumpSuit.Spades,
             _ => TrumpSuit.None
         };
+    }
+
+    private async Task ShowGameFinishedCelebrationAsync(ScoreSession session)
+    {
+        if (session.Players.Count == 0)
+            return;
+
+        var bestScore = session.Players.Max(p => p.CurrentPoints);
+        var winners = session.Players
+            .Where(p => p.CurrentPoints == bestScore)
+            .OrderBy(p => p.Order)
+            .ToList();
+        var winnerNames = string.Join(", ", winners.Select(w => w.Name));
+
+        var tcs = new TaskCompletionSource<bool>();
+        var random = new Random();
+        var confettiSymbols = new[] { "🎉", "🎊", "✨", "🎈", "🥳" };
+
+        var confettiLayer = new AbsoluteLayout
+        {
+            InputTransparent = true
+        };
+
+        var confettiLabels = new List<Label>();
+        for (var i = 0; i < 26; i++)
+        {
+            var lbl = new Label
+            {
+                Text = confettiSymbols[random.Next(confettiSymbols.Length)],
+                FontSize = random.Next(16, 25),
+                Opacity = 0.9
+            };
+            AbsoluteLayout.SetLayoutFlags(lbl, Microsoft.Maui.Layouts.AbsoluteLayoutFlags.PositionProportional);
+            AbsoluteLayout.SetLayoutBounds(lbl, new Rect(random.NextDouble(), -0.2 - random.NextDouble(), AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize));
+            confettiLayer.Children.Add(lbl);
+            confettiLabels.Add(lbl);
+        }
+
+        var closeButton = new Button
+        {
+            Text = Localization.GetString("Ok"),
+            Margin = new Thickness(0, 12, 0, 0)
+        };
+
+        var card = new Border
+        {
+            BackgroundColor = Colors.White,
+            Stroke = Color.FromArgb("#d6dce5"),
+            StrokeThickness = 1,
+            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 },
+            Padding = new Thickness(20, 16),
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Content = new VerticalStackLayout
+            {
+                Spacing = 8,
+                Children =
+                {
+                    new Label
+                    {
+                        Text = "🎉🎊🎉",
+                        FontSize = 30,
+                        HorizontalTextAlignment = TextAlignment.Center
+                    },
+                    new Label
+                    {
+                        Text = Localization.GetString("GameFinishedTitle"),
+                        FontAttributes = FontAttributes.Bold,
+                        FontSize = 22,
+                        HorizontalTextAlignment = TextAlignment.Center
+                    },
+                    new Label
+                    {
+                        Text = string.Format(Localization.GetString("WinnerTemplate"), winnerNames, bestScore),
+                        FontSize = 18,
+                        HorizontalTextAlignment = TextAlignment.Center
+                    },
+                    closeButton
+                }
+            }
+        };
+
+        var root = new Grid
+        {
+            BackgroundColor = Color.FromArgb("#22000000")
+        };
+        root.Children.Add(confettiLayer);
+        root.Children.Add(card);
+
+        var modal = new ContentPage
+        {
+            Content = root,
+            BackgroundColor = Colors.Transparent
+        };
+
+        closeButton.Clicked += (s, e) => tcs.TrySetResult(true);
+        modal.Disappearing += (s, e) => tcs.TrySetResult(true);
+
+        await Navigation.PushModalAsync(modal);
+
+        _ = Task.Run(async () =>
+        {
+            foreach (var label in confettiLabels)
+            {
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    var travel = 700 + random.Next(0, 260);
+                    await label.TranslateToAsync(0, travel, (uint)random.Next(1400, 2300), Easing.CubicIn);
+                });
+            }
+        });
+
+        await tcs.Task;
+        if (Navigation.ModalStack.Contains(modal))
+            await Navigation.PopModalAsync();
     }
 }

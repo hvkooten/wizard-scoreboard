@@ -44,7 +44,6 @@ public class ScoreService : IScoreService
     public void EndGame(ScoreSession session)
     {
         session.IsActive = false;
-        session.CurrentRound = 0;
     }
 
     public RoundEntry StartRound(ScoreSession session, TrumpSuit trump, Dictionary<Guid, int> bids)
