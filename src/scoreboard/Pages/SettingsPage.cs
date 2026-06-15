@@ -24,8 +24,9 @@ public class SettingsPage : ContentPage
     private readonly ITrumpPaletteService trumpPaletteService;
     private readonly Picker languagePicker;
     private readonly Picker trumpPalettePicker;
+    private readonly Picker bidTotalRulePicker;
     private readonly Picker groupPicker;
-    private int selectedPlayerCount = 3;
+    private int selectedPlayerCount = 6;
     private readonly List<Button> playerCountButtons = new();
     private readonly HorizontalStackLayout playerCountLayout;
     private readonly Entry groupNameEntry;
@@ -37,6 +38,7 @@ public class SettingsPage : ContentPage
     private bool groupNameUserEdited;
     private readonly Button createGroupButton;
     private readonly CollectionView groupListView;
+    private int bidTotalRuleStartRoundValue = 6;
 
     public SettingsPage(IGroupService groupService, ITrumpPaletteService trumpPaletteService)
     {
@@ -101,19 +103,18 @@ public class SettingsPage : ContentPage
         };
 
         // Bid total rule start round setting
-        var bidTotalRulePicker = new Picker { Title = Localization.GetString("BidTotalRuleStartRound") };
+        bidTotalRulePicker = new Picker { Title = Localization.GetString("BidTotalRuleStartRound") };
+        bidTotalRulePicker.Items.Add(Localization.GetString("Disabled"));
         for (var round = 1; round <= 13; round++)
         {
             bidTotalRulePicker.Items.Add(round.ToString());
         }
-        var savedStartRound = Preferences.Default.Get("bid_total_rule_start_round", 1);
-        bidTotalRulePicker.SelectedIndex = savedStartRound - 1;
+        bidTotalRulePicker.SelectedIndex = bidTotalRuleStartRoundValue;
         bidTotalRulePicker.SelectedIndexChanged += (s, e) =>
         {
             if (bidTotalRulePicker.SelectedIndex >= 0)
             {
-                var selectedRound = bidTotalRulePicker.SelectedIndex + 1;
-                Preferences.Default.Set("bid_total_rule_start_round", selectedRound);
+                bidTotalRuleStartRoundValue = bidTotalRulePicker.SelectedIndex;
             }
         };
 
@@ -250,6 +251,7 @@ public class SettingsPage : ContentPage
                 {
                     existing.Name = groupName;
                     existing.Players = players;
+                    existing.BidTotalRuleStartRound = bidTotalRuleStartRoundValue;
                     groupService.UpdateGroup(existing);
                     groupService.SetSelectedGroup(existing.Id);
                 }
@@ -257,6 +259,8 @@ public class SettingsPage : ContentPage
             else
             {
                 var created = groupService.CreateGroup(groupName, players);
+                created.BidTotalRuleStartRound = bidTotalRuleStartRoundValue;
+                groupService.UpdateGroup(created);
                 groupService.SetSelectedGroup(created.Id);
             }
 
@@ -495,7 +499,9 @@ public class SettingsPage : ContentPage
             groupNameUserEdited = false;
             createGroupButton.Text = Localization.GetString("CreatorGroup");
             SetGroupNameFromCode(string.Empty);
-            SetPlayerCount(3);
+            SetPlayerCount(6);
+            bidTotalRuleStartRoundValue = selectedPlayerCount;
+            bidTotalRulePicker.SelectedIndex = bidTotalRuleStartRoundValue;
             for (var k = 0; k < allPlayerNames.Count; k++) allPlayerNames[k] = string.Empty;
             RebuildPlayerNameInputs();
             return;
@@ -515,6 +521,10 @@ public class SettingsPage : ContentPage
         SetGroupNameFromCode(selected.Name);
 
         SetPlayerCount(selected.Players.Count);
+        bidTotalRuleStartRoundValue = selected.BidTotalRuleStartRound is >= 0 and <= 13
+            ? selected.BidTotalRuleStartRound
+            : selected.Players.Count;
+        bidTotalRulePicker.SelectedIndex = bidTotalRuleStartRoundValue;
 
         var orderedNames = selected.Players.OrderBy(p => p.Order).Select(p => p.Name).ToList();
         RebuildPlayerNameInputs(orderedNames);

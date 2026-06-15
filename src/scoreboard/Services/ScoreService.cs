@@ -25,8 +25,10 @@ public class ScoreService : IScoreService
         if (players.Count < 3 || players.Count > 6)
             throw new ArgumentException("Aantal spelers moet tussen 3 en 6 liggen.");
 
-        // Default TotalBidsEqualRoundError start round to player count
-        var bidTotalRuleStartRound = Preferences.Default.Get("bid_total_rule_start_round", players.Count);
+        // Use group-specific setting; fallback to player count for migrated groups.
+        var bidTotalRuleStartRound = group.BidTotalRuleStartRound is >= 0 and <= 13
+            ? group.BidTotalRuleStartRound
+            : players.Count;
 
         var session = new ScoreSession
         {

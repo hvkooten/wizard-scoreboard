@@ -54,6 +54,7 @@ https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
   <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0}: gewonnen={1}, beste={2}</value></data>
   <data name="None" xml:space="preserve"><value>Geen</value></data>
+  <data name="Disabled" xml:space="preserve"><value>Uitgeschakeld</value></data>
   <data name="Hearts" xml:space="preserve"><value>Harten</value></data>
   <data name="Diamonds" xml:space="preserve"><value>Ruiten</value></data>
   <data name="Clubs" xml:space="preserve"><value>Klaveren</value></data>

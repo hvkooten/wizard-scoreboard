@@ -562,18 +562,27 @@ public class ScoreBoardPage : ContentPage
             TextColor = Colors.White
         };
 
-        var bidRuleValue = Preferences.Default.Get("bid_total_rule_start_round", selected.Count);
+        var bidRuleValue = group.BidTotalRuleStartRound is >= 0 and <= 13
+            ? group.BidTotalRuleStartRound
+            : selected.Count;
+        if (bidRuleValue < 0 || bidRuleValue > 13)
+        {
+            bidRuleValue = selected.Count;
+        }
         
         void UpdateBidRuleUI()
         {
-            bidRuleLabel.Text = $"{Localization.GetString("BidTotalRuleStartRound")}: {bidRuleValue}";
-            bidRuleMinusBtn.IsEnabled = bidRuleValue > 1;
+            var bidRuleDisplay = bidRuleValue == 0
+                ? Localization.GetString("Disabled")
+                : bidRuleValue.ToString();
+            bidRuleLabel.Text = $"{Localization.GetString("BidTotalRuleStartRound")}: {bidRuleDisplay}";
+            bidRuleMinusBtn.IsEnabled = bidRuleValue > 0;
             bidRulePlusBtn.IsEnabled = bidRuleValue < 13;
         }
 
         bidRuleMinusBtn.Clicked += (s, e) =>
         {
-            if (bidRuleValue > 1)
+            if (bidRuleValue > 0)
             {
                 bidRuleValue--;
                 UpdateBidRuleUI();
@@ -608,7 +617,8 @@ public class ScoreBoardPage : ContentPage
         startBtn.Clicked += (s, e) =>
         {
             Preferences.Default.Set(prefKey, string.Join(',', selected.Select(id => id.ToString())));
-            Preferences.Default.Set("bid_total_rule_start_round", bidRuleValue);
+            group.BidTotalRuleStartRound = bidRuleValue;
+            groupService.UpdateGroup(group);
             var result = allPlayers.Where(p => selected.Contains(p.Id)).ToList();
             tcs.TrySetResult(result);
         };
@@ -647,6 +657,7 @@ public class ScoreBoardPage : ContentPage
             return;
 
         var currentRoundNumber = currentSession.CurrentRound + 1;
+        var isBidTotalRuleEnabled = currentSession.BidTotalRuleStartRound > 0;
         var orderedPlayers = currentSession.Players.OrderBy(p => p.Order).ToList();
         var dealerIndexForEntry = currentSession.CurrentRound % orderedPlayers.Count;
         var dealerForEntry = orderedPlayers[dealerIndexForEntry];
@@ -686,12 +697,12 @@ public class ScoreBoardPage : ContentPage
             TextColor = Colors.DarkRed,
             HorizontalTextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 8, 0, 0),
-            IsVisible = currentRoundNumber >= currentSession.BidTotalRuleStartRound
+            IsVisible = isBidTotalRuleEnabled && currentRoundNumber >= currentSession.BidTotalRuleStartRound
         };
         
         void UpdateDealerWarning()
         {
-            if (currentRoundNumber >= currentSession.BidTotalRuleStartRound)
+            if (isBidTotalRuleEnabled && currentRoundNumber >= currentSession.BidTotalRuleStartRound)
             {
                 // Calculate forbidden bid amounts for the dealer
                 var otherPlayersBidsSum = bidEntries
@@ -833,7 +844,7 @@ public class ScoreBoardPage : ContentPage
 
             var totalBids = bidEntries.Values.Sum(entry =>
                 int.TryParse(entry.Text, out var bid) ? bid : 0);
-            if (currentRoundNumber >= currentSession.BidTotalRuleStartRound && totalBids == currentRoundNumber)
+            if (isBidTotalRuleEnabled && currentRoundNumber >= currentSession.BidTotalRuleStartRound && totalBids == currentRoundNumber)
             {
                 await DisplayAlertAsync(
                     Localization.GetString("ErrorTitle"),
