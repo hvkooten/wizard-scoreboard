@@ -19,8 +19,9 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Cache NuGet and MAUI workload
-        uses: actions/cache@v4
+      - name: Restore NuGet and MAUI workload cache
+        id: cache-maui
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.nuget/packages
@@ -48,3 +49,14 @@ jobs:
 
       - name: Run tests
         run: dotnet test src/scoreboard.Tests/WizardScoreboard.Tests.csproj -c Release -f net10.0-windows10.0.19041.0 --no-restore -p:RuntimeIdentifier=win-x64 -p:PublishReadyToRun=false -v minimal
+
+      - name: Save NuGet and MAUI workload cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.nuget/packages
+            ~/.dotnet/packs
+            ~/.dotnet/sdk-manifests
+            ~/.dotnet/workloadmetadata
+          key: ${{ steps.cache-maui.outputs.cache-primary-key }}
