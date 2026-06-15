@@ -459,6 +459,73 @@ public class ScoreBoardPage : ContentPage
         }
 
         layout.Children.Add(countLabel);
+
+        // Bid total rule start round setting
+        var bidRuleLabel = new Label
+        {
+            FontSize = 13,
+            HorizontalTextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 12, 0, 4)
+        };
+        
+        var bidRuleMinusBtn = new Button
+        {
+            Text = "−",
+            WidthRequest = 36,
+            HeightRequest = 36,
+            Padding = new Thickness(0),
+            FontSize = 16,
+            BackgroundColor = Color.FromArgb("#e0e8f0"),
+            TextColor = Color.FromArgb("#1a3a5c")
+        };
+        var bidRulePlusBtn = new Button
+        {
+            Text = "+",
+            WidthRequest = 36,
+            HeightRequest = 36,
+            Padding = new Thickness(0),
+            FontSize = 16,
+            BackgroundColor = Color.FromArgb("#1a3a5c"),
+            TextColor = Colors.White
+        };
+
+        var bidRuleValue = Preferences.Default.Get("bid_total_rule_start_round", selected.Count);
+        
+        void UpdateBidRuleUI()
+        {
+            bidRuleLabel.Text = $"{Localization.GetString("BidTotalRuleStartRound")}: {bidRuleValue}";
+            bidRuleMinusBtn.IsEnabled = bidRuleValue > 1;
+            bidRulePlusBtn.IsEnabled = bidRuleValue < 13;
+        }
+
+        bidRuleMinusBtn.Clicked += (s, e) =>
+        {
+            if (bidRuleValue > 1)
+            {
+                bidRuleValue--;
+                UpdateBidRuleUI();
+            }
+        };
+
+        bidRulePlusBtn.Clicked += (s, e) =>
+        {
+            if (bidRuleValue < 13)
+            {
+                bidRuleValue++;
+                UpdateBidRuleUI();
+            }
+        };
+
+        UpdateBidRuleUI();
+
+        var bidRuleRow = new HorizontalStackLayout
+        {
+            Spacing = 8,
+            HorizontalOptions = LayoutOptions.Center,
+            Children = { bidRuleMinusBtn, bidRuleLabel, bidRulePlusBtn }
+        };
+        layout.Children.Add(bidRuleRow);
+
         layout.Children.Add(startBtn);
         UpdateUI();
 
@@ -468,6 +535,7 @@ public class ScoreBoardPage : ContentPage
         startBtn.Clicked += (s, e) =>
         {
             Preferences.Default.Set(prefKey, string.Join(',', selected.Select(id => id.ToString())));
+            Preferences.Default.Set("bid_total_rule_start_round", bidRuleValue);
             var result = allPlayers.Where(p => selected.Contains(p.Id)).ToList();
             tcs.TrySetResult(result);
         };
@@ -551,9 +619,27 @@ public class ScoreBoardPage : ContentPage
         {
             if (currentRoundNumber >= currentSession.BidTotalRuleStartRound)
             {
+                // Calculate forbidden bid amounts for the dealer
+                var otherPlayersBidsSum = bidEntries
+                    .Where(kvp => kvp.Key != dealerForEntry.Id)
+                    .Sum(kvp => int.TryParse(kvp.Value.Text, out var v) ? v : 0);
+                
+                var forbiddenBids = new List<int>();
+                for (var bid = 0; bid <= currentRoundNumber; bid++)
+                {
+                    if (otherPlayersBidsSum + bid == currentRoundNumber)
+                    {
+                        forbiddenBids.Add(bid);
+                    }
+                }
+                
+                var forbiddenText = forbiddenBids.Count > 0 
+                    ? string.Join(", ", forbiddenBids)
+                    : Localization.GetString("None");
+                
                 dealerWarningLabel.Text = string.Format(
                     Localization.GetString("DealerCannotBidTemplate"),
-                    currentRoundNumber);
+                    forbiddenText);
             }
         }
         
@@ -577,6 +663,7 @@ public class ScoreBoardPage : ContentPage
                 int.TryParse(entry.Text, out var v) ? v : 0);
             totalBidsLabel.Text = string.Format(Localization.GetString("TotalBidsLabel"), sum, currentRoundNumber);
             totalBidsLabel.TextColor = sum == currentRoundNumber ? Colors.DarkRed : Colors.DarkGreen;
+            UpdateDealerWarning();
         }
 
         // One entry per player
@@ -609,7 +696,7 @@ public class ScoreBoardPage : ContentPage
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
                 TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
                 VerticalTextAlignment = TextAlignment.Center,
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                HorizontalOptions = LayoutOptions.Fill
             };
 
             population.Children.Add(CreateStepperRow(playerLabel, bidEntry, 0, currentRoundNumber));
@@ -775,7 +862,7 @@ public class ScoreBoardPage : ContentPage
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
                 TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
                 VerticalTextAlignment = TextAlignment.Center,
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                HorizontalOptions = LayoutOptions.Fill
             };
 
             popActuals.Children.Add(CreateStepperRow(playerLabel, actualEntry, 0, currentSession.CurrentRound));
