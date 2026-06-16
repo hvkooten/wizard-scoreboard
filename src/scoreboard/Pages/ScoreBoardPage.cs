@@ -103,6 +103,23 @@ public class ScoreBoardPage : ContentPage
         RefreshUI();
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        
+        // Ensure the last used group is automatically loaded
+        if (currentSession == null)
+        {
+            var selectedGroup = groupService.GetSelectedGroup();
+            if (selectedGroup != null)
+            {
+                groupService.SetSelectedGroup(selectedGroup.Id);
+            }
+        }
+
+        RefreshUI();
+    }
+
     private void RefreshUI()
     {
         headerGrid.Children.Clear();
