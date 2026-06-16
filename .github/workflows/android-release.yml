@@ -67,7 +67,11 @@ jobs:
             ${{ runner.os }}-dotnet10-maui-v1-
 
       - name: Install MAUI workload
+        if: steps.cache-maui.outputs.cache-hit != 'true'
         run: dotnet workload install maui
+
+      - name: Restore workloads for app
+        run: dotnet workload restore src/scoreboard/WizardScoreboard.csproj
 
       - name: Validate tag version is higher than source version
         id: version

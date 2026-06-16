@@ -33,6 +33,7 @@ jobs:
             ${{ runner.os }}-dotnet10-maui-v1-
 
       - name: Install MAUI workload
+        if: steps.cache-maui.outputs.cache-hit != 'true'
         run: dotnet workload install maui --skip-manifest-update
 
       - name: Restore workloads for app
