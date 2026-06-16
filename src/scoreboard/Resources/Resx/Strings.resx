@@ -62,6 +62,7 @@
   <data name="PredictionRangeError" xml:space="preserve"><value>Prediction must be inside range.</value></data>
   <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Predicted tricks (0..round)</value></data>
   <data name="RoundHeader" xml:space="preserve"><value>Rnd</value></data>
+  <data name="RoundPopupTitle" xml:space="preserve"><value>Round {0}/{1}</value></data>
   <data name="Refresh" xml:space="preserve"><value>Refresh</value></data>
   <data name="Red" xml:space="preserve"><value>Red</value></data>
   <data name="ResumeGame" xml:space="preserve"><value>Resume</value></data>

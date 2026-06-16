@@ -43,6 +43,7 @@
   <data name="PredictionRangeError" xml:space="preserve"><value>Vorhersage muss im gültigen Bereich liegen.</value></data>
   <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Vorhergesagte Stiche (0..Runde)</value></data>
   <data name="RoundHeader" xml:space="preserve"><value>Rnd</value></data>
+  <data name="RoundPopupTitle" xml:space="preserve"><value>Runde {0}/{1}</value></data>
   <data name="Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
   <data name="Red" xml:space="preserve"><value>Rot</value></data>
   <data name="ResumeGame" xml:space="preserve"><value>Fortsetzen</value></data>

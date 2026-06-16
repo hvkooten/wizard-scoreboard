@@ -43,6 +43,7 @@
   <data name="PredictionRangeError" xml:space="preserve"><value>La prédiction doit être dans la plage autorisée.</value></data>
   <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Plis prévus (0..manche)</value></data>
   <data name="RoundHeader" xml:space="preserve"><value>Man.</value></data>
+  <data name="RoundPopupTitle" xml:space="preserve"><value>Manche {0}/{1}</value></data>
   <data name="Refresh" xml:space="preserve"><value>Actualiser</value></data>
   <data name="Red" xml:space="preserve"><value>Rouge</value></data>
   <data name="Rules" xml:space="preserve"><value>Règles</value></data>
