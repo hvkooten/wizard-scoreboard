@@ -2,7 +2,7 @@
 <root>
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>¿Cuántas bazas ganó cada jugador?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>La apuesta de {0} debe estar entre 0 y {1}.</value></data>
-  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>¿A partir de qué ronda debe aplicarse la regla del total de apuestas?</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Regla del total de apuestas desde la ronda:</value></data>
   <data name="Blue" xml:space="preserve"><value>Azul</value></data>
   <data name="Clubs" xml:space="preserve"><value>Tréboles</value></data>
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Este juego sigue en curso. ¿Quieres detenerlo?</value></data>

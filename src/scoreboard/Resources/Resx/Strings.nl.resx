@@ -2,7 +2,7 @@
 <root>
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>Hoeveel slagen heeft elke speler gewonnen?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bod van {0} moet tussen 0 en {1} liggen.</value></data>
-  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Vanaf welke ronde moet de regel voor het totaal van de biedingen gelden?</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Bied-totaal-regel vanaf ronde:</value></data>
   <data name="Blue" xml:space="preserve"><value>Blauw</value></data>
   <data name="Clubs" xml:space="preserve"><value>Klaveren</value></data>
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dit spel is nog bezig. Wil je het toch stoppen?</value></data>

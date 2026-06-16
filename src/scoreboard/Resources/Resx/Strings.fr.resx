@@ -2,7 +2,7 @@
 <root>
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>Combien de plis chaque joueur a-t-il remportés ?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>L'enchère de {0} doit être comprise entre 0 et {1}.</value></data>
-  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>À partir de quelle manche la règle du total des mises doit-elle s'appliquer ?</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Règle du total des mises à partir de la manche :</value></data>
   <data name="Blue" xml:space="preserve"><value>Bleu</value></data>
   <data name="Clubs" xml:space="preserve"><value>Trèfles</value></data>
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Cette partie est encore en cours. Voulez-vous l'arrêter ?</value></data>
