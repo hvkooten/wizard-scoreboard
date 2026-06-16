@@ -128,6 +128,44 @@ public class ScoreBoardPage : ContentPage
         {
             statusLabel.Text = Localization.GetString("NoActiveGame");
             BackgroundColor = Colors.White;
+
+            // Show players from selected group if available
+            var selectedGroup = groupService.GetSelectedGroup();
+            if (selectedGroup != null && selectedGroup.Players.Any())
+            {
+                var groupPlayers = selectedGroup.Players.OrderBy(p => p.Order).ToList();
+
+                // Set up column definition
+                scoreGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+
+                // Header: Group name
+                scoreGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                var headerLbl = new Label
+                {
+                    Text = selectedGroup.Name,
+                    FontAttributes = FontAttributes.Bold,
+                    FontSize = 16,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    Padding = new Thickness(12, 8)
+                };
+                scoreGrid.Add(headerLbl, 0, 0);
+
+                // Players list
+                for (int i = 0; i < groupPlayers.Count; i++)
+                {
+                    scoreGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                    var playerLbl = new Label
+                    {
+                        Text = groupPlayers[i].Name,
+                        FontSize = 14,
+                        HorizontalTextAlignment = TextAlignment.Center,
+                        Padding = new Thickness(12, 12),
+                        BackgroundColor = (i % 2 == 0) ? RowEven : RowOdd
+                    };
+                    scoreGrid.Add(playerLbl, 0, i + 1);
+                }
+            }
+
             return;
         }
 
