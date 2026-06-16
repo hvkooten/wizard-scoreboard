@@ -6,7 +6,10 @@ public class HighscoreService : IHighscoreService
 {
     private readonly List<Player> leaderboard = new();
 
-    public IEnumerable<Player> GetHighscores() => leaderboard.OrderByDescending(p => p.Wins).ThenByDescending(p => p.HighestScore);
+    public IEnumerable<Player> GetHighscores() => leaderboard
+        .OrderByDescending(p => p.Wins)
+        .ThenByDescending(p => p.HighestScore)
+        .ThenByDescending(p => p.GamesPlayed);
 
     private static string NormalizeName(string name) => name.Trim().ToUpperInvariant();
 

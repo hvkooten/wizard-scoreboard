@@ -41,4 +41,30 @@ public class HighscoreServiceTests
         Assert.AreEqual(8, alex.GamesPlayed);
         Assert.AreEqual(25, alex.HighestScore);
     }
+
+    [Test]
+    public void GetHighscores_OrdersByWinsBestPlayed()
+    {
+        var service = new HighscoreService();
+
+        var groups = new List<Group>
+        {
+            new Group
+            {
+                Name = "G1",
+                Players = new List<Player>
+                {
+                    new Player { Name = "A", Wins = 3, GamesPlayed = 4, HighestScore = 20 },
+                    new Player { Name = "B", Wins = 3, GamesPlayed = 7, HighestScore = 20 },
+                    new Player { Name = "C", Wins = 3, GamesPlayed = 3, HighestScore = 25 },
+                    new Player { Name = "D", Wins = 2, GamesPlayed = 10, HighestScore = 99 }
+                }
+            }
+        };
+
+        service.UpdateHighscores(groups);
+
+        var ordered = service.GetHighscores().Select(p => p.Name).ToList();
+        CollectionAssert.AreEqual(new[] { "C", "B", "A", "D" }, ordered);
+    }
 }
