@@ -22,6 +22,7 @@
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>How many tricks did each player win?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bid for {0} must be between 0 and {1}.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Bid total rule from round:</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Blue" xml:space="preserve"><value>Blue</value></data>
   <data name="Clubs" xml:space="preserve"><value>Clubs</value></data>
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>This game is still in progress. Do you want to stop it?</value></data>

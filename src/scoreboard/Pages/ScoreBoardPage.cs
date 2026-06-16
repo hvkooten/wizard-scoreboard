@@ -663,7 +663,13 @@ public class ScoreBoardPage : ContentPage
         };
         layout.Children.Add(bidRuleRow);
 
-        layout.Children.Add(startBtn);
+        var cancelBtn = new Button { Text = Localization.GetString("Cancel") };
+        var buttonRow = new HorizontalStackLayout
+        {
+            Spacing = 8,
+            Children = { startBtn, cancelBtn }
+        };
+        layout.Children.Add(buttonRow);
         UpdateUI();
 
         var modal = new ContentPage { Content = new ScrollView { Content = layout } };
@@ -676,6 +682,11 @@ public class ScoreBoardPage : ContentPage
             groupService.UpdateGroup(group);
             var result = allPlayers.Where(p => selected.Contains(p.Id)).ToList();
             tcs.TrySetResult(result);
+        };
+
+        cancelBtn.Clicked += (s, e) =>
+        {
+            tcs.TrySetResult(null);
         };
 
         modal.Disappearing += (s, e) => tcs.TrySetResult(null);
