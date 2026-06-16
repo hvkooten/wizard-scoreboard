@@ -45,6 +45,19 @@ public class ScoreService : IScoreService
 
     public void EndGame(ScoreSession session)
     {
+        if (!session.IsActive)
+            return;
+
+        if (session.Rounds.Count > 0 && session.Players.Count > 0)
+        {
+            var bestScore = session.Players.Max(p => p.CurrentPoints);
+            var winners = session.Players.Where(p => p.CurrentPoints == bestScore);
+            foreach (var winner in winners)
+            {
+                winner.Wins += 1;
+            }
+        }
+
         session.IsActive = false;
     }
 
@@ -101,9 +114,6 @@ public class ScoreService : IScoreService
 
             if (player.CurrentPoints > player.HighestScore)
                 player.HighestScore = player.CurrentPoints;
-
-            if (player.CurrentPoints >= 100)
-                player.Wins += 1;
         }
 
         if (session.CurrentRound >= session.MaxRounds)

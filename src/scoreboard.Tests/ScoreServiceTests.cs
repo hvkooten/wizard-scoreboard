@@ -152,4 +152,83 @@ public class ScoreServiceTests
         Assert.AreEqual(1, session.CurrentRound);
         Assert.IsFalse(session.IsActive);
     }
+
+    [Test]
+    public void EndGame_EarlyStop_AssignsWinToHighestScorePlayer()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "EarlyStopGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
+        scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+
+        session.Players[0].CurrentPoints = 12;
+        session.Players[1].CurrentPoints = 8;
+        session.Players[2].CurrentPoints = 3;
+
+        scoreService.EndGame(session);
+
+        Assert.AreEqual(1, session.Players[0].Wins);
+        Assert.AreEqual(0, session.Players[1].Wins);
+        Assert.AreEqual(0, session.Players[2].Wins);
+    }
+
+    [Test]
+    public void EndGame_Tie_AssignsWinToAllTopPlayers()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "TieGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
+        scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+
+        // Force a tie at top between A and B.
+        session.Players[0].CurrentPoints = 10;
+        session.Players[1].CurrentPoints = 10;
+        session.Players[2].CurrentPoints = 7;
+
+        scoreService.EndGame(session);
+
+        Assert.AreEqual(1, session.Players[0].Wins);
+        Assert.AreEqual(1, session.Players[1].Wins);
+        Assert.AreEqual(0, session.Players[2].Wins);
+    }
+
+    [Test]
+    public void EndGame_WithoutRounds_DoesNotAssignWins()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "NoRoundsGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        scoreService.EndGame(session);
+
+        Assert.IsTrue(session.Players.All(p => p.Wins == 0));
+    }
 }

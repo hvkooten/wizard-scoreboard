@@ -8,6 +8,7 @@ namespace WizardScoreboard.Pages;
 public class ScoreBoardPage : ContentPage
 {
     private readonly IGroupService groupService;
+    private readonly IHighscoreService highscoreService;
     private readonly IScoreService scoreService;
     private readonly ITrumpPaletteService trumpPaletteService;
     private ScoreSession? currentSession;
@@ -33,11 +34,12 @@ public class ScoreBoardPage : ContentPage
     private static readonly Color LoseFg     = Color.FromArgb("#a32020");
     private static readonly Color TotalBg    = Color.FromArgb("#ddeeff");
 
-    public ScoreBoardPage(IGroupService groupService, IScoreService scoreService, ITrumpPaletteService trumpPaletteService)
+    public ScoreBoardPage(IGroupService groupService, IHighscoreService highscoreService, IScoreService scoreService, ITrumpPaletteService trumpPaletteService)
     {
         Title = Localization.GetString("Scoreboard");
 
         this.groupService    = groupService;
+        this.highscoreService = highscoreService;
         this.scoreService    = scoreService;
         this.trumpPaletteService = trumpPaletteService;
 
@@ -485,7 +487,9 @@ public class ScoreBoardPage : ContentPage
         if (currentSession == null)
             return;
 
-        if (currentSession.IsActive && currentSession.CurrentRound < currentSession.MaxRounds)
+        var session = currentSession;
+
+        if (session.IsActive && session.CurrentRound < session.MaxRounds)
         {
             var confirm = await DisplayAlertAsync(
                 Localization.GetString("ConfirmEndGameTitle"),
@@ -497,7 +501,14 @@ public class ScoreBoardPage : ContentPage
                 return;
         }
 
-        scoreService.EndGame(currentSession);
+        scoreService.EndGame(session);
+        highscoreService.UpdateHighscores(groupService.GetGroups());
+
+        if (session.Rounds.Count > 0)
+        {
+            await ShowGameFinishedCelebrationAsync(session);
+        }
+
         currentSession = null;
         RefreshUI();
     }
@@ -1104,6 +1115,10 @@ public class ScoreBoardPage : ContentPage
         try
         {
             scoreService.FinishRound(currentSession, actuals);
+            if (!currentSession.IsActive)
+            {
+                highscoreService.UpdateHighscores(groupService.GetGroups());
+            }
             RefreshUI();
 
             if (!currentSession.IsActive && currentSession.CurrentRound >= currentSession.MaxRounds)
