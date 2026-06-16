@@ -827,7 +827,10 @@ public class ScoreBoardPage : ContentPage
 
         // Trump icon selector (no None option — trump is required)
         population.Children.Add(new Label { Text = Localization.GetString("Trump"), FontAttributes = FontAttributes.Bold });
-        var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector();
+        Button? doneButton = null;
+        Func<int>? getTrumpIndexAccessor = null;
+        Label? trumpHintLabelRef = null;
+        var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector(() => UpdateTrumpSelectionState());
         population.Children.Add(trumpSelectorView);
        // Friendly hint label
        var trumpHintLabel = new Label
@@ -840,6 +843,21 @@ public class ScoreBoardPage : ContentPage
            IsVisible = true
        };
        population.Children.Add(trumpHintLabel);
+       getTrumpIndexAccessor = getTrumpIndex;
+       trumpHintLabelRef = trumpHintLabel;
+
+        void UpdateTrumpSelectionState()
+        {
+            var hasTrumpSelection = getTrumpIndexAccessor != null && getTrumpIndexAccessor() >= 0;
+            if (trumpHintLabelRef != null)
+            {
+                trumpHintLabelRef.IsVisible = !hasTrumpSelection;
+            }
+            if (doneButton != null)
+            {
+                doneButton.IsEnabled = hasTrumpSelection;
+            }
+        }
 
 
         // Dealer bid total warning (if rule is active and dealer is in round)
@@ -960,12 +978,14 @@ public class ScoreBoardPage : ContentPage
         population.Children.Add(totalBidsLabel);
         UpdateBidTotal();
 
-        var doneButton = new Button
+        doneButton = new Button
         {
             Text = Localization.GetString("Ok"),
-            Margin = new Thickness(0, 12, 0, 0)
+            Margin = new Thickness(0, 12, 0, 0),
+            IsEnabled = false
         };
         population.Children.Add(doneButton);
+        UpdateTrumpSelectionState();
 
         var modal = new ContentPage { Content = scroll, BackgroundColor = Colors.White };
         var tcs = new TaskCompletionSource<bool>();
@@ -1196,7 +1216,7 @@ public class ScoreBoardPage : ContentPage
         }
     }
 
-    private (View view, Func<int> getSelectedIndex) BuildTrumpIconSelector()
+    private (View view, Func<int> getSelectedIndex) BuildTrumpIconSelector(Action? onSelectionChanged = null)
     {
         var mode = trumpPaletteService.GetMode();
 
@@ -1235,6 +1255,7 @@ public class ScoreBoardPage : ContentPage
                     labels[i].TextColor = i == selectedIndex ? Colors.Black : Colors.White;
                 }
             }
+            onSelectionChanged?.Invoke();
         }
 
         var row = new HorizontalStackLayout { Spacing = 8 };
