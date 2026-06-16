@@ -202,6 +202,7 @@ jobs:
           else
             TAG="${{ inputs.release_tag }}"
             TAG="${TAG#v}"
+            DATE="$(date -u +%Y-%m-%d)"
             CURRENT_DEFAULT=$(grep -E 'default: "v[0-9]+\.[0-9]+\.[0-9]+"' .github/workflows/android-release.yml | head -n 1 | sed -E 's#.*"v([0-9]+\.[0-9]+\.[0-9]+)"#\1#')
 
             if [ -z "$CURRENT_DEFAULT" ]; then
@@ -210,6 +211,18 @@ jobs:
 
             if [ "$TAG" != "$CURRENT_DEFAULT" ] && printf '%s\n%s\n' "$CURRENT_DEFAULT" "$TAG" | sort -V -C; then
               sed -i -E "s#default: \"v[0-9]+\.[0-9]+\.[0-9]+\"#default: \"v${TAG}\"#" .github/workflows/android-release.yml
+
+              ENTRY="- [v${TAG}](https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${TAG}) - [Download APK](https://github.com/${GITHUB_REPOSITORY}/releases/download/v${TAG}/wizard-scoreboard-android.apk) (${DATE})"
+
+              if ! grep -Fq "releases/tag/v${TAG}" VERSION_OVERVIEW.md; then
+                TMP_FILE="$(mktemp)"
+                {
+                  head -n 5 VERSION_OVERVIEW.md
+                  echo "$ENTRY"
+                  tail -n +6 VERSION_OVERVIEW.md
+                } > "$TMP_FILE"
+                mv "$TMP_FILE" VERSION_OVERVIEW.md
+              fi
             else
               echo "Manual tag v${TAG} is not newer than current default v${CURRENT_DEFAULT}; keeping default unchanged."
             fi
