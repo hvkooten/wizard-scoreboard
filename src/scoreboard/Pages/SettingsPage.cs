@@ -43,7 +43,7 @@ public class SettingsPage : ContentPage
 
     public SettingsPage(IGroupService groupService, ITrumpPaletteService trumpPaletteService)
     {
-        Title = Localization.GetString("Settings");
+        Title = $"{Localization.GetString("Settings")} · Wizard";
 
         this.groupService = groupService;
         this.trumpPaletteService = trumpPaletteService;
@@ -180,13 +180,6 @@ public class SettingsPage : ContentPage
                 Spacing = 15,
                 Children =
                 {
-                    new Label
-                    {
-                        Text = "Wizard",
-                        FontSize = 11,
-                        TextColor = Colors.Gray,
-                        HorizontalTextAlignment = TextAlignment.Center
-                    },
                     languagePicker,
                     trumpStyleHeaderRow,
                     trumpPalettePicker,

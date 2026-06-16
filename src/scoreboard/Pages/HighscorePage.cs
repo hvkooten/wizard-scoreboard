@@ -13,7 +13,7 @@ public class HighscorePage : ContentPage
 
     public HighscorePage(IHighscoreService highscoreService, IGroupService groupService)
     {
-        Title = Localization.GetString("Highscore");
+        Title = $"{Localization.GetString("Highscore")} · Wizard";
 
         this.highscoreService = highscoreService;
         this.groupService = groupService;
@@ -25,14 +25,6 @@ public class HighscorePage : ContentPage
             Padding = 20,
             Children =
             {
-                new Label
-                {
-                    Text = "Wizard",
-                    FontSize = 11,
-                    TextColor = Colors.Gray,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    Margin = new Thickness(0, 0, 0, 8)
-                },
                 listView
             }
         };

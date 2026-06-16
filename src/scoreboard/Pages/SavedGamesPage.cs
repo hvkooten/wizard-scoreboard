@@ -15,23 +15,13 @@ public class SavedGamesPage : ContentPage
     public SavedGamesPage(IScoreService scoreService)
     {
         this.scoreService = scoreService;
-        Title = Localization.GetString("SavedGames");
+        Title = $"{Localization.GetString("SavedGames")} · Wizard";
 
         listLayout = new VerticalStackLayout
         {
             Spacing = 10,
             Padding = new Thickness(12)
         };
-
-        var subtitleLabel = new Label
-        {
-            Text = "Wizard",
-            FontSize = 11,
-            TextColor = Colors.Gray,
-            HorizontalTextAlignment = TextAlignment.Center,
-            Margin = new Thickness(0, 4, 0, 0)
-        };
-        listLayout.Children.Insert(0, subtitleLabel);
 
         Content = new ScrollView
         {

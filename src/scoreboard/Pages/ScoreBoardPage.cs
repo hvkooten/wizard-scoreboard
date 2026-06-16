@@ -37,7 +37,7 @@ public class ScoreBoardPage : ContentPage
 
     public ScoreBoardPage(IGroupService groupService, IHighscoreService highscoreService, IScoreService scoreService, ITrumpPaletteService trumpPaletteService)
     {
-        Title = Localization.GetString("Scoreboard");
+        Title = $"{Localization.GetString("Scoreboard")} · Wizard";
 
         this.groupService    = groupService;
         this.highscoreService = highscoreService;
@@ -90,21 +90,12 @@ public class ScoreBoardPage : ContentPage
             }
         };
 
-        var pageSubtitleLabel = new Label
-        {
-            Text = "Wizard",
-            FontSize = 11,
-            TextColor = Colors.Gray,
-            HorizontalTextAlignment = TextAlignment.Center,
-            Margin = new Thickness(0, 4, 0, 0)
-        };
-
         var headerStack = new StackLayout
         {
             Padding = 12,
             Spacing = 8,
             BackgroundColor = Colors.White,
-            Children = { pageSubtitleLabel, statusLabel, buttonRow }
+            Children = { statusLabel, buttonRow }
         };
 
         mainGrid.Add(headerStack, 0, 0);
