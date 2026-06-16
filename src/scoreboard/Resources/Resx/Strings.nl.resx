@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>Hoeveel slagen heeft elke speler gewonnen?</value></data>
+  <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Hoeveel slagen biedt elke speler?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bod van {0} moet tussen 0 en {1} liggen.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Bied-totaal-regel vanaf ronde:</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuleren</value></data>
@@ -29,6 +30,7 @@
   <data name="No" xml:space="preserve"><value>Nee</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>Geen actief spel.</value></data>
   <data name="NoGroupsAvailable" xml:space="preserve"><value>Geen groepen beschikbaar. Maak eerst een groep in instellingen.</value></data>
+  <data name="None" xml:space="preserve"><value>Geen</value></data>
   <data name="NextRound" xml:space="preserve"><value>Volgende ronde</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Open regels in browser</value></data>

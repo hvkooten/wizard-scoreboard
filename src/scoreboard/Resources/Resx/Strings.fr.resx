@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>Combien de plis chaque joueur a-t-il remportés ?</value></data>
+  <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Combien de plis chaque joueur annonce-t-il ?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>L'enchère de {0} doit être comprise entre 0 et {1}.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Règle du total des mises à partir de la manche :</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuler</value></data>
@@ -29,6 +30,7 @@
   <data name="No" xml:space="preserve"><value>Non</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>Aucune partie active.</value></data>
   <data name="NoGroupsAvailable" xml:space="preserve"><value>Aucun groupe disponible. Créez d'abord un groupe dans les paramètres.</value></data>
+  <data name="None" xml:space="preserve"><value>Aucun</value></data>
   <data name="NextRound" xml:space="preserve"><value>Tour suivant</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Ouvrir les règles dans le navigateur</value></data>

@@ -3,6 +3,7 @@
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>Wie viele Stiche hat jeder Spieler gewonnen?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Gebot von {0} muss zwischen 0 und {1} liegen.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Gebotssummenregel ab Runde:</value></data>
+  <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Wie viele Stiche bietet jeder Spieler?</value></data>
   <data name="Cancel" xml:space="preserve"><value>Abbrechen</value></data>
   <data name="Blue" xml:space="preserve"><value>Blau</value></data>
   <data name="Clubs" xml:space="preserve"><value>Kreuz</value></data>
@@ -29,6 +30,7 @@
   <data name="No" xml:space="preserve"><value>Nein</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>Kein aktives Spiel.</value></data>
   <data name="NoGroupsAvailable" xml:space="preserve"><value>Keine Gruppen verfügbar. Erstelle zuerst eine Gruppe in den Einstellungen.</value></data>
+  <data name="None" xml:space="preserve"><value>Keine</value></data>
   <data name="NextRound" xml:space="preserve"><value>Nächste Runde</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Regeln im Browser öffnen</value></data>

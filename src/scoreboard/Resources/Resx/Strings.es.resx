@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>¿Cuántas bazas ganó cada jugador?</value></data>
+  <data name="BidsPerPlayerLabel" xml:space="preserve"><value>¿Cuántas bazas apuesta cada jugador?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>La apuesta de {0} debe estar entre 0 y {1}.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Regla del total de apuestas desde la ronda:</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancelar</value></data>
@@ -29,6 +30,7 @@
   <data name="No" xml:space="preserve"><value>No</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>No hay juego activo.</value></data>
   <data name="NoGroupsAvailable" xml:space="preserve"><value>No hay grupos disponibles. Crea primero un grupo en configuración.</value></data>
+  <data name="None" xml:space="preserve"><value>Ninguna</value></data>
   <data name="NextRound" xml:space="preserve"><value>Siguiente ronda</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Abrir reglas en el navegador</value></data>

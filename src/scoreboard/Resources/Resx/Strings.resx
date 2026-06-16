@@ -20,6 +20,7 @@
   </xsd:schema>
 
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>How many tricks did each player win?</value></data>
+  <data name="BidsPerPlayerLabel" xml:space="preserve"><value>How many tricks does each player bid?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bid for {0} must be between 0 and {1}.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Bid total rule from round:</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
@@ -48,6 +49,7 @@
   <data name="No" xml:space="preserve"><value>No</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>No active game.</value></data>
   <data name="NoGroupsAvailable" xml:space="preserve"><value>No groups available. Create group first in settings.</value></data>
+  <data name="None" xml:space="preserve"><value>None</value></data>
   <data name="NextRound" xml:space="preserve"><value>Next Round</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Open rules in browser</value></data>
