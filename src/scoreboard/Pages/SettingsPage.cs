@@ -43,7 +43,7 @@ public class SettingsPage : ContentPage
 
     public SettingsPage(IGroupService groupService, ITrumpPaletteService trumpPaletteService)
     {
-        Title = $"{Localization.GetString("Settings")} · Wizard";
+        PageTitleHelper.Apply(this, Localization.GetString("Settings"));
 
         this.groupService = groupService;
         this.trumpPaletteService = trumpPaletteService;
@@ -170,7 +170,53 @@ public class SettingsPage : ContentPage
         createGroupButton = new Button { Text = Localization.GetString("CreatorGroup") };
         createGroupButton.Clicked += CreateGroupButton_Clicked;
 
-        groupListView = new CollectionView();
+        groupListView = new CollectionView
+        {
+            SelectionMode = SelectionMode.None,
+            ItemTemplate = new DataTemplate(() =>
+            {
+                var row = new Grid
+                {
+                    ColumnDefinitions =
+                    {
+                        new ColumnDefinition { Width = GridLength.Star },
+                        new ColumnDefinition { Width = GridLength.Auto }
+                    },
+                    ColumnSpacing = 8,
+                    Padding = new Thickness(8, 4)
+                };
+
+                var nameLabel = new Label
+                {
+                    VerticalTextAlignment = TextAlignment.Center,
+                    FontSize = 14
+                };
+                nameLabel.SetBinding(Label.TextProperty, nameof(Group.Name));
+
+                var deleteButton = new Button
+                {
+                    Text = "🗑",
+                    WidthRequest = 44,
+                    HeightRequest = 36,
+                    Padding = new Thickness(0),
+                    BackgroundColor = Color.FromArgb("#fde8e8"),
+                    TextColor = Color.FromArgb("#a32020"),
+                    CornerRadius = 8
+                };
+                deleteButton.Clicked += async (s, e) =>
+                {
+                    if (deleteButton.BindingContext is Group group)
+                    {
+                        await ConfirmDeleteGroupAsync(group);
+                    }
+                };
+
+                row.Add(nameLabel, 0, 0);
+                row.Add(deleteButton, 1, 0);
+
+                return row;
+            })
+        };
 
         Content = new ScrollView
         {
@@ -219,7 +265,30 @@ public class SettingsPage : ContentPage
             groupPicker.SelectedIndex = 0;
         }
 
-        groupListView.ItemsSource = groups.Select(g => g.Name).ToList();
+        groupListView.ItemsSource = groups;
+    }
+
+    private async Task ConfirmDeleteGroupAsync(Group group)
+    {
+        var confirm = await DisplayAlertAsync(
+            Localization.GetString("DeleteGroupConfirmTitle"),
+            string.Format(Localization.GetString("DeleteGroupConfirmMessage"), group.Name),
+            Localization.GetString("Yes"),
+            Localization.GetString("No"));
+
+        if (!confirm)
+        {
+            return;
+        }
+
+        groupService.DeleteGroup(group.Id);
+
+        if (editingGroupId == group.Id)
+        {
+            editingGroupId = null;
+        }
+
+        RefreshGroups();
     }
 
     private async void CreateGroupButton_Clicked(object? sender, EventArgs e)
@@ -236,9 +305,9 @@ public class SettingsPage : ContentPage
             // Flush visible entries into the backing cache first so nothing is lost.
             FlushVisibleEntriesToCache();
 
-            // Build player list from ALL non-empty cached names (may exceed visible count).
+            // Persist only currently selected visible players for both create and edit.
             var players = new List<Player>();
-            for (var i = 0; i < allPlayerNames.Count; i++)
+            for (var i = 0; i < selectedPlayerCount; i++)
             {
                 var name = allPlayerNames[i].Trim();
                 if (!string.IsNullOrWhiteSpace(name))
@@ -540,7 +609,7 @@ public class SettingsPage : ContentPage
         UpdateGroupNameFromPlayers();
     }
 
-    private void SetPlayerCount(int count)
+    private void SetPlayerCount(int count, bool updateGroupName = true)
     {
         var previousCount = selectedPlayerCount;
         selectedPlayerCount = count;
@@ -557,6 +626,11 @@ public class SettingsPage : ContentPage
 
         ApplyPlayerCountButtonStyles();
         RebuildPlayerNameInputs();
+
+        if (updateGroupName)
+        {
+            UpdateGroupNameFromPlayers();
+        }
     }
 
     private void ApplyPlayerCountButtonStyles()
@@ -578,7 +652,7 @@ public class SettingsPage : ContentPage
             groupNameUserEdited = false;
             createGroupButton.Text = Localization.GetString("CreatorGroup");
             SetGroupNameFromCode(string.Empty);
-            SetPlayerCount(6);
+            SetPlayerCount(6, updateGroupName: false);
             bidTotalRuleStartRoundValue = selectedPlayerCount;
             bidTotalRulePicker.SelectedIndex = bidTotalRuleStartRoundValue;
             for (var k = 0; k < allPlayerNames.Count; k++) allPlayerNames[k] = string.Empty;
@@ -599,7 +673,7 @@ public class SettingsPage : ContentPage
         createGroupButton.Text = "Save group";
         SetGroupNameFromCode(selected.Name);
 
-        SetPlayerCount(selected.Players.Count);
+        SetPlayerCount(selected.Players.Count, updateGroupName: false);
         bidTotalRuleStartRoundValue = selected.BidTotalRuleStartRound is >= 0 and <= 13
             ? selected.BidTotalRuleStartRound
             : selected.Players.Count;

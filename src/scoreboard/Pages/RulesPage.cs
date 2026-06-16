@@ -8,7 +8,7 @@ public class RulesPage : ContentPage
 {
     public RulesPage()
     {
-        Title = $"{Localization.GetString("Rules")} · Wizard";
+        PageTitleHelper.Apply(this, Localization.GetString("Rules"));
 
         var label = new Label
         {

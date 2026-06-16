@@ -37,7 +37,7 @@ public class ScoreBoardPage : ContentPage
 
     public ScoreBoardPage(IGroupService groupService, IHighscoreService highscoreService, IScoreService scoreService, ITrumpPaletteService trumpPaletteService)
     {
-        Title = $"{Localization.GetString("Scoreboard")} · Wizard";
+        PageTitleHelper.Apply(this, Localization.GetString("Scoreboard"));
 
         this.groupService    = groupService;
         this.highscoreService = highscoreService;

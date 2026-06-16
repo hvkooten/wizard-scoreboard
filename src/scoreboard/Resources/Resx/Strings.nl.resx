@@ -12,6 +12,8 @@
   <data name="CreatorGroup" xml:space="preserve"><value>Groep aanmaken</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Jij (Croupier) mag niet bieden: {0}</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>
+  <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Wil je groep '{0}' verwijderen?</value></data>
+  <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>Groep verwijderen?</value></data>
   <data name="Disabled" xml:space="preserve"><value>Uitgeschakeld</value></data>
   <data name="Diamonds" xml:space="preserve"><value>Ruiten</value></data>
   <data name="EndGame" xml:space="preserve"><value>Beëindig spel</value></data>

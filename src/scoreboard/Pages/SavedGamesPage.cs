@@ -15,7 +15,7 @@ public class SavedGamesPage : ContentPage
     public SavedGamesPage(IScoreService scoreService)
     {
         this.scoreService = scoreService;
-        Title = $"{Localization.GetString("SavedGames")} · Wizard";
+        PageTitleHelper.Apply(this, Localization.GetString("SavedGames"));
 
         listLayout = new VerticalStackLayout
         {

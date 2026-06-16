@@ -12,6 +12,8 @@
   <data name="CreatorGroup" xml:space="preserve"><value>Crear grupo</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Tú (Repartidor) no puedes apostar: {0}</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Repartidor</value></data>
+  <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>¿Quieres eliminar el grupo '{0}'?</value></data>
+  <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>¿Eliminar grupo?</value></data>
   <data name="Disabled" xml:space="preserve"><value>Desactivado</value></data>
   <data name="Diamonds" xml:space="preserve"><value>Diamantes</value></data>
   <data name="EndGame" xml:space="preserve"><value>Finalizar juego</value></data>

@@ -12,6 +12,8 @@
   <data name="CreatorGroup" xml:space="preserve"><value>Créer un groupe</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Vous (Donneur) ne pouvez pas enchérir: {0}</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Donneur</value></data>
+  <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Voulez-vous supprimer le groupe '{0}' ?</value></data>
+  <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>Supprimer le groupe ?</value></data>
   <data name="Disabled" xml:space="preserve"><value>Desactive</value></data>
   <data name="Diamonds" xml:space="preserve"><value>Carreaux</value></data>
   <data name="EndGame" xml:space="preserve"><value>Terminer le jeu</value></data>
