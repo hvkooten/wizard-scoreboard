@@ -24,7 +24,7 @@
   <data name="GroupUpdated" xml:space="preserve"><value>Groupe mis à jour</value></data>
   <data name="Hearts" xml:space="preserve"><value>Coeurs</value></data>
   <data name="Highscore" xml:space="preserve"><value>Meilleur score</value></data>
-  <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0} : victoires={1}, meilleur={2}</value></data>
+  <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0} : victoires={1}, jouées={2}, meilleur={3}</value></data>
   <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
   <data name="No" xml:space="preserve"><value>Non</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>Aucune partie active.</value></data>

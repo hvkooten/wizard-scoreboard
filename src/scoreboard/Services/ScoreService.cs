@@ -79,6 +79,11 @@ public class ScoreService : IScoreService
 
         if (session.Rounds.Count > 0 && session.Players.Count > 0)
         {
+            foreach (var player in session.Players)
+            {
+                player.GamesPlayed += 1;
+            }
+
             var bestScore = session.Players.Max(p => p.CurrentPoints);
             var winners = session.Players.Where(p => p.CurrentPoints == bestScore);
             foreach (var winner in winners)

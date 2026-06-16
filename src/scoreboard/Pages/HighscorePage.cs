@@ -24,7 +24,7 @@ public class HighscorePage : ContentPage
             highscoreService.UpdateHighscores(groupService.GetGroups());
             listView.ItemsSource = highscoreService
                 .GetHighscores()
-                .Select(p => string.Format(Localization.GetString("HighscoreEntryTemplate"), p.Name, p.Wins, p.HighestScore))
+                .Select(p => string.Format(Localization.GetString("HighscoreEntryTemplate"), p.Name, p.Wins, p.GamesPlayed, p.HighestScore))
                 .ToList();
         };
 

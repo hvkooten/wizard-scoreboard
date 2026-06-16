@@ -536,6 +536,7 @@ public class ScoreBoardPage : ContentPage
         }
 
         scoreService.EndGame(session);
+        SyncSessionStatsToGroup(session);
         highscoreService.UpdateHighscores(groupService.GetGroups());
 
         if (session.Rounds.Count > 0)
@@ -1201,6 +1202,7 @@ public class ScoreBoardPage : ContentPage
             scoreService.FinishRound(currentSession, actuals);
             if (!currentSession.IsActive)
             {
+                SyncSessionStatsToGroup(currentSession);
                 highscoreService.UpdateHighscores(groupService.GetGroups());
             }
             RefreshUI();
@@ -1214,6 +1216,31 @@ public class ScoreBoardPage : ContentPage
         {
             await DisplayAlertAsync(Localization.GetString("ErrorTitle"), ex.Message, Localization.GetString("Ok"));
         }
+    }
+
+    private void SyncSessionStatsToGroup(ScoreSession session)
+    {
+        var group = groupService.GetGroup(session.GroupId);
+        if (group == null)
+            return;
+
+        foreach (var sessionPlayer in session.Players)
+        {
+            var matchingById = group.Players.FirstOrDefault(p => p.Id == sessionPlayer.Id);
+            var matchingByName = group.Players.FirstOrDefault(p =>
+                string.Equals(p.Name.Trim(), sessionPlayer.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            var target = matchingById ?? matchingByName;
+            if (target == null)
+                continue;
+
+            target.Wins = Math.Max(target.Wins, sessionPlayer.Wins);
+            target.GamesPlayed = Math.Max(target.GamesPlayed, sessionPlayer.GamesPlayed);
+            target.HighestScore = Math.Max(target.HighestScore, sessionPlayer.HighestScore);
+            target.CurrentPoints = sessionPlayer.CurrentPoints;
+        }
+
+        groupService.UpdateGroup(group);
     }
 
     private (View view, Func<int> getSelectedIndex) BuildTrumpIconSelector(Action? onSelectionChanged = null)

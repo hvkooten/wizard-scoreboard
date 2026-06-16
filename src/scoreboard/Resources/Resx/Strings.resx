@@ -43,7 +43,7 @@
   <data name="GroupUpdated" xml:space="preserve"><value>Group updated</value></data>
   <data name="Hearts" xml:space="preserve"><value>Hearts</value></data>
   <data name="Highscore" xml:space="preserve"><value>Highscore</value></data>
-  <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0}: wins={1}, best={2}</value></data>
+  <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0}: wins={1}, played={2}, best={3}</value></data>
   <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
   <data name="No" xml:space="preserve"><value>No</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>No active game.</value></data>

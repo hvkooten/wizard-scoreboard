@@ -314,4 +314,34 @@ public class ScoreServiceTests
         Assert.NotNull(current);
         Assert.AreEqual(sessionA.Id, current!.Id);
     }
+
+    [Test]
+    public void EndGame_WithRounds_IncrementsGamesPlayedForAllPlayers()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "PlayedGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
+        scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+
+        session.Players[0].CurrentPoints = 8;
+        session.Players[1].CurrentPoints = 3;
+        session.Players[2].CurrentPoints = 1;
+
+        scoreService.EndGame(session);
+
+        Assert.AreEqual(1, session.Players[0].GamesPlayed);
+        Assert.AreEqual(1, session.Players[1].GamesPlayed);
+        Assert.AreEqual(1, session.Players[2].GamesPlayed);
+        Assert.AreEqual(1, session.Players[0].Wins);
+    }
 }
