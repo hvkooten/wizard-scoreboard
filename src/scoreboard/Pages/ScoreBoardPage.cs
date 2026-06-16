@@ -160,6 +160,12 @@ public class ScoreBoardPage : ContentPage
         nextRoundButton.IsEnabled = hasRoundsRemaining;
         endButton.IsEnabled = hasSession;
 
+        // Show only actions that are currently available.
+        startButton.IsVisible = startButton.IsEnabled;
+        pauseButton.IsVisible = pauseButton.IsEnabled;
+        nextRoundButton.IsVisible = nextRoundButton.IsEnabled;
+        endButton.IsVisible = endButton.IsEnabled;
+
         if (currentSession == null)
         {
             statusLabel.Text = Localization.GetString("NoActiveGame");
