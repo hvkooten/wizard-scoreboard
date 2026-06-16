@@ -93,6 +93,18 @@ public class SavedGamesPage : ContentPage
                 WidthRequest = 36
             };
 
+            var deleteButton = new Button
+            {
+                Text = "🗑",
+                FontSize = 14,
+                WidthRequest = 36,
+                HeightRequest = 32,
+                Padding = new Thickness(0),
+                CornerRadius = 8,
+                BackgroundColor = Color.FromArgb("#fde8e8"),
+                TextColor = Color.FromArgb("#a32020")
+            };
+
             var sessionScores = CalculateSessionScores(session);
 
             var playersText = string.Join("\n", session.Players
@@ -117,6 +129,23 @@ public class SavedGamesPage : ContentPage
                 await Shell.Current.GoToAsync(nameof(ScoreBoardPage));
             };
 
+            deleteButton.Clicked += async (s, e) =>
+            {
+                var confirm = await DisplayAlertAsync(
+                    Localization.GetString("DeleteSavedGameConfirmTitle"),
+                    string.Format(Localization.GetString("DeleteSavedGameConfirmMessage"), savedDate),
+                    Localization.GetString("Yes"),
+                    Localization.GetString("No"));
+
+                if (!confirm)
+                {
+                    return;
+                }
+
+                scoreService.DeleteSavedGame(sessionId);
+                BuildSavedGamesList();
+            };
+
             var detailsLayout = new VerticalStackLayout
             {
                 Spacing = 8,
@@ -133,6 +162,7 @@ public class SavedGamesPage : ContentPage
                 ColumnDefinitions =
                 {
                     new ColumnDefinition { Width = GridLength.Star },
+                    new ColumnDefinition { Width = GridLength.Auto },
                     new ColumnDefinition { Width = GridLength.Auto }
                 }
             };
@@ -144,7 +174,8 @@ public class SavedGamesPage : ContentPage
             };
 
             headerRow.Add(headerStack, 0, 0);
-            headerRow.Add(toggleLabel, 1, 0);
+            headerRow.Add(deleteButton, 1, 0);
+            headerRow.Add(toggleLabel, 2, 0);
 
             var tap = new TapGestureRecognizer();
             var capturedIndex = index;

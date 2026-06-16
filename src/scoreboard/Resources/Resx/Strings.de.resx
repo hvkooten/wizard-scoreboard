@@ -12,6 +12,8 @@
   <data name="CreatorGroup" xml:space="preserve"><value>Gruppe erstellen</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Du (Kartengeber) darfst nicht bieten: {0}</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Geber</value></data>
+  <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>Möchten Sie das gespeicherte Spiel vom {0} wirklich löschen?</value></data>
+  <data name="DeleteSavedGameConfirmTitle" xml:space="preserve"><value>Gespeichertes Spiel löschen?</value></data>
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Möchten Sie die Gruppe '{0}' löschen?</value></data>
   <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>Gruppe löschen?</value></data>
   <data name="Disabled" xml:space="preserve"><value>Deaktiviert</value></data>

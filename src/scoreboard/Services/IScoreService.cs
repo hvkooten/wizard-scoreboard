@@ -13,6 +13,7 @@ public interface IScoreService
     void FinishRound(ScoreSession session, Dictionary<Guid, int> actuals);
     IEnumerable<ScoreSession> GetActiveSessions();
     IEnumerable<ScoreSession> GetSavedGames();
+    void DeleteSavedGame(Guid sessionId);
     ScoreSession? GetCurrentSession();
     void SelectSavedGame(Guid sessionId);
 }

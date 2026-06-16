@@ -192,6 +192,24 @@ public class ScoreService : IScoreService
             .OrderByDescending(s => s.StartDate);
     }
 
+    public void DeleteSavedGame(Guid sessionId)
+    {
+        var found = sessions.FirstOrDefault(s => s.Id == sessionId && s.IsActive && s.IsPaused);
+        if (found == null)
+        {
+            return;
+        }
+
+        sessions.Remove(found);
+
+        if (selectedSessionId == sessionId)
+        {
+            selectedSessionId = null;
+        }
+
+        SavePausedSessions();
+    }
+
     public ScoreSession? GetCurrentSession()
     {
         if (selectedSessionId.HasValue)
