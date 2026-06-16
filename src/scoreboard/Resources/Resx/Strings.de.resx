@@ -1,76 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="Settings" xml:space="preserve"><value>Einstellungen</value></data>
-  <data name="Rules" xml:space="preserve"><value>Spielregeln</value></data>
-  <data name="Highscore" xml:space="preserve"><value>Highscore</value></data>
-  <data name="Scoreboard" xml:space="preserve"><value>Punktestand</value></data>
-  <data name="StartGame" xml:space="preserve"><value>Spiel starten</value></data>
-  <data name="EndGame" xml:space="preserve"><value>Spiel beenden</value></data>
-  <data name="SelectLanguage" xml:space="preserve"><value>Sprache wählen</value></data>
-  <data name="Players" xml:space="preserve"><value>Spieler</value></data>
-  <data name="CreatorGroup" xml:space="preserve"><value>Gruppe erstellen</value></data>
-  <data name="ShowRules" xml:space="preserve"><value>Regeln anzeigen</value></data>
-  <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Trumpffarbstil</value></data>
-  <data name="TrumpPaletteCards" xml:space="preserve"><value>Kartenfarben (Herz, Karo, Kreuz, Pik)</value></data>
-  <data name="TrumpPaletteColors" xml:space="preserve"><value>Farben (Rot, Gelb, Grün, Blau)</value></data>
-  <data name="PlayerCount" xml:space="preserve"><value>Anzahl Spieler</value></data>
-  <data name="ErrorTitle" xml:space="preserve"><value>Fehler</value></data>
-  <data name="SuccessTitle" xml:space="preserve"><value>Erfolg</value></data>
-  <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
-  <data name="Ok" xml:space="preserve"><value>OK</value></data>
-  <data name="GroupNameRequired" xml:space="preserve"><value>Gruppenname ist erforderlich.</value></data>
-  <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Name für Spieler {0} ist erforderlich.</value></data>
-  <data name="GroupCreated" xml:space="preserve"><value>Gruppe erstellt</value></data>
-  <data name="GroupUpdated" xml:space="preserve"><value>Gruppe aktualisiert</value></data>
-  <data name="PlayerPlaceholder" xml:space="preserve"><value>Spieler {0}</value></data>
-  <data name="NoActiveGame" xml:space="preserve"><value>Kein aktives Spiel.</value></data>
-  <data name="NextRound" xml:space="preserve"><value>Nächste Runde</value></data>
-  <data name="ScoreStatusTemplate" xml:space="preserve"><value>Spiel: Runde {0}/{1}, Geber {2}</value></data>
-  <data name="PlayersLabel" xml:space="preserve"><value>Spieler:</value></data>
-  <data name="PlayerScoreTemplate" xml:space="preserve"><value>{0}. {1}: {2} Punkte, Siege {3}</value></data>
-  <data name="NoGroupsAvailable" xml:space="preserve"><value>Keine Gruppen verfügbar. Erstelle zuerst eine Gruppe in den Einstellungen.</value></data>
-  <data name="SelectPlayersTitle" xml:space="preserve"><value>Spieler für dieses Spiel auswählen</value></data>
-  <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} Spieler ausgewählt</value></data>
-  <data name="GameAlreadyCompleted" xml:space="preserve"><value>Spiel bereits abgeschlossen.</value></data>
-  <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Vorhergesagte Stiche (0..Runde)</value></data>
-  <data name="RoundPopupTitle" xml:space="preserve"><value>Runde {0} von {1}</value></data>
-  <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Wie viele Stiche pro Spieler?</value></data>
-  <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Gebot von {0} muss zwischen 0 und {1} liegen.</value></data>
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>Wie viele Stiche hat jeder Spieler gewonnen?</value></data>
-  <data name="RoundHeader" xml:space="preserve"><value>Rnd</value></data>
-  <data name="TrumpHeader" xml:space="preserve"><value>Trumpf</value></data>
-  <data name="TotalHeader" xml:space="preserve"><value>Gesamt</value></data>
-    <data name="TrumpRequiredError" xml:space="preserve"><value>Bitte eine Trumpffarbe auswählen.</value></data>
-    <data name="TotalBidsLabel" xml:space="preserve"><value>Gesamtgebote: {0} / {1}</value></data>
-    <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Gesamtgebote können nicht gleich der Rundenzahl ({0}) sein.</value></data>
-    <data name="TotalActualsError" xml:space="preserve"><value>Die Gesamtzahl der gewonnenen Stiche muss der Rundenzahl entsprechen ({0}).</value></data>
-  <data name="Trump" xml:space="preserve"><value>Trumpf</value></data>
+  <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Gebot von {0} muss zwischen 0 und {1} liegen.</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Ab welcher Runde sollte die Gebotssummenregel gelten?</value></data>
+  <data name="Blue" xml:space="preserve"><value>Blau</value></data>
+  <data name="Clubs" xml:space="preserve"><value>Kreuz</value></data>
+  <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dieses Spiel lauft noch. Wirklich beenden?</value></data>
+  <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spiel beenden?</value></data>
+  <data name="CreatorGroup" xml:space="preserve"><value>Gruppe erstellen</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Du (Kartengeber) darfst nicht bieten: {0}</value></data>
+  <data name="DealerLabel" xml:space="preserve"><value>Geber</value></data>
+  <data name="Disabled" xml:space="preserve"><value>Deaktiviert</value></data>
+  <data name="Diamonds" xml:space="preserve"><value>Karo</value></data>
+  <data name="EndGame" xml:space="preserve"><value>Spiel beenden</value></data>
+  <data name="ErrorTitle" xml:space="preserve"><value>Fehler</value></data>
+  <data name="GameAlreadyCompleted" xml:space="preserve"><value>Spiel bereits abgeschlossen.</value></data>
+  <data name="GameFinishedTitle" xml:space="preserve"><value>Spiel beendet!</value></data>
+  <data name="Green" xml:space="preserve"><value>Grün</value></data>
+  <data name="GroupCreated" xml:space="preserve"><value>Gruppe erstellt</value></data>
+  <data name="GroupNameRequired" xml:space="preserve"><value>Gruppenname ist erforderlich.</value></data>
+  <data name="GroupUpdated" xml:space="preserve"><value>Gruppe aktualisiert</value></data>
+  <data name="Hearts" xml:space="preserve"><value>Herz</value></data>
+  <data name="Highscore" xml:space="preserve"><value>Highscore</value></data>
+  <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0}: Siege={1}, Bestwert={2}</value></data>
+  <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
+  <data name="No" xml:space="preserve"><value>Nein</value></data>
+  <data name="NoActiveGame" xml:space="preserve"><value>Kein aktives Spiel.</value></data>
+  <data name="NoGroupsAvailable" xml:space="preserve"><value>Keine Gruppen verfügbar. Erstelle zuerst eine Gruppe in den Einstellungen.</value></data>
+  <data name="NextRound" xml:space="preserve"><value>Nächste Runde</value></data>
+  <data name="Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="OpenRulesInBrowser" xml:space="preserve"><value>Regeln im Browser öffnen</value></data>
+  <data name="PlayerCount" xml:space="preserve"><value>Anzahl Spieler</value></data>
+  <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Name für Spieler {0} ist erforderlich.</value></data>
+  <data name="PlayerPlaceholder" xml:space="preserve"><value>Spieler {0}</value></data>
+  <data name="PlayerScoreTemplate" xml:space="preserve"><value>{0}. {1}: {2} Punkte, Siege {3}</value></data>
+  <data name="Players" xml:space="preserve"><value>Spieler</value></data>
+  <data name="PlayersLabel" xml:space="preserve"><value>Spieler:</value></data>
   <data name="PredictionRangeError" xml:space="preserve"><value>Vorhersage muss im gültigen Bereich liegen.</value></data>
-  <data name="RulesIntro" xml:space="preserve"><value>Die Wizard-Regeln sind unten verfügbar.
-Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
+  <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Vorhergesagte Stiche (0..Runde)</value></data>
+  <data name="Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
+  <data name="Red" xml:space="preserve"><value>Rot</value></data>
+  <data name="Rules" xml:space="preserve"><value>Spielregeln</value></data>
   <data name="RulesFallback" xml:space="preserve"><value>Wenn das PDF nicht lädt, siehe die Regeln hier:
 https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
-  <data name="OpenRulesInBrowser" xml:space="preserve"><value>Regeln im Browser öffnen</value></data>
-  <data name="Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
-  <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0}: Siege={1}, Bestwert={2}</value></data>
-  <data name="None" xml:space="preserve"><value>Keine</value></data>
-  <data name="Disabled" xml:space="preserve"><value>Deaktiviert</value></data>
-  <data name="Hearts" xml:space="preserve"><value>Herz</value></data>
-  <data name="Diamonds" xml:space="preserve"><value>Karo</value></data>
-  <data name="Clubs" xml:space="preserve"><value>Kreuz</value></data>
+  <data name="RulesIntro" xml:space="preserve"><value>Die Wizard-Regeln sind unten verfügbar.
+Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
+  <data name="ScoreStatusTemplate" xml:space="preserve"><value>Spiel: Runde {0}/{1}, Geber {2}</value></data>
+  <data name="Scoreboard" xml:space="preserve"><value>Punktestand</value></data>
+  <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} Spieler ausgewählt</value></data>
+  <data name="SelectLanguage" xml:space="preserve"><value>Sprache wählen</value></data>
+  <data name="SelectPlayersTitle" xml:space="preserve"><value>Spieler für dieses Spiel auswählen</value></data>
+  <data name="Settings" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="ShowRules" xml:space="preserve"><value>Regeln anzeigen</value></data>
   <data name="Spades" xml:space="preserve"><value>Pik</value></data>
-  <data name="Red" xml:space="preserve"><value>Rot</value></data>
-  <data name="Yellow" xml:space="preserve"><value>Gelb</value></data>
-  <data name="Green" xml:space="preserve"><value>Grün</value></data>
-  <data name="Blue" xml:space="preserve"><value>Blau</value></data>
+  <data name="StartGame" xml:space="preserve"><value>Spiel starten</value></data>
+  <data name="SuccessTitle" xml:space="preserve"><value>Erfolg</value></data>
+  <data name="TotalActualsError" xml:space="preserve"><value>Die Gesamtzahl der gewonnenen Stiche muss der Rundenzahl entsprechen ({0}).</value></data>
   <data name="TotalActualsLabel" xml:space="preserve"><value>Gewonnene Gesamtstiche: {0} / {1}</value></data>
-  <data name="DealerLabel" xml:space="preserve"><value>Geber</value></data>
-  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Ab welcher Runde sollte die Gebotssummenregel gelten?</value></data>
-  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Du (Kartengeber) darfst nicht bieten: {0}</value></data>
-  <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spiel beenden?</value></data>
-  <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dieses Spiel lauft noch. Wirklich beenden?</value></data>
-  <data name="Yes" xml:space="preserve"><value>Ja</value></data>
-  <data name="No" xml:space="preserve"><value>Nein</value></data>
-  <data name="GameFinishedTitle" xml:space="preserve"><value>Spiel beendet!</value></data>
+  <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Gesamtgebote können nicht gleich der Rundenzahl ({0}) sein.</value></data>
+  <data name="TotalBidsLabel" xml:space="preserve"><value>Gesamtgebote: {0} / {1}</value></data>
+  <data name="TotalHeader" xml:space="preserve"><value>Gesamt</value></data>
+  <data name="Trump" xml:space="preserve"><value>Trumpf</value></data>
+  <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Trumpffarbstil</value></data>
+  <data name="TrumpHeader" xml:space="preserve"><value>Trumpf</value></data>
+  <data name="TrumpPaletteCards" xml:space="preserve"><value>Kartenfarben (Herz, Karo, Kreuz, Pik)</value></data>
+  <data name="TrumpPaletteColors" xml:space="preserve"><value>Farben (Rot, Gelb, Grün, Blau)</value></data>
+  <data name="TrumpRequiredError" xml:space="preserve"><value>Bitte eine Trumpffarbe auswählen.</value></data>
   <data name="WinnerTemplate" xml:space="preserve"><value>Gewinner: {0} mit {1} Punkten</value></data>
+  <data name="Yes" xml:space="preserve"><value>Ja</value></data>
+  <data name="Yellow" xml:space="preserve"><value>Gelb</value></data>
 </root>

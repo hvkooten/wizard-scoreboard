@@ -1,76 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="Settings" xml:space="preserve"><value>Instellingen</value></data>
-  <data name="Rules" xml:space="preserve"><value>Spelregels</value></data>
-  <data name="Highscore" xml:space="preserve"><value>Highscore</value></data>
-  <data name="Scoreboard" xml:space="preserve"><value>Scoreblok</value></data>
-  <data name="StartGame" xml:space="preserve"><value>Start spel</value></data>
-  <data name="EndGame" xml:space="preserve"><value>Beëindig spel</value></data>
-  <data name="SelectLanguage" xml:space="preserve"><value>Selecteer taal</value></data>
-  <data name="Players" xml:space="preserve"><value>Spelers</value></data>
-  <data name="CreatorGroup" xml:space="preserve"><value>Groep aanmaken</value></data>
-  <data name="ShowRules" xml:space="preserve"><value>Spelregels tonen</value></data>
-  <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Troefkleurstijl</value></data>
-  <data name="TrumpPaletteCards" xml:space="preserve"><value>Kaartsymbolen (Harten, Ruiten, Klaveren, Schoppen)</value></data>
-  <data name="TrumpPaletteColors" xml:space="preserve"><value>Kleuren (Rood, Geel, Groen, Blauw)</value></data>
-  <data name="PlayerCount" xml:space="preserve"><value>Aantal spelers</value></data>
-  <data name="ErrorTitle" xml:space="preserve"><value>Fout</value></data>
-  <data name="SuccessTitle" xml:space="preserve"><value>Succes</value></data>
-  <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
-  <data name="Ok" xml:space="preserve"><value>OK</value></data>
-  <data name="GroupNameRequired" xml:space="preserve"><value>Groepsnaam is verplicht.</value></data>
-  <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Naam voor speler {0} is verplicht.</value></data>
-  <data name="GroupCreated" xml:space="preserve"><value>Groep aangemaakt</value></data>
-  <data name="GroupUpdated" xml:space="preserve"><value>Groep bijgewerkt</value></data>
-  <data name="PlayerPlaceholder" xml:space="preserve"><value>Speler {0}</value></data>
-  <data name="NoActiveGame" xml:space="preserve"><value>Geen actief spel.</value></data>
-  <data name="NextRound" xml:space="preserve"><value>Volgende ronde</value></data>
-  <data name="ScoreStatusTemplate" xml:space="preserve"><value>Spel: ronde {0}/{1}, deler {2}</value></data>
-  <data name="PlayersLabel" xml:space="preserve"><value>Spelers:</value></data>
-  <data name="PlayerScoreTemplate" xml:space="preserve"><value>{0}. {1}: {2} punten, gewonnen {3}</value></data>
-  <data name="NoGroupsAvailable" xml:space="preserve"><value>Geen groepen beschikbaar. Maak eerst een groep in instellingen.</value></data>
-  <data name="SelectPlayersTitle" xml:space="preserve"><value>Selecteer spelers voor dit spel</value></data>
-  <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} spelers geselecteerd</value></data>
-  <data name="GameAlreadyCompleted" xml:space="preserve"><value>Spel is al afgerond.</value></data>
-  <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Verwachte slagen (0..ronde)</value></data>
-  <data name="RoundPopupTitle" xml:space="preserve"><value>Ronde {0} van {1}</value></data>
-  <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Hoeveel slagen per speler?</value></data>
-  <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bod van {0} moet tussen 0 en {1} liggen.</value></data>
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>Hoeveel slagen heeft elke speler gewonnen?</value></data>
-  <data name="RoundHeader" xml:space="preserve"><value>Ronde</value></data>
-  <data name="TrumpHeader" xml:space="preserve"><value>Troef</value></data>
-  <data name="TotalHeader" xml:space="preserve"><value>Totaal</value></data>
-    <data name="TrumpRequiredError" xml:space="preserve"><value>Selecteer een troefkleur.</value></data>
-    <data name="TotalBidsLabel" xml:space="preserve"><value>Totaal biedingen: {0} / {1}</value></data>
-    <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Totaal biedingen kan niet gelijk zijn aan het rondenummer ({0}).</value></data>
-    <data name="TotalActualsError" xml:space="preserve"><value>Het totaal gewonnen slagen moet gelijk zijn aan het rondenummer ({0}).</value></data>
-  <data name="Trump" xml:space="preserve"><value>Troef</value></data>
+  <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bod van {0} moet tussen 0 en {1} liggen.</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Vanaf welke ronde geldt de bied-totaal-regel?</value></data>
+  <data name="Blue" xml:space="preserve"><value>Blauw</value></data>
+  <data name="Clubs" xml:space="preserve"><value>Klaveren</value></data>
+  <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dit spel is nog bezig. Wil je het toch stoppen?</value></data>
+  <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spel beëindigen?</value></data>
+  <data name="CreatorGroup" xml:space="preserve"><value>Groep aanmaken</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Jij (Croupier) mag niet bieden: {0}</value></data>
+  <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>
+  <data name="Disabled" xml:space="preserve"><value>Uitgeschakeld</value></data>
+  <data name="Diamonds" xml:space="preserve"><value>Ruiten</value></data>
+  <data name="EndGame" xml:space="preserve"><value>Beëindig spel</value></data>
+  <data name="ErrorTitle" xml:space="preserve"><value>Fout</value></data>
+  <data name="GameAlreadyCompleted" xml:space="preserve"><value>Spel is al afgerond.</value></data>
+  <data name="GameFinishedTitle" xml:space="preserve"><value>Spel afgelopen!</value></data>
+  <data name="Green" xml:space="preserve"><value>Groen</value></data>
+  <data name="GroupCreated" xml:space="preserve"><value>Groep aangemaakt</value></data>
+  <data name="GroupNameRequired" xml:space="preserve"><value>Groepsnaam is verplicht.</value></data>
+  <data name="GroupUpdated" xml:space="preserve"><value>Groep bijgewerkt</value></data>
+  <data name="Hearts" xml:space="preserve"><value>Harten</value></data>
+  <data name="Highscore" xml:space="preserve"><value>Highscore</value></data>
+  <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0}: gewonnen={1}, beste={2}</value></data>
+  <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
+  <data name="No" xml:space="preserve"><value>Nee</value></data>
+  <data name="NoActiveGame" xml:space="preserve"><value>Geen actief spel.</value></data>
+  <data name="NoGroupsAvailable" xml:space="preserve"><value>Geen groepen beschikbaar. Maak eerst een groep in instellingen.</value></data>
+  <data name="NextRound" xml:space="preserve"><value>Volgende ronde</value></data>
+  <data name="Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="OpenRulesInBrowser" xml:space="preserve"><value>Open regels in browser</value></data>
+  <data name="PlayerCount" xml:space="preserve"><value>Aantal spelers</value></data>
+  <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Naam voor speler {0} is verplicht.</value></data>
+  <data name="PlayerPlaceholder" xml:space="preserve"><value>Speler {0}</value></data>
+  <data name="PlayerScoreTemplate" xml:space="preserve"><value>{0}. {1}: {2} punten, gewonnen {3}</value></data>
+  <data name="Players" xml:space="preserve"><value>Spelers</value></data>
+  <data name="PlayersLabel" xml:space="preserve"><value>Spelers:</value></data>
   <data name="PredictionRangeError" xml:space="preserve"><value>Voorspelling moet binnen bereik liggen.</value></data>
-  <data name="RulesIntro" xml:space="preserve"><value>De Wizard spelregels staan hieronder.
-Als de PDF niet laadt, gebruik de link.</value></data>
+  <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Verwachte slagen (0..ronde)</value></data>
+  <data name="Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
+  <data name="Red" xml:space="preserve"><value>Rood</value></data>
+  <data name="Rules" xml:space="preserve"><value>Spelregels</value></data>
   <data name="RulesFallback" xml:space="preserve"><value>Als de PDF niet laadt, bekijk de regels hier:
 https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
-  <data name="OpenRulesInBrowser" xml:space="preserve"><value>Open regels in browser</value></data>
-  <data name="Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
-  <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0}: gewonnen={1}, beste={2}</value></data>
-  <data name="None" xml:space="preserve"><value>Geen</value></data>
-  <data name="Disabled" xml:space="preserve"><value>Uitgeschakeld</value></data>
-  <data name="Hearts" xml:space="preserve"><value>Harten</value></data>
-  <data name="Diamonds" xml:space="preserve"><value>Ruiten</value></data>
-  <data name="Clubs" xml:space="preserve"><value>Klaveren</value></data>
+  <data name="RulesIntro" xml:space="preserve"><value>De Wizard spelregels staan hieronder.
+Als de PDF niet laadt, gebruik de link.</value></data>
+  <data name="ScoreStatusTemplate" xml:space="preserve"><value>Spel: ronde {0}/{1}, deler {2}</value></data>
+  <data name="Scoreboard" xml:space="preserve"><value>Scoreblok</value></data>
+  <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} spelers geselecteerd</value></data>
+  <data name="SelectLanguage" xml:space="preserve"><value>Selecteer taal</value></data>
+  <data name="SelectPlayersTitle" xml:space="preserve"><value>Selecteer spelers voor dit spel</value></data>
+  <data name="Settings" xml:space="preserve"><value>Instellingen</value></data>
+  <data name="ShowRules" xml:space="preserve"><value>Spelregels tonen</value></data>
   <data name="Spades" xml:space="preserve"><value>Schoppen</value></data>
-  <data name="Red" xml:space="preserve"><value>Rood</value></data>
-  <data name="Yellow" xml:space="preserve"><value>Geel</value></data>
-  <data name="Green" xml:space="preserve"><value>Groen</value></data>
-  <data name="Blue" xml:space="preserve"><value>Blauw</value></data>
+  <data name="StartGame" xml:space="preserve"><value>Start spel</value></data>
+  <data name="SuccessTitle" xml:space="preserve"><value>Succes</value></data>
+  <data name="TotalActualsError" xml:space="preserve"><value>Het totaal gewonnen slagen moet gelijk zijn aan het rondenummer ({0}).</value></data>
   <data name="TotalActualsLabel" xml:space="preserve"><value>Totaal gewonnen: {0} / {1}</value></data>
-  <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>
-  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Vanaf welke ronde geldt de bied-totaal-regel?</value></data>
-  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Jij (Croupier) mag niet bieden: {0}</value></data>
-  <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spel beëindigen?</value></data>
-  <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dit spel is nog bezig. Wil je het toch stoppen?</value></data>
-  <data name="Yes" xml:space="preserve"><value>Ja</value></data>
-  <data name="No" xml:space="preserve"><value>Nee</value></data>
-  <data name="GameFinishedTitle" xml:space="preserve"><value>Spel afgelopen!</value></data>
+  <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Totaal biedingen kan niet gelijk zijn aan het rondenummer ({0}).</value></data>
+  <data name="TotalBidsLabel" xml:space="preserve"><value>Totaal biedingen: {0} / {1}</value></data>
+  <data name="TotalHeader" xml:space="preserve"><value>Totaal</value></data>
+  <data name="Trump" xml:space="preserve"><value>Troef</value></data>
+  <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Troefkleurstijl</value></data>
+  <data name="TrumpHeader" xml:space="preserve"><value>Troef</value></data>
+  <data name="TrumpPaletteCards" xml:space="preserve"><value>Kaartsymbolen (Harten, Ruiten, Klaveren, Schoppen)</value></data>
+  <data name="TrumpPaletteColors" xml:space="preserve"><value>Kleuren (Rood, Geel, Groen, Blauw)</value></data>
+  <data name="TrumpRequiredError" xml:space="preserve"><value>Selecteer een troefkleur.</value></data>
   <data name="WinnerTemplate" xml:space="preserve"><value>Winnaar: {0} met {1} punten</value></data>
+  <data name="Yes" xml:space="preserve"><value>Ja</value></data>
+  <data name="Yellow" xml:space="preserve"><value>Geel</value></data>
 </root>
