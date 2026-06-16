@@ -1,10 +1,18 @@
+using Microsoft.Maui.Storage;
+using System.Text.Json;
 using WizardScoreboard.Models;
 
 namespace WizardScoreboard.Services;
 
 public class ScoreService : IScoreService
 {
+    private const string PausedSessionsStorageKey = "paused_sessions_storage_v1";
     private readonly List<ScoreSession> sessions = new();
+
+    public ScoreService()
+    {
+        LoadPausedSessions();
+    }
 
     private static int GetMaxRounds(int playerCount)
     {
@@ -40,6 +48,7 @@ public class ScoreService : IScoreService
         };
 
         sessions.Add(session);
+        SavePausedSessions();
         return session;
     }
 
@@ -49,6 +58,7 @@ public class ScoreService : IScoreService
             throw new InvalidOperationException("Spelsessie is niet actief.");
 
         session.IsPaused = true;
+        SavePausedSessions();
     }
 
     public void ResumeGame(ScoreSession session)
@@ -57,6 +67,7 @@ public class ScoreService : IScoreService
             throw new InvalidOperationException("Spelsessie is niet actief.");
 
         session.IsPaused = false;
+        SavePausedSessions();
     }
 
     public void EndGame(ScoreSession session)
@@ -76,6 +87,7 @@ public class ScoreService : IScoreService
 
         session.IsPaused = false;
         session.IsActive = false;
+        SavePausedSessions();
     }
 
     public RoundEntry StartRound(ScoreSession session, TrumpSuit trump, Dictionary<Guid, int> bids)
@@ -107,6 +119,7 @@ public class ScoreService : IScoreService
         };
 
         session.Rounds.Add(round);
+        SavePausedSessions();
         return round;
     }
 
@@ -140,7 +153,54 @@ public class ScoreService : IScoreService
         {
             EndGame(session);
         }
+
+        SavePausedSessions();
     }
 
     public IEnumerable<ScoreSession> GetActiveSessions() => sessions.Where(s => s.IsActive);
+
+    private void LoadPausedSessions()
+    {
+        string raw;
+        try
+        {
+            raw = Preferences.Default.Get(PausedSessionsStorageKey, string.Empty);
+        }
+        catch (Exception)
+        {
+            // Preferences may be unavailable in non-MAUI contexts (for example unit tests).
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(raw))
+            return;
+
+        try
+        {
+            var saved = JsonSerializer.Deserialize<List<ScoreSession>>(raw);
+            if (saved == null)
+                return;
+
+            sessions.Clear();
+            sessions.AddRange(saved.Where(s => s.IsActive && s.IsPaused));
+        }
+        catch (JsonException)
+        {
+            sessions.Clear();
+        }
+    }
+
+    private void SavePausedSessions()
+    {
+        var paused = sessions.Where(s => s.IsActive && s.IsPaused).ToList();
+        var raw = JsonSerializer.Serialize(paused);
+        try
+        {
+            Preferences.Default.Set(PausedSessionsStorageKey, raw);
+        }
+        catch (Exception)
+        {
+            // Ignore persistence failures outside app runtime.
+        }
+    }
 }
