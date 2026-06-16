@@ -19,18 +19,10 @@ public class AppShell : Shell
             {
                 new Tab
                 {
-                    Title = Localization.GetString("Settings"),
+                    Title = Localization.GetString("Scoreboard"),
                     Items =
                     {
-                        new ShellContent { Content = settingsPage }
-                    }
-                },
-                new Tab
-                {
-                    Title = Localization.GetString("Rules"),
-                    Items =
-                    {
-                        new ShellContent { Content = rulesPage }
+                        new ShellContent { Content = scoreBoardPage }
                     }
                 },
                 new Tab
@@ -43,10 +35,18 @@ public class AppShell : Shell
                 },
                 new Tab
                 {
-                    Title = Localization.GetString("Scoreboard"),
+                    Title = Localization.GetString("Rules"),
                     Items =
                     {
-                        new ShellContent { Content = scoreBoardPage }
+                        new ShellContent { Content = rulesPage }
+                    }
+                },
+                new Tab
+                {
+                    Title = Localization.GetString("Settings"),
+                    Items =
+                    {
+                        new ShellContent { Content = settingsPage }
                     }
                 }
             }
