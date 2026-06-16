@@ -68,7 +68,7 @@ public class ScoreBoardPage : ContentPage
         var buttonRow = new HorizontalStackLayout
         {
             Spacing = 8,
-            Children = { startButton, pauseButton, nextRoundButton, endButton }
+            Children = { startButton, nextRoundButton, pauseButton, endButton }
         };
 
         scoreboardScrollView = new ScrollView 
