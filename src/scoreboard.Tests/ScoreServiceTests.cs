@@ -344,4 +344,88 @@ public class ScoreServiceTests
         Assert.AreEqual(1, session.Players[2].GamesPlayed);
         Assert.AreEqual(1, session.Players[0].Wins);
     }
+
+    [Test]
+    public void EndGame_WithoutRounds_DoesNotIncrementGamesPlayed()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "NoRoundsPlayedGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        scoreService.EndGame(session);
+
+        Assert.IsTrue(session.Players.All(p => p.GamesPlayed == 0));
+    }
+
+    [Test]
+    public void GetSavedGames_ReturnsOnlyPausedActiveSessions()
+    {
+        var scoreService = new ScoreService();
+
+        var groupA = new Group
+        {
+            Name = "A",
+            Players = new List<Player>
+            {
+                new Player { Name = "A1", Order = 0 },
+                new Player { Name = "A2", Order = 1 },
+                new Player { Name = "A3", Order = 2 }
+            }
+        };
+        var groupB = new Group
+        {
+            Name = "B",
+            Players = new List<Player>
+            {
+                new Player { Name = "B1", Order = 0 },
+                new Player { Name = "B2", Order = 1 },
+                new Player { Name = "B3", Order = 2 }
+            }
+        };
+
+        var sessionA = scoreService.StartGame(groupA);
+        var sessionB = scoreService.StartGame(groupB);
+        scoreService.PauseGame(sessionA);
+
+        var saved = scoreService.GetSavedGames().ToList();
+
+        Assert.AreEqual(1, saved.Count);
+        Assert.AreEqual(sessionA.Id, saved[0].Id);
+        Assert.AreNotEqual(sessionB.Id, saved[0].Id);
+    }
+
+    [Test]
+    public void SelectSavedGame_IgnoresNonPausedSession()
+    {
+        var scoreService = new ScoreService();
+
+        var group = new Group
+        {
+            Name = "A",
+            Players = new List<Player>
+            {
+                new Player { Name = "A1", Order = 0 },
+                new Player { Name = "A2", Order = 1 },
+                new Player { Name = "A3", Order = 2 }
+            }
+        };
+
+        var pausedSession = scoreService.StartGame(group);
+        scoreService.PauseGame(pausedSession);
+
+        var activeSession = scoreService.StartGame(group);
+        scoreService.SelectSavedGame(activeSession.Id);
+
+        var current = scoreService.GetCurrentSession();
+        Assert.NotNull(current);
+        Assert.AreEqual(activeSession.Id, current!.Id);
+    }
 }
