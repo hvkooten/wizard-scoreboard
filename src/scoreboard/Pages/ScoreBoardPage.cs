@@ -90,12 +90,21 @@ public class ScoreBoardPage : ContentPage
             }
         };
 
+        var pageSubtitleLabel = new Label
+        {
+            Text = "Wizard",
+            FontSize = 11,
+            TextColor = Colors.Gray,
+            HorizontalTextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 4, 0, 0)
+        };
+
         var headerStack = new StackLayout
         {
             Padding = 12,
             Spacing = 8,
             BackgroundColor = Colors.White,
-            Children = { statusLabel, buttonRow }
+            Children = { pageSubtitleLabel, statusLabel, buttonRow }
         };
 
         mainGrid.Add(headerStack, 0, 0);

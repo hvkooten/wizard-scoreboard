@@ -180,6 +180,13 @@ public class SettingsPage : ContentPage
                 Spacing = 15,
                 Children =
                 {
+                    new Label
+                    {
+                        Text = "Wizard",
+                        FontSize = 11,
+                        TextColor = Colors.Gray,
+                        HorizontalTextAlignment = TextAlignment.Center
+                    },
                     languagePicker,
                     trumpStyleHeaderRow,
                     trumpPalettePicker,

@@ -10,6 +10,15 @@ public class RulesPage : ContentPage
     {
         Title = Localization.GetString("Rules");
 
+        var subtitleLabel = new Label
+        {
+            Text = "Wizard",
+            FontSize = 11,
+            TextColor = Colors.Gray,
+            HorizontalTextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 4, 0, 0)
+        };
+
         var label = new Label
         {
             Text = Localization.GetString("RulesIntro"),
@@ -46,7 +55,7 @@ public class RulesPage : ContentPage
             Content = new StackLayout
             {
                 Padding = 10,
-                Children = { label, webView, fallback, openRulesButton }
+                Children = { subtitleLabel, label, webView, fallback, openRulesButton }
             }
         };
     }
