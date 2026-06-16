@@ -152,7 +152,7 @@ public class ScoreBoardPage : ContentPage
             && !isPausedSession
             && currentSession!.CurrentRound < currentSession.MaxRounds;
 
-        startButton.IsEnabled = hasAvailableGroup && !hasSession;
+        startButton.IsEnabled = hasAvailableGroup && (!hasSession || isPausedSession);
         pauseButton.IsEnabled = isActiveSession;
         pauseButton.Text = isPausedSession
             ? Localization.GetString("ResumeGame")
