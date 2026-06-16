@@ -53,14 +53,44 @@ public class SavedGamesPage : ContentPage
             return;
         }
 
-        foreach (var session in savedGames)
+        var detailsLayouts = new List<VerticalStackLayout>();
+        var toggleLabels = new List<Label>();
+
+        void SetExpanded(int expandedIndex)
         {
+            for (var i = 0; i < detailsLayouts.Count; i++)
+            {
+                var isExpanded = i == expandedIndex;
+                detailsLayouts[i].IsVisible = isExpanded;
+                toggleLabels[i].Text = isExpanded ? "[-]" : "[+]";
+            }
+        }
+
+        for (var index = 0; index < savedGames.Count; index++)
+        {
+            var session = savedGames[index];
             var savedDate = session.StartDate.ToLocalTime().ToString("g");
             var header = new Label
             {
                 Text = $"{Localization.GetString("SavedOn")}: {savedDate}",
                 FontAttributes = FontAttributes.Bold,
                 FontSize = 14
+            };
+
+            var subHeader = new Label
+            {
+                Text = $"{Localization.GetString("Players")}: {session.Players.Count}",
+                FontSize = 12,
+                TextColor = Colors.Gray
+            };
+
+            var toggleLabel = new Label
+            {
+                Text = "[+]",
+                FontSize = 12,
+                VerticalTextAlignment = TextAlignment.Center,
+                HorizontalTextAlignment = TextAlignment.End,
+                WidthRequest = 36
             };
 
             var sessionScores = CalculateSessionScores(session);
@@ -87,6 +117,44 @@ public class SavedGamesPage : ContentPage
                 await Shell.Current.GoToAsync(nameof(ScoreBoardPage));
             };
 
+            var detailsLayout = new VerticalStackLayout
+            {
+                Spacing = 8,
+                IsVisible = false,
+                Children =
+                {
+                    playersLabel,
+                    openButton
+                }
+            };
+
+            var headerRow = new Grid
+            {
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = GridLength.Star },
+                    new ColumnDefinition { Width = GridLength.Auto }
+                }
+            };
+
+            var headerStack = new VerticalStackLayout
+            {
+                Spacing = 2,
+                Children = { header, subHeader }
+            };
+
+            headerRow.Add(headerStack, 0, 0);
+            headerRow.Add(toggleLabel, 1, 0);
+
+            var tap = new TapGestureRecognizer();
+            var capturedIndex = index;
+            tap.Tapped += (s, e) =>
+            {
+                var shouldExpand = !detailsLayouts[capturedIndex].IsVisible;
+                SetExpanded(shouldExpand ? capturedIndex : -1);
+            };
+            headerRow.GestureRecognizers.Add(tap);
+
             var card = new Border
             {
                 BackgroundColor = Color.FromArgb("#f8fbff"),
@@ -99,15 +167,19 @@ public class SavedGamesPage : ContentPage
                     Spacing = 8,
                     Children =
                     {
-                        header,
-                        playersLabel,
-                        openButton
+                        headerRow,
+                        detailsLayout
                     }
                 }
             };
 
+            detailsLayouts.Add(detailsLayout);
+            toggleLabels.Add(toggleLabel);
             listLayout.Children.Add(card);
         }
+
+        // Newest saved game (first item) is expanded by default.
+        SetExpanded(0);
     }
 
     private static Dictionary<Guid, int> CalculateSessionScores(ScoreSession session)
