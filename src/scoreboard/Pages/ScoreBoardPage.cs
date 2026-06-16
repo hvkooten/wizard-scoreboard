@@ -318,7 +318,7 @@ public class ScoreBoardPage : ContentPage
     {
         var lbl = new Label
         {
-            Text = isDealer ? $"★ {text}" : text,
+            Text = text,
             FontAttributes = FontAttributes.Bold,
             FontSize = isDealer ? 14 : 13,
             TextColor = isDealer ? Colors.Black : HeaderFg,
@@ -793,7 +793,7 @@ public class ScoreBoardPage : ContentPage
             var playerLabel = new Label
             {
                 Text = isDealer
-                    ? $"{player.Name} ★ {Localization.GetString("DealerLabel")}"
+                    ? $"{player.Name} ({Localization.GetString("DealerLabel")})"
                     : player.Name,
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
                 TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
@@ -959,7 +959,7 @@ public class ScoreBoardPage : ContentPage
             var playerLabel = new Label
             {
                 Text = isDealer
-                    ? $"{player.Name} ★ {Localization.GetString("DealerLabel")} (bod: {bid})"
+                    ? $"{player.Name} ({Localization.GetString("DealerLabel")}, bod: {bid})"
                     : $"{player.Name} (bod: {bid})",
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
                 TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
