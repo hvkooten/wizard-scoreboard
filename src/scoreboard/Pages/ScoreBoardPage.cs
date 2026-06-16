@@ -1577,5 +1577,7 @@ public class ScoreBoardPage : ContentPage
         await tcs.Task;
         if (Navigation.ModalStack.Contains(modal))
             await Navigation.PopModalAsync();
+
+        await Shell.Current.GoToAsync(nameof(HighscorePage));
     }
 }
