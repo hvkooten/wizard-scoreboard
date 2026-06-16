@@ -71,6 +71,7 @@ If PDF cannot render, use the link.</value></data>
   <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} players selected</value></data>
   <data name="SelectLanguage" xml:space="preserve"><value>Select Language</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Select players for this game</value></data>
+  <data name="SelectTrumpHint" xml:space="preserve"><value>Choose a trump suit to continue</value></data>
   <data name="Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Game Rules</value></data>
   <data name="Spades" xml:space="preserve"><value>Spades</value></data>

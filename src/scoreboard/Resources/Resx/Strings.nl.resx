@@ -52,6 +52,7 @@ Als de PDF niet laadt, gebruik de link.</value></data>
   <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} spelers geselecteerd</value></data>
   <data name="SelectLanguage" xml:space="preserve"><value>Selecteer taal</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Selecteer spelers voor dit spel</value></data>
+  <data name="SelectTrumpHint" xml:space="preserve"><value>Kies een troefkleur om door te gaan</value></data>
   <data name="Settings" xml:space="preserve"><value>Instellingen</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Spelregels tonen</value></data>
   <data name="Spades" xml:space="preserve"><value>Schoppen</value></data>

@@ -52,6 +52,7 @@ Si el PDF no se carga, usa el enlace.</value></data>
   <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} jugadores seleccionados</value></data>
   <data name="SelectLanguage" xml:space="preserve"><value>Seleccionar idioma</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Seleccionar jugadores para este juego</value></data>
+  <data name="SelectTrumpHint" xml:space="preserve"><value>Elige un palo para continuar</value></data>
   <data name="Settings" xml:space="preserve"><value>Configuración</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Mostrar reglas</value></data>
   <data name="Spades" xml:space="preserve"><value>Picas</value></data>

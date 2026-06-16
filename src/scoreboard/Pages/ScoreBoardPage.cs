@@ -754,6 +754,18 @@ public class ScoreBoardPage : ContentPage
         population.Children.Add(new Label { Text = Localization.GetString("Trump"), FontAttributes = FontAttributes.Bold });
         var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector();
         population.Children.Add(trumpSelectorView);
+       // Friendly hint label
+       var trumpHintLabel = new Label
+       {
+           Text = Localization.GetString("SelectTrumpHint"),
+           FontSize = 12,
+           TextColor = Colors.Gray,
+           HorizontalTextAlignment = TextAlignment.Center,
+           Margin = new Thickness(0, -6, 0, 8),
+           IsVisible = true
+       };
+       population.Children.Add(trumpHintLabel);
+
 
         // Dealer bid total warning (if rule is active and dealer is in round)
         var dealerWarningLabel = new Label
@@ -888,12 +900,15 @@ public class ScoreBoardPage : ContentPage
             // Trump must be selected.
             if (getTrumpIndex() < 0)
             {
+                   trumpHintLabel.IsVisible = true;
                 await DisplayAlertAsync(
-                    Localization.GetString("ErrorTitle"),
+                       Localization.GetString("InfoTitle"),
                     Localization.GetString("TrumpRequiredError"),
                     Localization.GetString("Ok"));
                 return;
             }
+
+               trumpHintLabel.IsVisible = false;
             // Validate all bids.
             foreach (var player in entryOrder)
             {
