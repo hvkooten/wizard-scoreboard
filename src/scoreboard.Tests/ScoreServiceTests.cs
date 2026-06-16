@@ -276,4 +276,42 @@ public class ScoreServiceTests
         Assert.Throws<InvalidOperationException>(() =>
             scoreService.StartRound(session, TrumpSuit.Hearts, bids));
     }
+
+    [Test]
+    public void SelectSavedGame_SetsCurrentSession()
+    {
+        var scoreService = new ScoreService();
+
+        var groupA = new Group
+        {
+            Name = "A",
+            Players = new List<Player>
+            {
+                new Player { Name = "A1", Order = 0 },
+                new Player { Name = "A2", Order = 1 },
+                new Player { Name = "A3", Order = 2 }
+            }
+        };
+        var groupB = new Group
+        {
+            Name = "B",
+            Players = new List<Player>
+            {
+                new Player { Name = "B1", Order = 0 },
+                new Player { Name = "B2", Order = 1 },
+                new Player { Name = "B3", Order = 2 }
+            }
+        };
+
+        var sessionA = scoreService.StartGame(groupA);
+        var sessionB = scoreService.StartGame(groupB);
+        scoreService.PauseGame(sessionA);
+        scoreService.PauseGame(sessionB);
+
+        scoreService.SelectSavedGame(sessionA.Id);
+        var current = scoreService.GetCurrentSession();
+
+        Assert.NotNull(current);
+        Assert.AreEqual(sessionA.Id, current!.Id);
+    }
 }

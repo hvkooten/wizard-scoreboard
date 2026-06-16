@@ -115,9 +115,7 @@ public class ScoreBoardPage : ContentPage
         // Ensure the last used group is automatically loaded
         if (currentSession == null)
         {
-            currentSession = scoreService.GetActiveSessions()
-                .OrderByDescending(s => s.StartDate)
-                .FirstOrDefault();
+            currentSession = scoreService.GetCurrentSession();
 
             if (currentSession != null)
             {

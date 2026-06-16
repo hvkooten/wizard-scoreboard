@@ -12,4 +12,7 @@ public interface IScoreService
     RoundEntry StartRound(ScoreSession session, TrumpSuit trump, Dictionary<Guid, int> bids);
     void FinishRound(ScoreSession session, Dictionary<Guid, int> actuals);
     IEnumerable<ScoreSession> GetActiveSessions();
+    IEnumerable<ScoreSession> GetSavedGames();
+    ScoreSession? GetCurrentSession();
+    void SelectSavedGame(Guid sessionId);
 }

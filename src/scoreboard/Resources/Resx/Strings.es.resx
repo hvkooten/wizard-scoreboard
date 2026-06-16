@@ -32,6 +32,7 @@
   <data name="NextRound" xml:space="preserve"><value>Siguiente ronda</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Abrir reglas en el navegador</value></data>
+  <data name="OpenGame" xml:space="preserve"><value>Abrir juego</value></data>
   <data name="PlayerCount" xml:space="preserve"><value>Número de jugadores</value></data>
   <data name="PauseGame" xml:space="preserve"><value>Pausar</value></data>
   <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>El nombre del jugador {0} es obligatorio.</value></data>
@@ -50,8 +51,11 @@
 https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="RulesIntro" xml:space="preserve"><value>Las reglas de Wizard están disponibles abajo.
 Si el PDF no se carga, usa el enlace.</value></data>
+  <data name="SavedGames" xml:space="preserve"><value>Partidas guardadas</value></data>
+  <data name="SavedOn" xml:space="preserve"><value>Guardado el</value></data>
   <data name="ScoreStatusTemplate" xml:space="preserve"><value>Juego: ronda {0}/{1}, repartidor {2}</value></data>
   <data name="Scoreboard" xml:space="preserve"><value>Marcador</value></data>
+  <data name="NoSavedGames" xml:space="preserve"><value>No hay partidas guardadas.</value></data>
   <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} jugadores seleccionados</value></data>
   <data name="SelectLanguage" xml:space="preserve"><value>Seleccionar idioma</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Seleccionar jugadores para este juego</value></data>

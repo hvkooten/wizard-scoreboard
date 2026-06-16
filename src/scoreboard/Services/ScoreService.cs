@@ -8,6 +8,7 @@ public class ScoreService : IScoreService
 {
     private const string PausedSessionsStorageKey = "paused_sessions_storage_v1";
     private readonly List<ScoreSession> sessions = new();
+    private Guid? selectedSessionId;
 
     public ScoreService()
     {
@@ -48,6 +49,7 @@ public class ScoreService : IScoreService
         };
 
         sessions.Add(session);
+        selectedSessionId = session.Id;
         SavePausedSessions();
         return session;
     }
@@ -87,6 +89,10 @@ public class ScoreService : IScoreService
 
         session.IsPaused = false;
         session.IsActive = false;
+        if (selectedSessionId == session.Id)
+        {
+            selectedSessionId = null;
+        }
         SavePausedSessions();
     }
 
@@ -159,6 +165,46 @@ public class ScoreService : IScoreService
 
     public IEnumerable<ScoreSession> GetActiveSessions() => sessions.Where(s => s.IsActive);
 
+    public IEnumerable<ScoreSession> GetSavedGames()
+    {
+        return sessions
+            .Where(s => s.IsActive && s.IsPaused)
+            .OrderByDescending(s => s.StartDate);
+    }
+
+    public ScoreSession? GetCurrentSession()
+    {
+        if (selectedSessionId.HasValue)
+        {
+            var selected = sessions.FirstOrDefault(s => s.Id == selectedSessionId.Value && s.IsActive);
+            if (selected != null)
+            {
+                return selected;
+            }
+        }
+
+        var latest = sessions
+            .Where(s => s.IsActive)
+            .OrderByDescending(s => s.StartDate)
+            .FirstOrDefault();
+
+        if (latest != null)
+        {
+            selectedSessionId = latest.Id;
+        }
+
+        return latest;
+    }
+
+    public void SelectSavedGame(Guid sessionId)
+    {
+        var found = sessions.FirstOrDefault(s => s.Id == sessionId && s.IsActive && s.IsPaused);
+        if (found != null)
+        {
+            selectedSessionId = found.Id;
+        }
+    }
+
     private void LoadPausedSessions()
     {
         string raw;
@@ -183,10 +229,15 @@ public class ScoreService : IScoreService
 
             sessions.Clear();
             sessions.AddRange(saved.Where(s => s.IsActive && s.IsPaused));
+            selectedSessionId = sessions
+                .OrderByDescending(s => s.StartDate)
+                .Select(s => (Guid?)s.Id)
+                .FirstOrDefault();
         }
         catch (JsonException)
         {
             sessions.Clear();
+            selectedSessionId = null;
         }
     }
 

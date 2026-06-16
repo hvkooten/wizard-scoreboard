@@ -32,6 +32,7 @@
   <data name="NextRound" xml:space="preserve"><value>Volgende ronde</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Open regels in browser</value></data>
+  <data name="OpenGame" xml:space="preserve"><value>Open spel</value></data>
    <data name="PauseGame" xml:space="preserve"><value>Pauze</value></data>
   <data name="PlayerCount" xml:space="preserve"><value>Aantal spelers</value></data>
   <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Naam voor speler {0} is verplicht.</value></data>
@@ -50,8 +51,11 @@
 https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="RulesIntro" xml:space="preserve"><value>De Wizard spelregels staan hieronder.
 Als de PDF niet laadt, gebruik de link.</value></data>
+  <data name="SavedGames" xml:space="preserve"><value>Opgeslagen spellen</value></data>
+  <data name="SavedOn" xml:space="preserve"><value>Opgeslagen op</value></data>
   <data name="ScoreStatusTemplate" xml:space="preserve"><value>Spel: ronde {0}/{1}, deler {2}</value></data>
   <data name="Scoreboard" xml:space="preserve"><value>Scoreblok</value></data>
+  <data name="NoSavedGames" xml:space="preserve"><value>Geen opgeslagen spellen.</value></data>
   <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} spelers geselecteerd</value></data>
   <data name="SelectLanguage" xml:space="preserve"><value>Selecteer taal</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Selecteer spelers voor dit spel</value></data>

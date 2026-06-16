@@ -31,6 +31,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<RulesPage>();
         builder.Services.AddTransient<HighscorePage>();
+        builder.Services.AddTransient<SavedGamesPage>();
         builder.Services.AddTransient<ScoreBoardPage>();
         builder.Services.AddTransient<AppShell>();
 
