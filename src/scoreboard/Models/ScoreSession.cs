@@ -28,6 +28,7 @@ public class ScoreSession
     public TrumpSuit Trump { get; set; } = TrumpSuit.None;
     public List<RoundEntry> Rounds { get; set; } = new();
     public bool IsActive { get; set; }
+    public bool IsPaused { get; set; }
     public Guid CurrentDealer => Players.Count == 0 ? Guid.Empty : Players[CurrentRound % Players.Count].Id;
     public List<Player> Players { get; set; } = new();
     public int BidTotalRuleStartRound { get; set; } = 1;  // Starting round for total bids rule

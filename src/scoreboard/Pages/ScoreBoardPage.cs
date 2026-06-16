@@ -19,6 +19,7 @@ public class ScoreBoardPage : ContentPage
     private Grid headerGrid;
     private Grid footerGrid;
     private Button startButton;
+    private Button pauseButton;
     private Button endButton;
     private Button nextRoundButton;
     private ScrollView scoreboardScrollView;
@@ -55,17 +56,19 @@ public class ScoreBoardPage : ContentPage
         footerGrid = new Grid();
 
         startButton     = new Button { Text = Localization.GetString("StartGame") };
+        pauseButton     = new Button { Text = Localization.GetString("PauseGame") };
         endButton       = new Button { Text = Localization.GetString("EndGame") };
         nextRoundButton = new Button { Text = Localization.GetString("NextRound") };
 
         startButton.Clicked     += async (s, e) => await StartGameAsync();
+        pauseButton.Clicked     += async (s, e) => await TogglePauseAsync();
         endButton.Clicked       += async (s, e) => await EndGameAsync();
         nextRoundButton.Clicked += async (s, e) => await StartNextRoundAsync();
 
         var buttonRow = new HorizontalStackLayout
         {
             Spacing = 8,
-            Children = { startButton, nextRoundButton, endButton }
+            Children = { startButton, pauseButton, nextRoundButton, endButton }
         };
 
         scoreboardScrollView = new ScrollView 
@@ -137,9 +140,16 @@ public class ScoreBoardPage : ContentPage
         var hasAvailableGroup = groupService.GetSelectedGroup() != null || groupService.GetGroups().Any();
         var hasSession = currentSession != null;
         var isActiveSession = currentSession?.IsActive == true;
-        var hasRoundsRemaining = isActiveSession && currentSession!.CurrentRound < currentSession.MaxRounds;
+        var isPausedSession = currentSession?.IsPaused == true;
+        var hasRoundsRemaining = isActiveSession
+            && !isPausedSession
+            && currentSession!.CurrentRound < currentSession.MaxRounds;
 
-        startButton.IsEnabled = hasAvailableGroup && !isActiveSession;
+        startButton.IsEnabled = hasAvailableGroup && !hasSession;
+        pauseButton.IsEnabled = isActiveSession;
+        pauseButton.Text = isPausedSession
+            ? Localization.GetString("ResumeGame")
+            : Localization.GetString("PauseGame");
         nextRoundButton.IsEnabled = hasRoundsRemaining;
         endButton.IsEnabled = hasSession;
 
@@ -199,6 +209,10 @@ public class ScoreBoardPage : ContentPage
             displayRound,
             currentSession.MaxRounds,
             dealer.Name);
+        if (currentSession.IsPaused)
+        {
+            statusLabel.Text = $"{statusLabel.Text} ({Localization.GetString("GamePausedStatus")})";
+        }
 
         BackgroundColor = GetTrumpColor(currentSession.Trump);
 
@@ -718,6 +732,12 @@ public class ScoreBoardPage : ContentPage
             return;
         }
 
+        if (currentSession.IsPaused)
+        {
+            await DisplayAlertAsync(Localization.GetString("InfoTitle"), Localization.GetString("GamePausedStatus"), Localization.GetString("Ok"));
+            return;
+        }
+
         if (currentSession.CurrentRound >= currentSession.MaxRounds)
         {
             await DisplayAlertAsync(Localization.GetString("InfoTitle"), Localization.GetString("GameAlreadyCompleted"), Localization.GetString("Ok"));
@@ -726,6 +746,30 @@ public class ScoreBoardPage : ContentPage
 
         await DisplayRoundPopupAsync();
         RefreshUI();
+    }
+
+    private async Task TogglePauseAsync()
+    {
+        if (currentSession == null || !currentSession.IsActive)
+            return;
+
+        try
+        {
+            if (currentSession.IsPaused)
+            {
+                scoreService.ResumeGame(currentSession);
+            }
+            else
+            {
+                scoreService.PauseGame(currentSession);
+            }
+
+            RefreshUI();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlertAsync(Localization.GetString("ErrorTitle"), ex.Message, Localization.GetString("Ok"));
+        }
     }
 
     private async Task DisplayRoundPopupAsync()

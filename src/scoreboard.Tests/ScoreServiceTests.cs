@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -230,5 +231,49 @@ public class ScoreServiceTests
         scoreService.EndGame(session);
 
         Assert.IsTrue(session.Players.All(p => p.Wins == 0));
+    }
+
+    [Test]
+    public void PauseAndResume_TogglePausedState_ForActiveSession()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "PauseGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        scoreService.PauseGame(session);
+        Assert.IsTrue(session.IsPaused);
+
+        scoreService.ResumeGame(session);
+        Assert.IsFalse(session.IsPaused);
+    }
+
+    [Test]
+    public void StartRound_WhilePaused_ThrowsInvalidOperationException()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "PausedRoundGroup", Players = players };
+        var session = scoreService.StartGame(group);
+        var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
+
+        scoreService.PauseGame(session);
+
+        Assert.Throws<InvalidOperationException>(() =>
+            scoreService.StartRound(session, TrumpSuit.Hearts, bids));
     }
 }

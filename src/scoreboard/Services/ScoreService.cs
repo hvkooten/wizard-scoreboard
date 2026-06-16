@@ -43,6 +43,22 @@ public class ScoreService : IScoreService
         return session;
     }
 
+    public void PauseGame(ScoreSession session)
+    {
+        if (!session.IsActive)
+            throw new InvalidOperationException("Spelsessie is niet actief.");
+
+        session.IsPaused = true;
+    }
+
+    public void ResumeGame(ScoreSession session)
+    {
+        if (!session.IsActive)
+            throw new InvalidOperationException("Spelsessie is niet actief.");
+
+        session.IsPaused = false;
+    }
+
     public void EndGame(ScoreSession session)
     {
         if (!session.IsActive)
@@ -58,6 +74,7 @@ public class ScoreService : IScoreService
             }
         }
 
+        session.IsPaused = false;
         session.IsActive = false;
     }
 
@@ -65,6 +82,9 @@ public class ScoreService : IScoreService
     {
         if (!session.IsActive)
             throw new InvalidOperationException("Spelsessie is niet actief.");
+
+        if (session.IsPaused)
+            throw new InvalidOperationException("Spelsessie is gepauzeerd.");
 
         if (session.CurrentRound >= session.MaxRounds)
             throw new InvalidOperationException("Geen rondes meer beschikbaar.");

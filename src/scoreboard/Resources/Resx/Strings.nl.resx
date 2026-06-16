@@ -18,6 +18,7 @@
   <data name="GameAlreadyCompleted" xml:space="preserve"><value>Spel is al afgerond.</value></data>
   <data name="GameFinishedTitle" xml:space="preserve"><value>Spel afgelopen!</value></data>
   <data name="Green" xml:space="preserve"><value>Groen</value></data>
+   <data name="GamePausedStatus" xml:space="preserve"><value>Gepauzeerd</value></data>
   <data name="GroupCreated" xml:space="preserve"><value>Groep aangemaakt</value></data>
   <data name="GroupNameRequired" xml:space="preserve"><value>Groepsnaam is verplicht.</value></data>
   <data name="GroupUpdated" xml:space="preserve"><value>Groep bijgewerkt</value></data>
@@ -31,6 +32,7 @@
   <data name="NextRound" xml:space="preserve"><value>Volgende ronde</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Open regels in browser</value></data>
+   <data name="PauseGame" xml:space="preserve"><value>Pauze</value></data>
   <data name="PlayerCount" xml:space="preserve"><value>Aantal spelers</value></data>
   <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Naam voor speler {0} is verplicht.</value></data>
   <data name="PlayerPlaceholder" xml:space="preserve"><value>Speler {0}</value></data>
@@ -42,6 +44,7 @@
   <data name="RoundHeader" xml:space="preserve"><value>Rnd</value></data>
   <data name="Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
   <data name="Red" xml:space="preserve"><value>Rood</value></data>
+   <data name="ResumeGame" xml:space="preserve"><value>Hervatten</value></data>
   <data name="Rules" xml:space="preserve"><value>Spelregels</value></data>
   <data name="RulesFallback" xml:space="preserve"><value>Als de PDF niet laadt, bekijk de regels hier:
 https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>

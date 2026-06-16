@@ -36,6 +36,7 @@
   <data name="ErrorTitle" xml:space="preserve"><value>Error</value></data>
   <data name="GameAlreadyCompleted" xml:space="preserve"><value>Game already completed.</value></data>
   <data name="GameFinishedTitle" xml:space="preserve"><value>Game finished!</value></data>
+  <data name="GamePausedStatus" xml:space="preserve"><value>Paused</value></data>
   <data name="Green" xml:space="preserve"><value>Green</value></data>
   <data name="GroupCreated" xml:space="preserve"><value>Group created</value></data>
   <data name="GroupNameRequired" xml:space="preserve"><value>Group name is required.</value></data>
@@ -50,6 +51,7 @@
   <data name="NextRound" xml:space="preserve"><value>Next Round</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Open rules in browser</value></data>
+  <data name="PauseGame" xml:space="preserve"><value>Pause</value></data>
   <data name="PlayerCount" xml:space="preserve"><value>Number of players</value></data>
   <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Name for player {0} is required.</value></data>
   <data name="PlayerPlaceholder" xml:space="preserve"><value>Player {0}</value></data>
@@ -61,6 +63,7 @@
   <data name="RoundHeader" xml:space="preserve"><value>Rnd</value></data>
   <data name="Refresh" xml:space="preserve"><value>Refresh</value></data>
   <data name="Red" xml:space="preserve"><value>Red</value></data>
+  <data name="ResumeGame" xml:space="preserve"><value>Resume</value></data>
   <data name="Rules" xml:space="preserve"><value>Rules</value></data>
   <data name="RulesFallback" xml:space="preserve"><value>If PDF does not load, please check the rules at:
 https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>

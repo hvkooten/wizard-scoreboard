@@ -18,6 +18,7 @@
   <data name="GameAlreadyCompleted" xml:space="preserve"><value>El juego ya está completado.</value></data>
   <data name="GameFinishedTitle" xml:space="preserve"><value>¡Juego terminado!</value></data>
   <data name="Green" xml:space="preserve"><value>Verde</value></data>
+  <data name="GamePausedStatus" xml:space="preserve"><value>Pausado</value></data>
   <data name="GroupCreated" xml:space="preserve"><value>Grupo creado</value></data>
   <data name="GroupNameRequired" xml:space="preserve"><value>El nombre del grupo es obligatorio.</value></data>
   <data name="GroupUpdated" xml:space="preserve"><value>Grupo actualizado</value></data>
@@ -32,6 +33,7 @@
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Abrir reglas en el navegador</value></data>
   <data name="PlayerCount" xml:space="preserve"><value>Número de jugadores</value></data>
+  <data name="PauseGame" xml:space="preserve"><value>Pausar</value></data>
   <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>El nombre del jugador {0} es obligatorio.</value></data>
   <data name="PlayerPlaceholder" xml:space="preserve"><value>Jugador {0}</value></data>
   <data name="PlayerScoreTemplate" xml:space="preserve"><value>{0}. {1}: {2} pts, victorias {3}</value></data>
@@ -43,6 +45,7 @@
   <data name="Refresh" xml:space="preserve"><value>Actualizar</value></data>
   <data name="Red" xml:space="preserve"><value>Rojo</value></data>
   <data name="Rules" xml:space="preserve"><value>Reglas</value></data>
+  <data name="ResumeGame" xml:space="preserve"><value>Reanudar</value></data>
   <data name="RulesFallback" xml:space="preserve"><value>Si el PDF no se carga, consulta las reglas en:
 https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>
   <data name="RulesIntro" xml:space="preserve"><value>Las reglas de Wizard están disponibles abajo.
