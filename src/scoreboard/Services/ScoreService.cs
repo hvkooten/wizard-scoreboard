@@ -34,16 +34,31 @@ public class ScoreService : IScoreService
         if (players.Count < 3 || players.Count > 6)
             throw new ArgumentException("Aantal spelers moet tussen 3 en 6 liggen.");
 
+        // Start each game with a clean per-game score, while preserving long-term stats.
+        var sessionPlayers = players
+            .OrderBy(p => p.Order)
+            .Select(p => new Player
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Wins = p.Wins,
+                GamesPlayed = p.GamesPlayed,
+                HighestScore = p.HighestScore,
+                Order = p.Order,
+                CurrentPoints = 0
+            })
+            .ToList();
+
         // Use group-specific setting; fallback to player count for migrated groups.
         var bidTotalRuleStartRound = group.BidTotalRuleStartRound is >= 0 and <= 13
             ? group.BidTotalRuleStartRound
-            : players.Count;
+            : sessionPlayers.Count;
 
         var session = new ScoreSession
         {
             GroupId = group.Id,
-            Players = players.ToList(),
-            MaxRounds = GetMaxRounds(players.Count),
+            Players = sessionPlayers,
+            MaxRounds = GetMaxRounds(sessionPlayers.Count),
             IsActive = true,
             BidTotalRuleStartRound = bidTotalRuleStartRound
         };
