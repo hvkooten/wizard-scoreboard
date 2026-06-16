@@ -28,9 +28,9 @@ jobs:
             ~/.dotnet/packs
             ~/.dotnet/sdk-manifests
             ~/.dotnet/workloadmetadata
-          key: ${{ runner.os }}-dotnet10-maui-${{ hashFiles('**/*.csproj', '**/global.json', '.github/workflows/*.yml') }}
+          key: ${{ runner.os }}-dotnet10-maui-v1-${{ hashFiles('global.json') }}
           restore-keys: |
-            ${{ runner.os }}-dotnet10-maui-
+            ${{ runner.os }}-dotnet10-maui-v1-
 
       - name: Install MAUI workload
         run: dotnet workload install maui --skip-manifest-update
