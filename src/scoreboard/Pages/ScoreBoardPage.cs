@@ -337,24 +337,31 @@ public class ScoreBoardPage : ContentPage
         }
 
         // Auto-scroll to center the latest played round only when content overflows.
+        var sessionForScroll = currentSession;
         MainThread.BeginInvokeOnMainThread(async () =>
         {
             await Task.Delay(100);
+
+            if (sessionForScroll == null || !sessionForScroll.IsActive)
+            {
+                return;
+            }
+
             var viewportHeight = scoreboardScrollView.Height;
 
-            if (viewportHeight <= 0 || currentSession.CurrentRound <= 0)
+            if (viewportHeight <= 0 || sessionForScroll.CurrentRound <= 0)
             {
                 return;
             }
 
             const double roundHeight = 50; // 22 + 28
-            var contentHeight = currentSession.MaxRounds * roundHeight;
+            var contentHeight = sessionForScroll.MaxRounds * roundHeight;
             if (contentHeight <= viewportHeight)
             {
                 return;
             }
 
-            var lastPlayedRound = currentSession.CurrentRound;
+            var lastPlayedRound = sessionForScroll.CurrentRound;
             var roundCenterY = ((lastPlayedRound - 1) * roundHeight) + (roundHeight / 2);
             var desiredY = roundCenterY - (viewportHeight / 2);
             var maxScrollY = Math.Max(0, contentHeight - viewportHeight);
