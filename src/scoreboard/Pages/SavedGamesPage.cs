@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using Microsoft.Maui.Controls;
+using WizardScoreboard.Models;
 using WizardScoreboard.Resources;
 using WizardScoreboard.Services;
 
@@ -61,9 +63,11 @@ public class SavedGamesPage : ContentPage
                 FontSize = 14
             };
 
+            var sessionScores = CalculateSessionScores(session);
+
             var playersText = string.Join("\n", session.Players
                 .OrderBy(p => p.Order)
-                .Select(p => $"{p.Name}: {p.CurrentPoints}"));
+                .Select(p => $"{p.Name}: {sessionScores.GetValueOrDefault(p.Id, 0)}"));
 
             var playersLabel = new Label
             {
@@ -104,5 +108,31 @@ public class SavedGamesPage : ContentPage
 
             listLayout.Children.Add(card);
         }
+    }
+
+    private static Dictionary<Guid, int> CalculateSessionScores(ScoreSession session)
+    {
+        var totals = session.Players.ToDictionary(p => p.Id, _ => 0);
+
+        foreach (var round in session.Rounds.OrderBy(r => r.RoundNumber))
+        {
+            foreach (var player in session.Players)
+            {
+                var bid = round.BidByPlayer.GetValueOrDefault(player.Id, -1);
+                var actual = round.ActualByPlayer.GetValueOrDefault(player.Id, -1);
+
+                if (actual < 0)
+                {
+                    continue;
+                }
+
+                var delta = bid == actual
+                    ? 2 + actual
+                    : -Math.Abs(bid - actual);
+                totals[player.Id] += delta;
+            }
+        }
+
+        return totals;
     }
 }
