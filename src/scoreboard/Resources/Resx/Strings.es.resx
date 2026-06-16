@@ -38,6 +38,7 @@
   <data name="PlayersLabel" xml:space="preserve"><value>Jugadores:</value></data>
   <data name="PredictionRangeError" xml:space="preserve"><value>La predicción debe estar dentro del rango.</value></data>
   <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Bazas previstas (0..ronda)</value></data>
+  <data name="RoundHeader" xml:space="preserve"><value>Rda</value></data>
   <data name="Refresh" xml:space="preserve"><value>Actualizar</value></data>
   <data name="Red" xml:space="preserve"><value>Rojo</value></data>
   <data name="Rules" xml:space="preserve"><value>Reglas</value></data>

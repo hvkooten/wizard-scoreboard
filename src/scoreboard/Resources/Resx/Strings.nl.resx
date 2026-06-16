@@ -38,6 +38,7 @@
   <data name="PlayersLabel" xml:space="preserve"><value>Spelers:</value></data>
   <data name="PredictionRangeError" xml:space="preserve"><value>Voorspelling moet binnen bereik liggen.</value></data>
   <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Verwachte slagen (0..ronde)</value></data>
+  <data name="RoundHeader" xml:space="preserve"><value>Rnd</value></data>
   <data name="Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
   <data name="Red" xml:space="preserve"><value>Rood</value></data>
   <data name="Rules" xml:space="preserve"><value>Spelregels</value></data>

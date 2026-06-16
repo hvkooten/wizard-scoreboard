@@ -38,6 +38,7 @@
   <data name="PlayersLabel" xml:space="preserve"><value>Spieler:</value></data>
   <data name="PredictionRangeError" xml:space="preserve"><value>Vorhersage muss im gültigen Bereich liegen.</value></data>
   <data name="PredictedTricksPlaceholder" xml:space="preserve"><value>Vorhergesagte Stiche (0..Runde)</value></data>
+  <data name="RoundHeader" xml:space="preserve"><value>Rnd</value></data>
   <data name="Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
   <data name="Red" xml:space="preserve"><value>Rot</value></data>
   <data name="Rules" xml:space="preserve"><value>Spielregeln</value></data>
