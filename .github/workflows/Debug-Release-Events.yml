@@ -1,0 +1,14 @@
+name: Debug Release Events
+on:
+  release:
+    types: [created, deleted, unpublished, edited, prereleased, released]
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump event payload
+        run: |
+          echo "Action: ${{ github.event.action }}"
+          echo "Tag: ${{ github.event.release.tag_name }}"
+          echo "Event: ${{ github.event_name }}"
