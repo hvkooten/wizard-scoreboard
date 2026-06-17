@@ -1,0 +1,48 @@
+name: Delete Release Entry
+
+on:
+  release:
+    types: [deleted]
+
+jobs:
+  update-version-overview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Remove release from VERSION_OVERVIEW.md
+        run: |
+          release_tag="${{ github.event.release.tag_name }}"
+          release_version="${release_tag#v}"
+          
+          # Remove the release entry from VERSION_OVERVIEW.md
+          if grep -q "| \[$release_version\]" VERSION_OVERVIEW.md; then
+            # Use awk to remove the line containing the release
+            awk -v version="$release_version" '!/\| \['"$version"'\]/ { print }' VERSION_OVERVIEW.md > VERSION_OVERVIEW.md.tmp
+            mv VERSION_OVERVIEW.md.tmp VERSION_OVERVIEW.md
+            echo "Removed release entry: $release_version"
+          else
+            echo "Release entry not found: $release_version"
+          fi
+
+      - name: Commit and push changes
+        run: |
+          if git diff --quiet VERSION_OVERVIEW.md; then
+            echo "No changes to VERSION_OVERVIEW.md"
+          else
+            git add VERSION_OVERVIEW.md
+            git commit -m "Remove release ${{ github.event.release.tag_name }} from VERSION_OVERVIEW.md"
+            git push
+            echo "Successfully updated VERSION_OVERVIEW.md"
+          fi
