@@ -107,6 +107,14 @@ jobs:
       - name: Restore app
         run: dotnet restore src/scoreboard/WizardScoreboard.csproj -m
 
+      - name: Decode and prepare release keystore
+        shell: pwsh
+        run: |
+          $keystoreBase64 = "${{ secrets.ANDROID_KEYSTORE_BASE64 }}"
+          $keystorePath = "$env:RUNNER_TEMP\release.jks"
+          [IO.File]::WriteAllBytes($keystorePath, [Convert]::FromBase64String($keystoreBase64))
+          "KEYSTORE_PATH=$keystorePath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
       - name: Publish Android APK
         shell: pwsh
         run: |
@@ -116,6 +124,11 @@ jobs:
             -p:AndroidPackageFormats=apk `
             -p:ApplicationDisplayVersion=${{ steps.version.outputs.display_version }} `
             -p:ApplicationVersion=${{ steps.version.outputs.version_code }} `
+            -p:AndroidKeyStore=true `
+            -p:AndroidSigningKeyStore="$env:KEYSTORE_PATH" `
+            -p:AndroidSigningKeyAlias="${{ secrets.ANDROID_KEY_ALIAS }}" `
+            -p:AndroidSigningKeyPass="${{ secrets.ANDROID_KEY_PASSWORD }}" `
+            -p:AndroidSigningStorePass="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" `
             -p:ParallelBuildCount=4 `
             -p:EmbedDebugSymbols=false `
             -p:TrimMode=link `

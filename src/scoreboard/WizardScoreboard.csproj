@@ -6,6 +6,7 @@
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     <ApplicationTitle>WizardScoreboard</ApplicationTitle>
     <ApplicationDisplayVersion>1.2.1</ApplicationDisplayVersion>
     <ApplicationVersion>10201</ApplicationVersion>
