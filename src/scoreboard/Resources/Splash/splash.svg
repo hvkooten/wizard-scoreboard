@@ -12,5 +12,5 @@
     <rect x="108" y="238" width="90" height="30" rx="6" fill="#176087"/>
   </g>
   <text x="256" y="420" text-anchor="middle" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="700">Wizard Scoreboard</text>
-  <text id="splash-version" x="256" y="458" text-anchor="middle" fill="#d9ecff" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">v1.2.2</text>
+  <text id="splash-version" x="256" y="458" text-anchor="middle" fill="#d9ecff" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">v1.2.3</text>
 </svg>
