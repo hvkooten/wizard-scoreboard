@@ -117,6 +117,9 @@ jobs:
 
       - name: Publish Android APK
         shell: pwsh
+        env:
+          JAVA_OPTS: "-Xmx4g"
+          _JAVA_OPTIONS: "-Xmx4g"
         run: |
           dotnet publish src/scoreboard/WizardScoreboard.csproj `
             -f net10.0-android `
@@ -129,9 +132,9 @@ jobs:
             -p:AndroidSigningKeyAlias="${{ secrets.ANDROID_KEY_ALIAS }}" `
             -p:AndroidSigningKeyPass="${{ secrets.ANDROID_KEY_PASSWORD }}" `
             -p:AndroidSigningStorePass="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" `
-            -p:ParallelBuildCount=4 `
+            -p:ParallelBuildCount=2 `
             -p:EmbedDebugSymbols=false `
-            -p:TrimMode=link `
+            -p:TrimMode=partial `
             --no-restore
 
       - name: Collect APK artifact
