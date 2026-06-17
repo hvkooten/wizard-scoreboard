@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Tag to (re)release (leave empty to use DEFAULT_RELEASE_TAG repo variable)"
+        description: "Tag to (re)release, e.g. v2.0.0  or leave empty to use latest existing v*.*.* tag"
         required: false
         type: string
 
@@ -24,22 +24,37 @@ jobs:
       - name: Resolve release tag
         id: release_tag
         shell: pwsh
-        env:
-          DEFAULT_TAG: ${{ vars.DEFAULT_RELEASE_TAG }}
         run: |
           if ("${{ github.event_name }}" -eq "workflow_dispatch") {
             $tag = "${{ inputs.release_tag }}"
-            # If input is empty, use repo variable as fallback
+
+            # If input is empty, resolve to latest semantic version tag from origin.
             if ([string]::IsNullOrWhiteSpace($tag)) {
-              $tag = $env:DEFAULT_TAG
-              Write-Host "Using DEFAULT_RELEASE_TAG from repo variables: $tag"
+              $tagRefs = git ls-remote --tags --refs origin "v*.*.*"
+              $semverTags = @()
+
+              foreach ($line in $tagRefs) {
+                if ($line -match "refs/tags/(v\d+\.\d+\.\d+)$") {
+                  $semverTags += $Matches[1]
+                }
+              }
+
+              if ($semverTags.Count -eq 0) {
+                throw "No matching tags found in origin (expected vmajor.minor.patch)."
+              }
+
+              $tag = $semverTags |
+                Sort-Object { [version]($_.TrimStart('v')) } |
+                Select-Object -Last 1
+
+              Write-Host "Using latest existing tag from origin: $tag"
             }
           } else {
             $tag = "${{ github.ref_name }}"
           }
 
           if ([string]::IsNullOrWhiteSpace($tag)) {
-            throw "Release tag is empty. Set DEFAULT_RELEASE_TAG in repo variables or provide release_tag input."
+            throw "Release tag is empty. Please provide release_tag input."
           }
 
           if ($tag -notmatch '^v\d+\.\d+\.\d+$') {
