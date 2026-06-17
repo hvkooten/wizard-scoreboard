@@ -470,6 +470,21 @@ public class SettingsPage : ContentPage
                     : previous
             };
 
+            entry.Focused += (s, e) =>
+            {
+                if (s is not Entry focusedEntry)
+                {
+                    return;
+                }
+
+                focusedEntry.Dispatcher.Dispatch(() =>
+                {
+                    var textLength = focusedEntry.Text?.Length ?? 0;
+                    focusedEntry.CursorPosition = 0;
+                    focusedEntry.SelectionLength = textLength;
+                });
+            };
+
             var rowIndex = i;
 
             var upButton = new Button
