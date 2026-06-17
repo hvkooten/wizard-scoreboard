@@ -2,7 +2,7 @@ name: Delete Release Entry
 
 on:
   release:
-    types: [unpublished]
+    types: [deleted, unpublished]
 
 jobs:
   update-version-overview:
