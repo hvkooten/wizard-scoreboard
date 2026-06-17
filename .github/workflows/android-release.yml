@@ -171,6 +171,8 @@ jobs:
             -p:AndroidPackageFormats=apk `
             -p:ApplicationDisplayVersion=${{ steps.version.outputs.display_version }} `
             -p:ApplicationVersion=${{ steps.version.outputs.version_code }} `
+            -p:AndroidEnableProfiledAot=false `
+            -p:RunAOTCompilation=false `
             -p:AndroidKeyStore=true `
             -p:AndroidSigningKeyStore="$env:KEYSTORE_PATH" `
             -p:AndroidSigningKeyAlias="${{ secrets.ANDROID_KEY_ALIAS }}" `
