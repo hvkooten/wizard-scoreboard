@@ -175,11 +175,50 @@ jobs:
       - name: Checkout default branch
         uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.repository.default_branch }}
+          ref: refs/heads/${{ github.event.repository.default_branch }}
 
       - name: Update version source and overview page
         shell: bash
         run: |
+          set -euo pipefail
+
+          upsert_version_overview() {
+            local tag="$1"
+            local date="$2"
+            local entry="- [v${tag}](https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${tag}) - [Download APK](https://github.com/${GITHUB_REPOSITORY}/releases/download/v${tag}/wizard-scoreboard-android.apk) (${date})"
+
+            if grep -Fq "releases/tag/v${tag}" VERSION_OVERVIEW.md; then
+              echo "Release v${tag} is already listed in VERSION_OVERVIEW.md"
+              return
+            fi
+
+            local tmp_file
+            tmp_file="$(mktemp)"
+            awk -v entry="$entry" '
+              BEGIN { inserted=0 }
+              {
+                if ($0 == "- No releases yet.") {
+                  next
+                }
+                print
+                if (!inserted && $0 == "## Released Versions") {
+                  print ""
+                  print entry
+                  inserted=1
+                }
+              }
+              END {
+                if (!inserted) {
+                  print ""
+                  print "## Released Versions"
+                  print ""
+                  print entry
+                }
+              }
+            ' VERSION_OVERVIEW.md > "$tmp_file"
+            mv "$tmp_file" VERSION_OVERVIEW.md
+          }
+
           if [ "$GITHUB_EVENT_NAME" = "push" ]; then
             TAG="${GITHUB_REF_NAME#v}"
             DATE="$(date -u +%Y-%m-%d)"
@@ -192,17 +231,7 @@ jobs:
             # Keep workflow_dispatch default aligned with the latest released tag.
             sed -i -E "s#default: \"v[0-9]+\.[0-9]+\.[0-9]+\"#default: \"v${TAG}\"#" .github/workflows/android-release.yml
 
-            ENTRY="- [v${TAG}](https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${TAG}) - [Download APK](https://github.com/${GITHUB_REPOSITORY}/releases/download/v${TAG}/wizard-scoreboard-android.apk) (${DATE})"
-
-            if ! grep -Fq "releases/tag/v${TAG}" VERSION_OVERVIEW.md; then
-              TMP_FILE="$(mktemp)"
-              {
-                head -n 5 VERSION_OVERVIEW.md
-                echo "$ENTRY"
-                tail -n +6 VERSION_OVERVIEW.md
-              } > "$TMP_FILE"
-              mv "$TMP_FILE" VERSION_OVERVIEW.md
-            fi
+            upsert_version_overview "$TAG" "$DATE"
           else
             TAG="${{ inputs.release_tag }}"
             TAG="${TAG#v}"
@@ -215,21 +244,16 @@ jobs:
 
             if [ "$TAG" != "$CURRENT_DEFAULT" ] && printf '%s\n%s\n' "$CURRENT_DEFAULT" "$TAG" | sort -V -C; then
               sed -i -E "s#default: \"v[0-9]+\.[0-9]+\.[0-9]+\"#default: \"v${TAG}\"#" .github/workflows/android-release.yml
-
-              ENTRY="- [v${TAG}](https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${TAG}) - [Download APK](https://github.com/${GITHUB_REPOSITORY}/releases/download/v${TAG}/wizard-scoreboard-android.apk) (${DATE})"
-
-              if ! grep -Fq "releases/tag/v${TAG}" VERSION_OVERVIEW.md; then
-                TMP_FILE="$(mktemp)"
-                {
-                  head -n 5 VERSION_OVERVIEW.md
-                  echo "$ENTRY"
-                  tail -n +6 VERSION_OVERVIEW.md
-                } > "$TMP_FILE"
-                mv "$TMP_FILE" VERSION_OVERVIEW.md
-              fi
             else
               echo "Manual tag v${TAG} is not newer than current default v${CURRENT_DEFAULT}; keeping default unchanged."
             fi
+
+            upsert_version_overview "$TAG" "$DATE"
+          fi
+
+          if ! grep -Fq "releases/tag/v${TAG}" VERSION_OVERVIEW.md; then
+            echo "VERSION_OVERVIEW.md did not contain expected release entry for v${TAG}."
+            exit 1
           fi
 
       - name: Commit and push updates
@@ -250,4 +274,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/scoreboard/WizardScoreboard.csproj VERSION_OVERVIEW.md .github/workflows/android-release.yml
           git commit -m "docs: sync release metadata for ${COMMIT_TAG}"
-          git push
+          git push origin HEAD:${{ github.event.repository.default_branch }}
