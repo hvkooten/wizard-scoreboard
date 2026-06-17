@@ -88,6 +88,12 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Restore NuGet and MAUI workload cache
         id: cache-maui
         uses: actions/cache/restore@v5
@@ -153,8 +159,9 @@ jobs:
       - name: Publish Android APK
         shell: pwsh
         env:
-          JAVA_OPTS: "-Xmx4g"
-          _JAVA_OPTIONS: "-Xmx4g"
+          JAVA_TOOL_OPTIONS: "-Xmx6g -XX:+UseG1GC"
+          JAVA_OPTS: "-Xmx6g -XX:+UseG1GC"
+          _JAVA_OPTIONS: "-Xmx6g -XX:+UseG1GC"
         run: |
           dotnet publish src/scoreboard/WizardScoreboard.csproj `
             -f net10.0-android `
@@ -167,7 +174,7 @@ jobs:
             -p:AndroidSigningKeyAlias="${{ secrets.ANDROID_KEY_ALIAS }}" `
             -p:AndroidSigningKeyPass="${{ secrets.ANDROID_KEY_PASSWORD }}" `
             -p:AndroidSigningStorePass="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" `
-            -p:ParallelBuildCount=2 `
+            -p:ParallelBuildCount=1 `
             -p:EmbedDebugSymbols=false `
             -p:TrimMode=partial `
             --no-restore
