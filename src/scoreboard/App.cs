@@ -18,6 +18,12 @@ public class App : Application
     {
         var window = new Window(shell);
 
+        // Keep splash screen visible for 1.5 seconds on app startup
+        window.Created += async (s, e) =>
+        {
+            await Task.Delay(1500);
+        };
+
         var savedWidth  = Preferences.Default.Get(PrefWidth,  0.0);
         var savedHeight = Preferences.Default.Get(PrefHeight, 0.0);
 

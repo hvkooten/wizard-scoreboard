@@ -227,12 +227,14 @@ jobs:
             # Update source version so repository reflects released Android version.
             sed -i -E "s#<ApplicationDisplayVersion>[^<]+</ApplicationDisplayVersion>#<ApplicationDisplayVersion>${TAG}</ApplicationDisplayVersion>#" src/scoreboard/WizardScoreboard.csproj
             sed -i -E "s#<ApplicationVersion>[^<]+</ApplicationVersion>#<ApplicationVersion>${VERSION_CODE}</ApplicationVersion>#" src/scoreboard/WizardScoreboard.csproj
+            sed -i -E "s#(<text id=\"splash-version\"[^>]*>)v[0-9]+\.[0-9]+\.[0-9]+(</text>)#\1v${TAG}\2#" src/scoreboard/Resources/Splash/splash.svg
 
             upsert_version_overview "$TAG" "$DATE"
           else
             TAG="${{ inputs.release_tag }}"
             TAG="${TAG#v}"
             DATE="$(date -u +%Y-%m-%d)"
+            sed -i -E "s#(<text id=\"splash-version\"[^>]*>)v[0-9]+\.[0-9]+\.[0-9]+(</text>)#\1v${TAG}\2#" src/scoreboard/Resources/Splash/splash.svg
             upsert_version_overview "$TAG" "$DATE"
           fi
 
@@ -257,6 +259,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/scoreboard/WizardScoreboard.csproj VERSION_OVERVIEW.md
+          git add src/scoreboard/WizardScoreboard.csproj src/scoreboard/Resources/Splash/splash.svg VERSION_OVERVIEW.md
           git commit -m "docs: sync release metadata for ${COMMIT_TAG}"
           git push origin HEAD:${{ github.event.repository.default_branch }}
