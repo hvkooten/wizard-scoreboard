@@ -163,6 +163,8 @@ jobs:
           JAVA_OPTS: "-Xmx6g -XX:+UseG1GC"
           _JAVA_OPTIONS: "-Xmx6g -XX:+UseG1GC"
         run: |
+          java -version
+
           dotnet publish src/scoreboard/WizardScoreboard.csproj `
             -f net10.0-android `
             -c Release `
@@ -174,6 +176,9 @@ jobs:
             -p:AndroidSigningKeyAlias="${{ secrets.ANDROID_KEY_ALIAS }}" `
             -p:AndroidSigningKeyPass="${{ secrets.ANDROID_KEY_PASSWORD }}" `
             -p:AndroidSigningStorePass="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" `
+            -p:AndroidEnableMultiDex=true `
+            -p:AndroidEnableProguard=false `
+            -p:AndroidLinkTool=d8 `
             -p:ParallelBuildCount=1 `
             -p:EmbedDebugSymbols=false `
             -p:TrimMode=partial `
