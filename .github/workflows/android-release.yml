@@ -46,7 +46,21 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: refs/tags/${{ steps.release_tag.outputs.tag }}
-          fetch-depth: 1
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Verify tag exists
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          TAG="${{ steps.release_tag.outputs.tag }}"
+          if ! git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "::error::Release tag '$TAG' does not exist in this repository."
+            echo "::error::Please provide a valid tag, e.g., v1.0.0, v1.1.0, v2.0.0"
+            echo "::error::Use 'git tag -l' to list all available tags."
+            exit 1
+          fi
+          echo "✓ Tag $TAG verified and exists."
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
