@@ -1,8 +1,12 @@
 name: Delete Release Entry
 
 on:
-  release:
-    types: [deleted]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to remove (e.g., v2.0.0)'
+        required: true
+        type: string
 
 jobs:
   update-version-overview:
@@ -23,7 +27,7 @@ jobs:
 
       - name: Remove release from VERSION_OVERVIEW.md
         run: |
-          release_tag="${{ github.event.release.tag_name }}"
+          release_tag="${{ github.event.inputs.release_tag }}"
           release_version="${release_tag#v}"
           
           # Remove the release entry from VERSION_OVERVIEW.md
@@ -42,7 +46,7 @@ jobs:
             echo "No changes to VERSION_OVERVIEW.md"
           else
             git add VERSION_OVERVIEW.md
-            git commit -m "Remove release ${{ github.event.release.tag_name }} from VERSION_OVERVIEW.md"
+            git commit -m "Remove release ${{ github.event.inputs.release_tag }} from VERSION_OVERVIEW.md"
             git push
             echo "Successfully updated VERSION_OVERVIEW.md"
           fi
