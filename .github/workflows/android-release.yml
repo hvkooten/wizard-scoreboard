@@ -228,26 +228,11 @@ jobs:
             sed -i -E "s#<ApplicationDisplayVersion>[^<]+</ApplicationDisplayVersion>#<ApplicationDisplayVersion>${TAG}</ApplicationDisplayVersion>#" src/scoreboard/WizardScoreboard.csproj
             sed -i -E "s#<ApplicationVersion>[^<]+</ApplicationVersion>#<ApplicationVersion>${VERSION_CODE}</ApplicationVersion>#" src/scoreboard/WizardScoreboard.csproj
 
-            # Keep workflow_dispatch default aligned with the latest released tag.
-            sed -i -E "s#default: \"v[0-9]+\.[0-9]+\.[0-9]+\"#default: \"v${TAG}\"#" .github/workflows/android-release.yml
-
             upsert_version_overview "$TAG" "$DATE"
           else
             TAG="${{ inputs.release_tag }}"
             TAG="${TAG#v}"
             DATE="$(date -u +%Y-%m-%d)"
-            CURRENT_DEFAULT=$(grep -E 'default: "v[0-9]+\.[0-9]+\.[0-9]+"' .github/workflows/android-release.yml | head -n 1 | sed -E 's#.*"v([0-9]+\.[0-9]+\.[0-9]+)"#\1#')
-
-            if [ -z "$CURRENT_DEFAULT" ]; then
-              CURRENT_DEFAULT="0.0.0"
-            fi
-
-            if [ "$TAG" != "$CURRENT_DEFAULT" ] && printf '%s\n%s\n' "$CURRENT_DEFAULT" "$TAG" | sort -V -C; then
-              sed -i -E "s#default: \"v[0-9]+\.[0-9]+\.[0-9]+\"#default: \"v${TAG}\"#" .github/workflows/android-release.yml
-            else
-              echo "Manual tag v${TAG} is not newer than current default v${CURRENT_DEFAULT}; keeping default unchanged."
-            fi
-
             upsert_version_overview "$TAG" "$DATE"
           fi
 
@@ -272,6 +257,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/scoreboard/WizardScoreboard.csproj VERSION_OVERVIEW.md .github/workflows/android-release.yml
+          git add src/scoreboard/WizardScoreboard.csproj VERSION_OVERVIEW.md
           git commit -m "docs: sync release metadata for ${COMMIT_TAG}"
           git push origin HEAD:${{ github.event.repository.default_branch }}

@@ -1,0 +1,58 @@
+name: Label New Issues
+
+on:
+  issues:
+    types:
+      - opened
+
+permissions:
+  issues: write
+
+jobs:
+  label-new-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure needs-review label exists
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const labelName = "needs-review";
+            const labelColor = "FBCA04";
+            const labelDescription = "New issue that still needs reviewer attention";
+
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: labelName });
+              core.info(`Label '${labelName}' already exists.`);
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+
+              await github.rest.issues.createLabel({
+                owner,
+                repo,
+                name: labelName,
+                color: labelColor,
+                description: labelDescription,
+              });
+              core.info(`Created label '${labelName}'.`);
+            }
+
+      - name: Add needs-review label to new issue
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issueNumber = context.payload.issue.number;
+
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              labels: ["needs-review"],
+            });
+
+            core.info(`Added 'needs-review' label to issue #${issueNumber}.`);

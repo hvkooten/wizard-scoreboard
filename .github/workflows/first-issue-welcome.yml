@@ -1,0 +1,64 @@
+name: First Issue Welcome
+
+on:
+  issues:
+    types:
+      - opened
+
+permissions:
+  issues: write
+
+jobs:
+  welcome-first-time-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Welcome first-time issue authors
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const author = issue.user.login;
+
+            // Skip bot accounts to avoid noisy automation loops.
+            if (issue.user.type === "Bot") {
+              core.info(`Skipping bot author: ${author}`);
+              return;
+            }
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              creator: author,
+              state: "all",
+              per_page: 100,
+            });
+
+            if (issues.length !== 1) {
+              core.info(`${author} has ${issues.length} issues in this repository. No welcome comment needed.`);
+              return;
+            }
+
+            const message = [
+              `Hi @${author}, welcome and thanks for opening your first issue in Wizard Scoreboard!`,
+              "",
+              "We appreciate your feedback. A maintainer will review this as soon as possible.",
+              "",
+              "To help us resolve things faster, feel free to add:",
+              "- Clear steps to reproduce",
+              "- Expected and actual behavior",
+              "- Device details (OS/app version)",
+              "- Screenshots if relevant",
+              "",
+              "Thanks again for contributing to the project.",
+            ].join("\n");
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issue.number,
+              body: message,
+            });
+
+            core.info(`Posted first-issue welcome comment for @${author}.`);
