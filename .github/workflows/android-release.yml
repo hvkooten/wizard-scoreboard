@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Tag to (re)release"
-        required: true
+        description: "Tag to (re)release (leave empty to use DEFAULT_RELEASE_TAG repo variable)"
+        required: false
         type: string
 
 permissions:
@@ -24,15 +24,22 @@ jobs:
       - name: Resolve release tag
         id: release_tag
         shell: pwsh
+        env:
+          DEFAULT_TAG: ${{ vars.DEFAULT_RELEASE_TAG }}
         run: |
           if ("${{ github.event_name }}" -eq "workflow_dispatch") {
             $tag = "${{ inputs.release_tag }}"
+            # If input is empty, use repo variable as fallback
+            if ([string]::IsNullOrWhiteSpace($tag)) {
+              $tag = $env:DEFAULT_TAG
+              Write-Host "Using DEFAULT_RELEASE_TAG from repo variables: $tag"
+            }
           } else {
             $tag = "${{ github.ref_name }}"
           }
 
           if ([string]::IsNullOrWhiteSpace($tag)) {
-            throw "Release tag is empty."
+            throw "Release tag is empty. Set DEFAULT_RELEASE_TAG in repo variables or provide release_tag input."
           }
 
           if ($tag -notmatch '^v\d+\.\d+\.\d+$') {
