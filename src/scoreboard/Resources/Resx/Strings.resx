@@ -36,6 +36,7 @@
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Do you want to delete group '{0}'?</value></data>
   <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>Delete group?</value></data>
   <data name="Disabled" xml:space="preserve"><value>Disabled</value></data>
+  <data name="Player Count" xml:space="preserve"><value>Player Count</value></data>
   <data name="Diamonds" xml:space="preserve"><value>Diamonds</value></data>
   <data name="EndGame" xml:space="preserve"><value>End Game</value></data>
   <data name="ErrorTitle" xml:space="preserve"><value>Error</value></data>

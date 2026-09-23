@@ -507,14 +507,35 @@ public class ScoreBoardPage : ContentPage
 
         groupService.SetSelectedGroup(group.Id);
 
-        var selectedPlayers = await SelectPlayersAsync(group);
-        if (selectedPlayers == null)
-            return;
+        // The player-selection modal lets the user switch groups or jump to group creation,
+        // so keep re-showing it until the user starts a game or cancels.
+        while (true)
+        {
+            var result = await SelectPlayersAsync(group);
 
-        currentSession = scoreService.StartGame(group, selectedPlayers);
-        await DisplayRoundPopupAsync();
-        RefreshUI();
+            if (result.CreateNewGroup)
+            {
+                await Shell.Current.GoToAsync($"//{nameof(GroupsPage)}");
+                return;
+            }
+
+            if (result.SwitchGroup)
+            {
+                group = groupService.GetSelectedGroup() ?? group;
+                continue;
+            }
+
+            if (result.Players == null)
+                return;
+
+            currentSession = scoreService.StartGame(group, result.Players);
+            await DisplayRoundPopupAsync();
+            RefreshUI();
+            return;
+        }
     }
+
+    private sealed record PlayerSelectionResult(List<Player>? Players, bool SwitchGroup, bool CreateNewGroup);
 
     private async Task EndGameAsync()
     {
@@ -548,13 +569,9 @@ public class ScoreBoardPage : ContentPage
         RefreshUI();
     }
 
-    private async Task<List<Player>?> SelectPlayersAsync(Group group)
+    private async Task<PlayerSelectionResult> SelectPlayersAsync(Group group)
     {
         var allPlayers = group.Players.OrderBy(p => p.Order).ToList();
-
-        // All groups have exactly as many players as configured — only show popup when >3
-        if (allPlayers.Count <= 3)
-            return allPlayers;
 
         var prefKey = $"player_sel_v1_{group.Id}";
         var savedRaw = Preferences.Default.Get(prefKey, string.Empty);
@@ -570,6 +587,13 @@ public class ScoreBoardPage : ContentPage
                 : allPlayers.Select(p => p.Id));
 
         var toggleButtons = new Dictionary<Guid, Button>();
+
+        // When the group's bid-total rule follows the player count, the start round tracks the
+        // number of selected players and resets to it on every player change (a manual +/- override
+        // via the buttons below lasts only until the next player change).
+        var followsPlayerCount = group.BidTotalRuleStartRound is < 0 or > 13;
+        var bidRuleValue = followsPlayerCount ? selected.Count : group.BidTotalRuleStartRound;
+        Action? syncBidRuleWithPlayers = null;
         var countLabel = new Label
         {
             FontSize = 14,
@@ -600,6 +624,54 @@ public class ScoreBoardPage : ContentPage
             Margin = new Thickness(0, 0, 0, 8)
         });
 
+        var tcs = new TaskCompletionSource<PlayerSelectionResult>();
+
+        // Group selector so the user can switch to another saved group without leaving the dialog.
+        var allGroups = groupService.GetGroups().OrderBy(g => g.CreatedAt).ToList();
+        var groupPicker = new Picker
+        {
+            Title = Localization.GetString("SelectGroup"),
+            HorizontalOptions = LayoutOptions.Fill
+        };
+        foreach (var g in allGroups)
+        {
+            groupPicker.Items.Add(g.Name);
+        }
+        groupPicker.SelectedIndex = allGroups.FindIndex(g => g.Id == group.Id);
+        groupPicker.SelectedIndexChanged += (s, e) =>
+        {
+            if (groupPicker.SelectedIndex < 0 || groupPicker.SelectedIndex >= allGroups.Count)
+                return;
+
+            var chosen = allGroups[groupPicker.SelectedIndex];
+            if (chosen.Id == group.Id)
+                return;
+
+            groupService.SetSelectedGroup(chosen.Id);
+            tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: true, CreateNewGroup: false));
+        };
+
+        var newGroupBtn = new Button
+        {
+            Text = Localization.GetString("NewGroup"),
+            WidthRequest = 52,
+            HeightRequest = 44,
+            Padding = new Thickness(0),
+            FontSize = 18
+        };
+        newGroupBtn.Clicked += (s, e) =>
+            tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: false, CreateNewGroup: true));
+
+        layout.Children.Add(new HorizontalStackLayout
+        {
+            Spacing = 8,
+            Children =
+            {
+                groupPicker,
+                newGroupBtn
+            }
+        });
+
         foreach (var player in allPlayers)
         {
             var btn = new Button
@@ -627,6 +699,7 @@ public class ScoreBoardPage : ContentPage
                     ApplyStyle(btn, true);
                 }
                 UpdateUI();
+                syncBidRuleWithPlayers?.Invoke();
             };
             toggleButtons[player.Id] = btn;
             layout.Children.Add(btn);
@@ -663,14 +736,6 @@ public class ScoreBoardPage : ContentPage
             TextColor = Colors.White
         };
 
-        var bidRuleValue = group.BidTotalRuleStartRound is >= 0 and <= 13
-            ? group.BidTotalRuleStartRound
-            : selected.Count;
-        if (bidRuleValue < 0 || bidRuleValue > 13)
-        {
-            bidRuleValue = selected.Count;
-        }
-        
         void UpdateBidRuleUI()
         {
             var bidRuleDisplay = bidRuleValue == 0
@@ -699,6 +764,15 @@ public class ScoreBoardPage : ContentPage
             }
         };
 
+        syncBidRuleWithPlayers = () =>
+        {
+            if (followsPlayerCount)
+            {
+                bidRuleValue = selected.Count;
+                UpdateBidRuleUI();
+            }
+        };
+
         UpdateBidRuleUI();
 
         var bidRuleRow = new HorizontalStackLayout
@@ -719,30 +793,33 @@ public class ScoreBoardPage : ContentPage
         UpdateUI();
 
         var modal = new ContentPage { Content = new ScrollView { Content = layout } };
-        var tcs = new TaskCompletionSource<List<Player>?>();
 
         startBtn.Clicked += (s, e) =>
         {
             Preferences.Default.Set(prefKey, string.Join(',', selected.Select(id => id.ToString())));
-            group.BidTotalRuleStartRound = bidRuleValue;
+            // Preserve the follow-player-count mode in storage; otherwise persist the fixed round.
+            group.BidTotalRuleStartRound = followsPlayerCount ? Group.PlayerCountRule : bidRuleValue;
             groupService.UpdateGroup(group);
+            // Apply the effective value (including any manual override) to the in-memory group so the
+            // game about to start uses it, without overwriting the persisted follow-player-count mode.
+            group.BidTotalRuleStartRound = bidRuleValue;
             var result = allPlayers.Where(p => selected.Contains(p.Id)).ToList();
-            tcs.TrySetResult(result);
+            tcs.TrySetResult(new PlayerSelectionResult(result, SwitchGroup: false, CreateNewGroup: false));
         };
 
         cancelBtn.Clicked += (s, e) =>
         {
-            tcs.TrySetResult(null);
+            tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: false, CreateNewGroup: false));
         };
 
-        modal.Disappearing += (s, e) => tcs.TrySetResult(null);
+        modal.Disappearing += (s, e) => tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: false, CreateNewGroup: false));
 
         await Navigation.PushModalAsync(modal);
-        var players = await tcs.Task;
+        var selectionResult = await tcs.Task;
         if (Navigation.ModalStack.Contains(modal))
             await Navigation.PopModalAsync();
 
-        return players;
+        return selectionResult;
     }
 
     private async Task StartNextRoundAsync()

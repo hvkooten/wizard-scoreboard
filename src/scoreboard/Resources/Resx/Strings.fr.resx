@@ -17,6 +17,7 @@
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Voulez-vous supprimer le groupe '{0}' ?</value></data>
   <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>Supprimer le groupe ?</value></data>
   <data name="Disabled" xml:space="preserve"><value>Desactive</value></data>
+  <data name="Player Count" xml:space="preserve"><value>Nombre de joueurs</value></data>
   <data name="Diamonds" xml:space="preserve"><value>Carreaux</value></data>
   <data name="EndGame" xml:space="preserve"><value>Terminer le jeu</value></data>
   <data name="ErrorTitle" xml:space="preserve"><value>Erreur</value></data>

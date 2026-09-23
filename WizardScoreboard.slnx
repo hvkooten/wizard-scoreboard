@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/NewFolder1/" />
+  <Project Path="src/scoreboard.Tests/WizardScoreboard.Tests.csproj" />
+  <Project Path="src/scoreboard/WizardScoreboard.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>

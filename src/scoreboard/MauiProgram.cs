@@ -29,6 +29,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ITrumpPaletteService, TrumpPaletteService>();
 
         builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<GroupsPage>();
         builder.Services.AddTransient<RulesPage>();
         builder.Services.AddTransient<HighscorePage>();
         builder.Services.AddTransient<SavedGamesPage>();

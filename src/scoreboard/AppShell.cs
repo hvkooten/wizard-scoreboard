@@ -6,13 +6,14 @@ namespace WizardScoreboard;
 
 public class AppShell : Shell
 {
-    public AppShell(SettingsPage settingsPage, RulesPage rulesPage, HighscorePage highscorePage, SavedGamesPage savedGamesPage, ScoreBoardPage scoreBoardPage)
+    public AppShell(SettingsPage settingsPage, RulesPage rulesPage, HighscorePage highscorePage, SavedGamesPage savedGamesPage, ScoreBoardPage scoreBoardPage, GroupsPage groupsPage)
     {
         Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
         Routing.RegisterRoute(nameof(RulesPage), typeof(RulesPage));
         Routing.RegisterRoute(nameof(HighscorePage), typeof(HighscorePage));
         Routing.RegisterRoute(nameof(SavedGamesPage), typeof(SavedGamesPage));
         Routing.RegisterRoute(nameof(ScoreBoardPage), typeof(ScoreBoardPage));
+        Routing.RegisterRoute(nameof(GroupsPage), typeof(GroupsPage));
 
         Items.Add(new TabBar
         {
@@ -48,6 +49,14 @@ public class AppShell : Shell
                     Items =
                     {
                         new ShellContent { Content = rulesPage }
+                    }
+                },
+                new Tab
+                {
+                    Title = Localization.GetString("Groups"),
+                    Items =
+                    {
+                        new ShellContent { Route = nameof(GroupsPage), Content = groupsPage }
                     }
                 },
                 new Tab
