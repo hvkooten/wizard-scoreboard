@@ -36,7 +36,8 @@
   <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
   <data name="No" xml:space="preserve"><value>Non</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>Aucune partie active.</value></data>
-  <data name="NoGroupsAvailable" xml:space="preserve"><value>Aucun groupe disponible. Créez d'abord un groupe dans les paramètres.</value></data>
+  <data name="NoGroupsAvailable" xml:space="preserve"><value>Aucun groupe disponible. Créez d'abord un groupe.</value></data>
+  <data name="CreateGroup" xml:space="preserve"><value>Créer un groupe</value></data>
   <data name="None" xml:space="preserve"><value>Aucun</value></data>
   <data name="NextRound" xml:space="preserve"><value>Tour suivant</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>

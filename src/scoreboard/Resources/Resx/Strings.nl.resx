@@ -36,7 +36,8 @@
   <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
   <data name="No" xml:space="preserve"><value>Nee</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>Geen actief spel.</value></data>
-  <data name="NoGroupsAvailable" xml:space="preserve"><value>Geen groepen beschikbaar. Maak eerst een groep in instellingen.</value></data>
+  <data name="NoGroupsAvailable" xml:space="preserve"><value>Geen groepen beschikbaar. Maak eerst een groep.</value></data>
+  <data name="CreateGroup" xml:space="preserve"><value>Groep maken</value></data>
   <data name="None" xml:space="preserve"><value>Geen</value></data>
   <data name="NextRound" xml:space="preserve"><value>Volgende ronde</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>

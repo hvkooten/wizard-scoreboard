@@ -54,7 +54,8 @@
   <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
   <data name="No" xml:space="preserve"><value>No</value></data>
   <data name="NoActiveGame" xml:space="preserve"><value>No active game.</value></data>
-  <data name="NoGroupsAvailable" xml:space="preserve"><value>No groups available. Create group first in settings.</value></data>
+  <data name="NoGroupsAvailable" xml:space="preserve"><value>No groups available. Create a group first.</value></data>
+  <data name="CreateGroup" xml:space="preserve"><value>Create group</value></data>
   <data name="None" xml:space="preserve"><value>None</value></data>
   <data name="NextRound" xml:space="preserve"><value>Next Round</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>

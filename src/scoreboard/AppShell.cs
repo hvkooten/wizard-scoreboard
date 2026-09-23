@@ -24,7 +24,7 @@ public class AppShell : Shell
                     Title = Localization.GetString("Scoreboard"),
                     Items =
                     {
-                        new ShellContent { Content = scoreBoardPage }
+                        new ShellContent { Route = nameof(ScoreBoardPage), Content = scoreBoardPage }
                     }
                 },
                 new Tab
@@ -32,7 +32,7 @@ public class AppShell : Shell
                     Title = Localization.GetString("Highscore"),
                     Items =
                     {
-                        new ShellContent { Content = highscorePage }
+                        new ShellContent { Route = nameof(HighscorePage), Content = highscorePage }
                     }
                 },
                 new Tab
@@ -40,7 +40,7 @@ public class AppShell : Shell
                     Title = Localization.GetString("SavedGames"),
                     Items =
                     {
-                        new ShellContent { Content = savedGamesPage }
+                        new ShellContent { Route = nameof(SavedGamesPage), Content = savedGamesPage }
                     }
                 },
                 new Tab
@@ -48,7 +48,7 @@ public class AppShell : Shell
                     Title = Localization.GetString("Rules"),
                     Items =
                     {
-                        new ShellContent { Content = rulesPage }
+                        new ShellContent { Route = nameof(RulesPage), Content = rulesPage }
                     }
                 },
                 new Tab
@@ -64,7 +64,7 @@ public class AppShell : Shell
                     Title = Localization.GetString("Settings"),
                     Items =
                     {
-                        new ShellContent { Content = settingsPage }
+                        new ShellContent { Route = nameof(SettingsPage), Content = settingsPage }
                     }
                 }
             }
