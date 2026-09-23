@@ -1,5 +1,14 @@
 <Solution>
-  <Folder Name="/NewFolder1/" />
+  <Folder Name="/Specs/">
+    <File Path="specs/001-wizard-scoreboard/data-model.md" />
+    <File Path="specs/001-wizard-scoreboard/plan.md" />
+    <File Path="specs/001-wizard-scoreboard/quickstart.md" />
+    <File Path="specs/001-wizard-scoreboard/spec.md" />
+    <File Path="specs/001-wizard-scoreboard/tasks.md" />
+  </Folder>
+  <Folder Name="/Specs/CheckList/">
+    <File Path="specs/001-wizard-scoreboard/checklists/requirements.md" />
+  </Folder>
   <Project Path="src/scoreboard.Tests/WizardScoreboard.Tests.csproj" />
   <Project Path="src/scoreboard/WizardScoreboard.csproj">
     <Deploy Solution="Debug|*" />
