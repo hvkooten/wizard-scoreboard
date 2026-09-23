@@ -37,6 +37,7 @@ public class GroupsPage : ContentPage
         bidTotalRulePicker = new Picker { Title = Localization.GetString("BidTotalRuleStartRound") };
         bidTotalRulePicker.Items.Add(Localization.GetString("Disabled"));
         bidTotalRulePicker.Items.Add(Localization.GetString("Player Count"));
+        bidTotalRulePicker.Items.Add(Localization.GetString("DoublePlayerCount"));
         for (var round = 1; round <= 13; round++)
         {
             bidTotalRulePicker.Items.Add(round.ToString());
@@ -556,7 +557,7 @@ public class GroupsPage : ContentPage
         SetGroupNameFromCode(selected.Name);
 
         SetPlayerCount(selected.Players.Count, updateGroupName: false);
-        bidTotalRuleStartRoundValue = selected.BidTotalRuleStartRound is >= 0 and <= 13
+        bidTotalRuleStartRoundValue = selected.BidTotalRuleStartRound is (>= 0 and <= 13) or Group.DoublePlayerCountRule
             ? selected.BidTotalRuleStartRound
             : Group.PlayerCountRule;
         bidTotalRulePicker.SelectedIndex = BidTotalRulePicker.IndexFromValue(bidTotalRuleStartRoundValue);

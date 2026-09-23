@@ -589,10 +589,12 @@ public class ScoreBoardPage : ContentPage
         var toggleButtons = new Dictionary<Guid, Button>();
 
         // When the group's bid-total rule follows the player count, the start round tracks the
-        // number of selected players and resets to it on every player change (a manual +/- override
-        // via the buttons below lasts only until the next player change).
+        // number of selected players (optionally doubled) and resets to it on every player change
+        // (a manual +/- override via the buttons below lasts only until the next player change).
         var followsPlayerCount = group.BidTotalRuleStartRound is < 0 or > 13;
-        var bidRuleValue = followsPlayerCount ? selected.Count : group.BidTotalRuleStartRound;
+        var followsDoublePlayerCount = group.BidTotalRuleStartRound == Group.DoublePlayerCountRule;
+        int FollowValue() => followsDoublePlayerCount ? selected.Count * 2 : selected.Count;
+        var bidRuleValue = followsPlayerCount ? Math.Min(FollowValue(), 13) : group.BidTotalRuleStartRound;
         Action? syncBidRuleWithPlayers = null;
         var countLabel = new Label
         {
@@ -768,7 +770,7 @@ public class ScoreBoardPage : ContentPage
         {
             if (followsPlayerCount)
             {
-                bidRuleValue = selected.Count;
+                bidRuleValue = Math.Min(FollowValue(), 13);
                 UpdateBidRuleUI();
             }
         };
@@ -798,7 +800,9 @@ public class ScoreBoardPage : ContentPage
         {
             Preferences.Default.Set(prefKey, string.Join(',', selected.Select(id => id.ToString())));
             // Preserve the follow-player-count mode in storage; otherwise persist the fixed round.
-            group.BidTotalRuleStartRound = followsPlayerCount ? Group.PlayerCountRule : bidRuleValue;
+            group.BidTotalRuleStartRound = followsPlayerCount
+                ? (followsDoublePlayerCount ? Group.DoublePlayerCountRule : Group.PlayerCountRule)
+                : bidRuleValue;
             groupService.UpdateGroup(group);
             // Apply the effective value (including any manual override) to the in-memory group so the
             // game about to start uses it, without overwriting the persisted follow-player-count mode.

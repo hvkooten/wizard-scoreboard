@@ -102,6 +102,7 @@ public class SettingsPage : ContentPage
         bidTotalRulePicker = new Picker { Title = Localization.GetString("DefaultBidTotalRuleStartRound") };
         bidTotalRulePicker.Items.Add(Localization.GetString("Disabled"));
         bidTotalRulePicker.Items.Add(Localization.GetString("Player Count"));
+        bidTotalRulePicker.Items.Add(Localization.GetString("DoublePlayerCount"));
         for (var round = 1; round <= 13; round++)
         {
             bidTotalRulePicker.Items.Add(round.ToString());

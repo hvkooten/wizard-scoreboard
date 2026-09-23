@@ -14,17 +14,18 @@
   <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Wil je groep '{0}' verwijderen?</value></data>
   <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>Groep verwijderen?</value></data>
-   <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>Weet je zeker dat je het opgeslagen spel van {0} wilt verwijderen?</value></data>
-   <data name="DeleteSavedGameConfirmTitle" xml:space="preserve"><value>Opgeslagen spel verwijderen?</value></data>
+  <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>Weet je zeker dat je het opgeslagen spel van {0} wilt verwijderen?</value></data>
+  <data name="DeleteSavedGameConfirmTitle" xml:space="preserve"><value>Opgeslagen spel verwijderen?</value></data>
   <data name="Disabled" xml:space="preserve"><value>Uitgeschakeld</value></data>
   <data name="Player Count" xml:space="preserve"><value>Aantal spelers</value></data>
+  <data name="DoublePlayerCount" xml:space="preserve"><value>2x Aantal spelers</value></data>
   <data name="Diamonds" xml:space="preserve"><value>Ruiten</value></data>
   <data name="EndGame" xml:space="preserve"><value>Beëindig spel</value></data>
   <data name="ErrorTitle" xml:space="preserve"><value>Fout</value></data>
   <data name="GameAlreadyCompleted" xml:space="preserve"><value>Spel is al afgerond.</value></data>
   <data name="GameFinishedTitle" xml:space="preserve"><value>Spel afgelopen!</value></data>
   <data name="Green" xml:space="preserve"><value>Groen</value></data>
-   <data name="GamePausedStatus" xml:space="preserve"><value>Gepauzeerd</value></data>
+  <data name="GamePausedStatus" xml:space="preserve"><value>Gepauzeerd</value></data>
   <data name="GroupCreated" xml:space="preserve"><value>Groep aangemaakt</value></data>
   <data name="GroupNameRequired" xml:space="preserve"><value>Groepsnaam is verplicht.</value></data>
   <data name="GroupUpdated" xml:space="preserve"><value>Groep bijgewerkt</value></data>
@@ -40,7 +41,7 @@
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OpenRulesInBrowser" xml:space="preserve"><value>Open regels in browser</value></data>
   <data name="OpenGame" xml:space="preserve"><value>Open spel</value></data>
-   <data name="PauseGame" xml:space="preserve"><value>Pauze</value></data>
+  <data name="PauseGame" xml:space="preserve"><value>Pauze</value></data>
   <data name="PlayerCount" xml:space="preserve"><value>Aantal spelers</value></data>
   <data name="PlayerNameRequiredTemplate" xml:space="preserve"><value>Naam voor speler {0} is verplicht.</value></data>
   <data name="PlayerPlaceholder" xml:space="preserve"><value>Speler {0}</value></data>
@@ -53,7 +54,7 @@
   <data name="RoundPopupTitle" xml:space="preserve"><value>Ronde {0}/{1}</value></data>
   <data name="Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
   <data name="Red" xml:space="preserve"><value>Rood</value></data>
-   <data name="ResumeGame" xml:space="preserve"><value>Hervatten</value></data>
+  <data name="ResumeGame" xml:space="preserve"><value>Hervatten</value></data>
   <data name="Rules" xml:space="preserve"><value>Spelregels</value></data>
   <data name="RulesFallback" xml:space="preserve"><value>Als de PDF niet laadt, bekijk de regels hier:
 https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf</value></data>

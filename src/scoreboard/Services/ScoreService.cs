@@ -50,9 +50,12 @@ public class ScoreService : IScoreService
             .ToList();
 
         // Use group-specific setting; fallback to player count for migrated groups.
-        var bidTotalRuleStartRound = group.BidTotalRuleStartRound is >= 0 and <= 13
-            ? group.BidTotalRuleStartRound
-            : sessionPlayers.Count;
+        var bidTotalRuleStartRound = group.BidTotalRuleStartRound switch
+        {
+            >= 0 and <= 13 => group.BidTotalRuleStartRound,
+            Group.DoublePlayerCountRule => sessionPlayers.Count * 2,
+            _ => sessionPlayers.Count
+        };
 
         var session = new ScoreSession
         {
