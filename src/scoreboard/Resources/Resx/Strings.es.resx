@@ -10,7 +10,8 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Este juego sigue en curso. ¿Quieres detenerlo?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>¿Finalizar juego?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Crear grupo</value></data>
-  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Tú (Repartidor) no puedes apostar: {0}</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Repartidor) no puede apostar: {1}</value></data>
+  <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Repartidor) puede apostar cualquier número</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Repartidor</value></data>
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>¿Quieres eliminar el grupo '{0}'?</value></data>
   <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>¿Eliminar grupo?</value></data>
@@ -68,6 +69,7 @@ Si el PDF no se carga, usa el enlace.</value></data>
   <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} jugadores seleccionados</value></data>
   <data name="SelectLanguage" xml:space="preserve"><value>Seleccionar idioma</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Seleccionar jugadores para este juego</value></data>
+  <data name="DragToReorderHint" xml:space="preserve"><value>Usa las flechas para cambiar el orden</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Elige un palo para continuar</value></data>
   <data name="Settings" xml:space="preserve"><value>Configuración</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Mostrar reglas</value></data>

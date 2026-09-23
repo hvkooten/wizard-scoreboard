@@ -10,7 +10,8 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Cette partie est encore en cours. Voulez-vous l'arrêter ?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Terminer la partie ?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Créer un groupe</value></data>
-  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Vous (Donneur) ne pouvez pas enchérir: {0}</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Donneur) ne peut pas enchérir: {1}</value></data>
+  <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Donneur) peut enchérir n'importe quel nombre</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Donneur</value></data>
   <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>Voulez-vous vraiment supprimer la partie sauvegardée du {0} ?</value></data>
   <data name="DeleteSavedGameConfirmTitle" xml:space="preserve"><value>Supprimer la partie sauvegardée ?</value></data>
@@ -68,6 +69,7 @@ Si le PDF ne se charge pas, utilisez le lien.</value></data>
   <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} joueurs sélectionnés</value></data>
   <data name="SelectLanguage" xml:space="preserve"><value>Choisir la langue</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Sélectionner les joueurs pour cette partie</value></data>
+  <data name="DragToReorderHint" xml:space="preserve"><value>Utilisez les flèches pour changer l'ordre</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Choisissez une couleur pour continuer</value></data>
   <data name="Settings" xml:space="preserve"><value>Paramètres</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Voir les règles</value></data>

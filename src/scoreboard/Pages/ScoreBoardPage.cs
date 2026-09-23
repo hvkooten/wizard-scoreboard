@@ -656,56 +656,128 @@ public class ScoreBoardPage : ContentPage
         var newGroupBtn = new Button
         {
             Text = Localization.GetString("NewGroup"),
-            WidthRequest = 52,
             HeightRequest = 44,
-            Padding = new Thickness(0),
-            FontSize = 18
+            HorizontalOptions = LayoutOptions.Fill
         };
         newGroupBtn.Clicked += (s, e) =>
             tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: false, CreateNewGroup: true));
 
-        layout.Children.Add(new HorizontalStackLayout
-        {
-            Spacing = 8,
-            Children =
-            {
-                groupPicker,
-                newGroupBtn
-            }
-        });
+        groupPicker.HorizontalOptions = LayoutOptions.Fill;
+        layout.Children.Add(groupPicker);
 
-        foreach (var player in allPlayers)
+        // The play order (used for dealer rotation) follows this list, which the user can
+        // rearrange by dragging one player onto another.
+        var orderedPlayers = new List<Player>(allPlayers);
+
+        var playersContainer = new VerticalStackLayout { Spacing = 8 };
+
+        void MovePlayer(Guid playerId, int direction)
         {
-            var btn = new Button
-            {
-                Text = player.Name,
-                HeightRequest = 44,
-                CornerRadius = 8,
-                FontSize = 16
-            };
-            ApplyStyle(btn, selected.Contains(player.Id));
-            var capturedId = player.Id;
-            btn.Clicked += (s, e) =>
-            {
-                if (selected.Contains(capturedId))
-                {
-                    if (selected.Count > 3)
-                    {
-                        selected.Remove(capturedId);
-                        ApplyStyle(btn, false);
-                    }
-                }
-                else
-                {
-                    selected.Add(capturedId);
-                    ApplyStyle(btn, true);
-                }
-                UpdateUI();
-                syncBidRuleWithPlayers?.Invoke();
-            };
-            toggleButtons[player.Id] = btn;
-            layout.Children.Add(btn);
+            var from = orderedPlayers.FindIndex(p => p.Id == playerId);
+            if (from < 0)
+                return;
+
+            var to = from + direction;
+            if (to < 0 || to >= orderedPlayers.Count)
+                return;
+
+            (orderedPlayers[from], orderedPlayers[to]) = (orderedPlayers[to], orderedPlayers[from]);
+            BuildPlayerButtons();
         }
+
+        void BuildPlayerButtons()
+        {
+            playersContainer.Children.Clear();
+            toggleButtons.Clear();
+
+            for (var index = 0; index < orderedPlayers.Count; index++)
+            {
+                var capturedId = orderedPlayers[index].Id;
+                var btn = new Button
+                {
+                    Text = orderedPlayers[index].Name,
+                    HeightRequest = 44,
+                    CornerRadius = 8,
+                    FontSize = 16,
+                    HorizontalOptions = LayoutOptions.Fill
+                };
+                ApplyStyle(btn, selected.Contains(capturedId));
+                btn.Clicked += (s, e) =>
+                {
+                    if (selected.Contains(capturedId))
+                    {
+                        if (selected.Count > 3)
+                        {
+                            selected.Remove(capturedId);
+                            ApplyStyle(btn, false);
+                        }
+                    }
+                    else
+                    {
+                        selected.Add(capturedId);
+                        ApplyStyle(btn, true);
+                    }
+                    UpdateUI();
+                    syncBidRuleWithPlayers?.Invoke();
+                };
+
+                var upBtn = new Button
+                {
+                    Text = "\u2191",
+                    WidthRequest = 44,
+                    HeightRequest = 44,
+                    Padding = new Thickness(0),
+                    FontSize = 16,
+                    CornerRadius = 8,
+                    BackgroundColor = Color.FromArgb("#e0e8f0"),
+                    TextColor = Color.FromArgb("#1a3a5c"),
+                    IsEnabled = index > 0
+                };
+                upBtn.Clicked += (s, e) => MovePlayer(capturedId, -1);
+
+                var downBtn = new Button
+                {
+                    Text = "\u2193",
+                    WidthRequest = 44,
+                    HeightRequest = 44,
+                    Padding = new Thickness(0),
+                    FontSize = 16,
+                    CornerRadius = 8,
+                    BackgroundColor = Color.FromArgb("#e0e8f0"),
+                    TextColor = Color.FromArgb("#1a3a5c"),
+                    IsEnabled = index < orderedPlayers.Count - 1
+                };
+                downBtn.Clicked += (s, e) => MovePlayer(capturedId, 1);
+
+                var row = new Grid
+                {
+                    ColumnSpacing = 6,
+                    ColumnDefinitions =
+                    {
+                        new ColumnDefinition { Width = GridLength.Star },
+                        new ColumnDefinition { Width = GridLength.Auto },
+                        new ColumnDefinition { Width = GridLength.Auto }
+                    }
+                };
+                row.Add(btn, 0);
+                row.Add(upBtn, 1);
+                row.Add(downBtn, 2);
+
+                toggleButtons[capturedId] = btn;
+                playersContainer.Children.Add(row);
+            }
+        }
+
+        BuildPlayerButtons();
+
+        layout.Children.Add(new Label
+        {
+            Text = Localization.GetString("DragToReorderHint"),
+            FontSize = 12,
+            HorizontalTextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 0, 0, 4)
+        });
+        layout.Children.Add(playersContainer);
 
         layout.Children.Add(countLabel);
 
@@ -785,13 +857,21 @@ public class ScoreBoardPage : ContentPage
         };
         layout.Children.Add(bidRuleRow);
 
-        var cancelBtn = new Button { Text = Localization.GetString("Cancel") };
-        var buttonRow = new HorizontalStackLayout
+        var cancelBtn = new Button { Text = Localization.GetString("Cancel"), HorizontalOptions = LayoutOptions.Fill };
+        startBtn.HorizontalOptions = LayoutOptions.Fill;
+        var buttonRow = new Grid
         {
-            Spacing = 8,
-            Children = { startBtn, cancelBtn }
+            ColumnSpacing = 8,
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = GridLength.Star }
+            }
         };
+        buttonRow.Add(startBtn, 0);
+        buttonRow.Add(cancelBtn, 1);
         layout.Children.Add(buttonRow);
+        layout.Children.Add(newGroupBtn);
         UpdateUI();
 
         var modal = new ContentPage { Content = new ScrollView { Content = layout } };
@@ -799,6 +879,9 @@ public class ScoreBoardPage : ContentPage
         startBtn.Clicked += (s, e) =>
         {
             Preferences.Default.Set(prefKey, string.Join(',', selected.Select(id => id.ToString())));
+            // Persist the drag-and-drop play order onto the group's players.
+            for (var i = 0; i < orderedPlayers.Count; i++)
+                orderedPlayers[i].Order = i;
             // Preserve the follow-player-count mode in storage; otherwise persist the fixed round.
             group.BidTotalRuleStartRound = followsPlayerCount
                 ? (followsDoublePlayerCount ? Group.DoublePlayerCountRule : Group.PlayerCountRule)
@@ -807,7 +890,7 @@ public class ScoreBoardPage : ContentPage
             // Apply the effective value (including any manual override) to the in-memory group so the
             // game about to start uses it, without overwriting the persisted follow-player-count mode.
             group.BidTotalRuleStartRound = bidRuleValue;
-            var result = allPlayers.Where(p => selected.Contains(p.Id)).ToList();
+            var result = orderedPlayers.Where(p => selected.Contains(p.Id)).ToList();
             tcs.TrySetResult(new PlayerSelectionResult(result, SwitchGroup: false, CreateNewGroup: false));
         };
 
@@ -892,6 +975,7 @@ public class ScoreBoardPage : ContentPage
         var trumpOptions = trumpPaletteService.GetTrumpLabels();
         int trumpSelectionIndex = 0;
         var bidEntries = new Dictionary<Guid, Entry>();
+        var touchedBids = new HashSet<Guid>();
         Entry? dealerBidEntry = null;
 
         var scroll = new ScrollView { BackgroundColor = Colors.White };
@@ -918,13 +1002,13 @@ public class ScoreBoardPage : ContentPage
        var trumpHintLabel = new Label
        {
            Text = Localization.GetString("SelectTrumpHint"),
-           FontSize = 12,
+           FontSize = 18,
+           FontAttributes = FontAttributes.Bold,
            TextColor = Colors.Gray,
            HorizontalTextAlignment = TextAlignment.Center,
-           Margin = new Thickness(0, -6, 0, 8),
+           Margin = new Thickness(0, 8, 0, 0),
            IsVisible = true
        };
-       population.Children.Add(trumpHintLabel);
        getTrumpIndexAccessor = getTrumpIndex;
        trumpHintLabelRef = trumpHintLabel;
 
@@ -970,19 +1054,40 @@ public class ScoreBoardPage : ContentPage
                         forbiddenBids.Add(bid);
                     }
                 }
-                
-                var forbiddenText = forbiddenBids.Count > 0 
+
+                if (otherPlayersBidsSum > currentRoundNumber)
+                {
+                    // The others already bid more than the round, so the dealer can bid any number.
+                    dealerWarningLabel.Text = string.Format(
+                        Localization.GetString("DealerCanBidAnyTemplate"),
+                        dealerForEntry.Name);
+
+                    if (dealerBidEntry != null)
+                    {
+                        dealerBidEntry.BackgroundColor = Colors.White;
+                    }
+                    return;
+                }
+
+                var forbiddenText = forbiddenBids.Count > 0
                     ? string.Join(", ", forbiddenBids)
                     : Localization.GetString("None");
-                
+
                 dealerWarningLabel.Text = string.Format(
                     Localization.GetString("DealerCannotBidTemplate"),
+                    dealerForEntry.Name,
                     forbiddenText);
 
                 if (dealerBidEntry != null)
                 {
+                    // Only flag the dealer's bid red once every other player has entered a bid.
+                    // While others are still bidding the total can still be made to equal the round,
+                    // so the dealer's value isn't necessarily forbidden yet.
+                    var othersEntered = bidEntries.Keys
+                        .Where(id => id != dealerForEntry.Id)
+                        .All(touchedBids.Contains);
                     var dealerBid = int.TryParse(dealerBidEntry.Text, out var parsedBid) ? parsedBid : -1;
-                    var isForbidden = forbiddenBids.Contains(dealerBid);
+                    var isForbidden = othersEntered && forbiddenBids.Contains(dealerBid);
                     dealerBidEntry.BackgroundColor = isForbidden
                         ? Color.FromArgb("#ffe5e5")
                         : Colors.White;
@@ -1012,8 +1117,11 @@ public class ScoreBoardPage : ContentPage
         {
             var sum = bidEntries.Values.Sum(entry =>
                 int.TryParse(entry.Text, out var v) ? v : 0);
+            // Only warn (red) once every player has entered a bid and the total equals the round.
+            // While bids are still being entered the total can still be changed, so keep it green.
+            var allEntered = touchedBids.Count == bidEntries.Count;
             totalBidsLabel.Text = string.Format(Localization.GetString("TotalBidsLabel"), sum, currentRoundNumber);
-            totalBidsLabel.TextColor = sum == currentRoundNumber ? Colors.DarkRed : Colors.DarkGreen;
+            totalBidsLabel.TextColor = allEntered && sum == currentRoundNumber ? Colors.DarkRed : Colors.DarkGreen;
             UpdateDealerWarning();
         }
 
@@ -1036,7 +1144,11 @@ public class ScoreBoardPage : ContentPage
                 Placeholder = $"0–{currentRoundNumber}",
                 HorizontalTextAlignment = TextAlignment.Center
             };
-            bidEntry.TextChanged += (s, e) => UpdateBidTotal();
+            bidEntry.TextChanged += (s, e) =>
+            {
+                touchedBids.Add(player.Id);
+                UpdateBidTotal();
+            };
             bidEntries[player.Id] = bidEntry;
             if (isDealer)
             {
@@ -1063,14 +1175,34 @@ public class ScoreBoardPage : ContentPage
         doneButton = new Button
         {
             Text = Localization.GetString("Ok"),
-            Margin = new Thickness(0, 12, 0, 0),
-            IsEnabled = false
+            IsEnabled = false,
+            HorizontalOptions = LayoutOptions.Fill
         };
-        population.Children.Add(doneButton);
+        var cancelButton = new Button
+        {
+            Text = Localization.GetString("Cancel"),
+            HorizontalOptions = LayoutOptions.Fill
+        };
+        var buttonsRow = new Grid
+        {
+            ColumnSpacing = 8,
+            Margin = new Thickness(0, 12, 0, 0),
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = GridLength.Star }
+            }
+        };
+        buttonsRow.Add(doneButton, 0);
+        buttonsRow.Add(cancelButton, 1);
+        population.Children.Add(buttonsRow);
+        population.Children.Add(trumpHintLabel);
         UpdateTrumpSelectionState();
 
         var modal = new ContentPage { Content = scroll, BackgroundColor = Colors.White };
         var tcs = new TaskCompletionSource<bool>();
+
+        cancelButton.Clicked += (s, e) => tcs.TrySetResult(false);
 
         doneButton.Clicked += async (s, e) =>
         {
@@ -1116,8 +1248,15 @@ public class ScoreBoardPage : ContentPage
         };
 
         await Navigation.PushModalAsync(modal);
-        await tcs.Task;
+        var proceed = await tcs.Task;
         await Navigation.PopModalAsync();
+
+        // Cancelled: return to the scoreboard without starting the round.
+        if (!proceed)
+        {
+            RefreshUI();
+            return;
+        }
 
         var trump = MapSelectionToTrump(trumpSelectionIndex);
         BackgroundColor = GetTrumpColor(trump);
@@ -1141,11 +1280,13 @@ public class ScoreBoardPage : ContentPage
 
         // --- Actuals popup ---
         var (trumpSymbol, trumpFgColor, trumpBgColor) = GetTrumpDisplayInfo(trump);
-        var lightBg = GetTrumpColor(trump);
+        // The trump color is semi-transparent for use over the scoreboard; flatten it over white
+        // so the actuals modal page is fully opaque and doesn't reveal the scoreboard behind it.
+        var lightBg = FlattenOverWhite(GetTrumpColor(trump));
 
         var actualEntries = new Dictionary<Guid, Entry>();
-        var scrollActuals = new ScrollView { BackgroundColor = Colors.White };
-        var popActuals = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = Colors.White };
+        var scrollActuals = new ScrollView { BackgroundColor = lightBg };
+        var popActuals = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = lightBg };
         scrollActuals.Content = popActuals;
         var totalActualsLabel = new Label
         {
@@ -1153,6 +1294,7 @@ public class ScoreBoardPage : ContentPage
             FontAttributes = FontAttributes.Bold,
             Margin = new Thickness(0, 6, 0, 0)
         };
+        Button? doneActuals = null;
 
         void UpdateActualsTotal()
         {
@@ -1160,6 +1302,10 @@ public class ScoreBoardPage : ContentPage
                 int.TryParse(entry.Text, out var value) ? value : 0);
             totalActualsLabel.Text = string.Format(Localization.GetString("TotalActualsLabel"), sum, currentSession.CurrentRound);
             totalActualsLabel.TextColor = sum == currentSession.CurrentRound ? Colors.DarkGreen : Colors.DarkRed;
+            if (doneActuals != null)
+            {
+                doneActuals.IsEnabled = sum == currentSession.CurrentRound;
+            }
         }
 
         // Round title
@@ -1229,14 +1375,14 @@ public class ScoreBoardPage : ContentPage
         }
 
         popActuals.Children.Add(totalActualsLabel);
-        UpdateActualsTotal();
 
-        var doneActuals = new Button
+        doneActuals = new Button
         {
             Text = Localization.GetString("Ok"),
             Margin = new Thickness(0, 12, 0, 0)
         };
         popActuals.Children.Add(doneActuals);
+        UpdateActualsTotal();
 
         var tcsActuals = new TaskCompletionSource<bool>();
         doneActuals.Clicked += async (s, e) =>
@@ -1267,7 +1413,7 @@ public class ScoreBoardPage : ContentPage
             tcsActuals.SetResult(true);
         };
 
-        await Navigation.PushModalAsync(new ContentPage { Content = scrollActuals, BackgroundColor = Colors.White });
+        await Navigation.PushModalAsync(new ContentPage { Content = scrollActuals, BackgroundColor = lightBg });
         await tcsActuals.Task;
         await Navigation.PopModalAsync();
 
@@ -1497,6 +1643,15 @@ public class ScoreBoardPage : ContentPage
             TrumpSuit.Spades   => ("♠", Colors.DarkBlue,              Colors.White),
             _                  => ("?", Colors.Gray,                   Colors.White)
         };
+    }
+
+    private static Color FlattenOverWhite(Color color)
+    {
+        var a = color.Alpha;
+        return Color.FromRgb(
+            color.Red * a + (1 - a),
+            color.Green * a + (1 - a),
+            color.Blue * a + (1 - a));
     }
 
     private Color GetTrumpColor(TrumpSuit trump)

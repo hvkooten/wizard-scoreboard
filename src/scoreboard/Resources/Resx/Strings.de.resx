@@ -10,7 +10,8 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dieses Spiel lauft noch. Wirklich beenden?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spiel beenden?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Gruppe erstellen</value></data>
-  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Du (Kartengeber) darfst nicht bieten: {0}</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Kartengeber) darf nicht bieten: {1}</value></data>
+  <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Kartengeber) darf beliebig bieten</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Geber</value></data>
   <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>Möchten Sie das gespeicherte Spiel vom {0} wirklich löschen?</value></data>
   <data name="DeleteSavedGameConfirmTitle" xml:space="preserve"><value>Gespeichertes Spiel löschen?</value></data>
@@ -68,6 +69,7 @@ Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
   <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} Spieler ausgewählt</value></data>
   <data name="SelectLanguage" xml:space="preserve"><value>Sprache wählen</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Spieler für dieses Spiel auswählen</value></data>
+  <data name="DragToReorderHint" xml:space="preserve"><value>Mit den Pfeilen die Reihenfolge ändern</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Wählen Sie eine Trumpffarbe, um fortzufahren</value></data>
   <data name="Settings" xml:space="preserve"><value>Einstellungen</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Regeln anzeigen</value></data>

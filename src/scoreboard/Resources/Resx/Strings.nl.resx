@@ -10,7 +10,8 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dit spel is nog bezig. Wil je het toch stoppen?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spel beëindigen?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Groep aanmaken</value></data>
-  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ Jij (Croupier) mag niet bieden: {0}</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Croupier) mag niet bieden: {1}</value></data>
+  <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Croupier) mag een willekeurig aantal bieden</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Wil je groep '{0}' verwijderen?</value></data>
   <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>Groep verwijderen?</value></data>
@@ -68,6 +69,7 @@ Als de PDF niet laadt, gebruik de link.</value></data>
   <data name="SelectedPlayersLabel" xml:space="preserve"><value>{0} spelers geselecteerd</value></data>
   <data name="SelectLanguage" xml:space="preserve"><value>Selecteer taal</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Selecteer spelers voor dit spel</value></data>
+  <data name="DragToReorderHint" xml:space="preserve"><value>Gebruik de pijlen om de volgorde te wijzigen</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Kies een troefkleur om door te gaan</value></data>
   <data name="Settings" xml:space="preserve"><value>Instellingen</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Spelregels tonen</value></data>
