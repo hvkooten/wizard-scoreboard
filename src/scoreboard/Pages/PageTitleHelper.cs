@@ -87,6 +87,7 @@ internal static class PageTitleHelper
             AddNavButton(Localization.GetString("Highscore"), nameof(HighscorePage));
             AddNavButton(Localization.GetString("SavedGames"), nameof(SavedGamesPage));
             AddNavButton(Localization.GetString("Rules"), nameof(RulesPage));
+            AddNavButton(Localization.GetString("Groups"), nameof(GroupsPage));
             AddNavButton(Localization.GetString("Settings"), nameof(SettingsPage));
 
             var navScroller = new ScrollView
@@ -111,7 +112,14 @@ internal static class PageTitleHelper
                     TextColor = Color.FromArgb("#163a5f")
                 };
 
-                button.Clicked += async (_, _) => await Shell.Current.GoToAsync(route);
+                // Use an absolute route so tabs switch in place instead of pushing a new page (no back button/stacking).
+                button.Clicked += async (_, _) =>
+                {
+                    if (!isActive)
+                    {
+                        await Shell.Current.GoToAsync($"//{route}");
+                    }
+                };
                 navRow.Children.Add(button);
             }
         }

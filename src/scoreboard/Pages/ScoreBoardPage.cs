@@ -207,6 +207,32 @@ public class ScoreBoardPage : ContentPage
                     scoreGrid.Add(playerLbl, 0, i + 1);
                 }
             }
+            else if (!hasAvailableGroup)
+            {
+                // First run / no groups yet: guide the user to create one.
+                scoreGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+                scoreGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                scoreGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                var infoLbl = new Label
+                {
+                    Text = Localization.GetString("NoGroupsAvailable"),
+                    FontSize = 15,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    Padding = new Thickness(12, 12)
+                };
+                scoreGrid.Add(infoLbl, 0, 0);
+
+                var createGroupButton = new Button
+                {
+                    Text = Localization.GetString("CreateGroup"),
+                    HorizontalOptions = LayoutOptions.Center,
+                    Margin = new Thickness(0, 8, 0, 0)
+                };
+                createGroupButton.Clicked += async (_, _) =>
+                    await Shell.Current.GoToAsync($"//{nameof(GroupsPage)}");
+                scoreGrid.Add(createGroupButton, 0, 1);
+            }
 
             return;
         }
@@ -1805,6 +1831,6 @@ public class ScoreBoardPage : ContentPage
         if (Navigation.ModalStack.Contains(modal))
             await Navigation.PopModalAsync();
 
-        await Shell.Current.GoToAsync(nameof(HighscorePage));
+        await Shell.Current.GoToAsync($"//{nameof(HighscorePage)}");
     }
 }

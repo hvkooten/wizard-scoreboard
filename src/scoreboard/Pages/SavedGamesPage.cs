@@ -126,7 +126,7 @@ public class SavedGamesPage : ContentPage
             openButton.Clicked += async (s, e) =>
             {
                 scoreService.SelectSavedGame(sessionId);
-                await Shell.Current.GoToAsync(nameof(ScoreBoardPage));
+                await Shell.Current.GoToAsync($"//{nameof(ScoreBoardPage)}");
             };
 
             deleteButton.Clicked += async (s, e) =>
