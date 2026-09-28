@@ -1017,6 +1017,7 @@ public class ScoreBoardPage : ContentPage
         var bidEntries = new Dictionary<Guid, Entry>();
         var touchedBids = new HashSet<Guid>();
         Entry? dealerBidEntry = null;
+        Action? refreshDealerColor = null;
 
         var scroll = new ScrollView { BackgroundColor = Colors.White };
         var population = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = Colors.White };
@@ -1070,6 +1071,9 @@ public class ScoreBoardPage : ContentPage
                 : Colors.White;
             scroll.BackgroundColor = popupBg;
             population.BackgroundColor = popupBg;
+
+            // Refresh the dealer's (last) bid field so its color follows the trump selection.
+            refreshDealerColor?.Invoke();
         }
 
 
@@ -1083,6 +1087,15 @@ public class ScoreBoardPage : ContentPage
             Margin = new Thickness(0, 8, 0, 0),
             IsVisible = isBidTotalRuleEnabled && currentRoundNumber >= currentSession.BidTotalRuleStartRound
         };
+
+        // Background color for the dealer's (last) bid field when the bid is valid:
+        // use the selected trump color, or white when no trump is chosen yet.
+        Color GetDealerValidColor()
+        {
+            return getTrumpIndexAccessor != null && getTrumpIndexAccessor() >= 0
+                ? FlattenOverWhite(GetTrumpColor(MapSelectionToTrump(getTrumpIndexAccessor())))
+                : Colors.White;
+        }
 
         void UpdateDealerWarning()
         {
@@ -1111,7 +1124,7 @@ public class ScoreBoardPage : ContentPage
 
                     if (dealerBidEntry != null)
                     {
-                        dealerBidEntry.BackgroundColor = Colors.White;
+                        dealerBidEntry.BackgroundColor = GetDealerValidColor();
                     }
                     return;
                 }
@@ -1136,13 +1149,13 @@ public class ScoreBoardPage : ContentPage
                     var dealerBid = int.TryParse(dealerBidEntry.Text, out var parsedBid) ? parsedBid : -1;
                     var isForbidden = othersEntered && forbiddenBids.Contains(dealerBid);
                     dealerBidEntry.BackgroundColor = isForbidden
-                        ? Color.FromArgb("#ffe5e5")
-                        : Colors.White;
+                        ? Color.FromArgb("#ffcccc")
+                        : GetDealerValidColor();
                 }
             }
             else if (dealerBidEntry != null)
             {
-                dealerBidEntry.BackgroundColor = Colors.White;
+                dealerBidEntry.BackgroundColor = GetDealerValidColor();
             }
         }
 
@@ -1151,6 +1164,7 @@ public class ScoreBoardPage : ContentPage
             population.Children.Add(dealerWarningLabel);
             UpdateDealerWarning();
         }
+        refreshDealerColor = UpdateDealerWarning;
 
         // Live bid total
         var totalBidsLabel = new Label
@@ -1674,6 +1688,7 @@ public class ScoreBoardPage : ContentPage
             CornerRadius = 8,
             Padding = new Thickness(0),
             FontSize = 18,
+            VerticalOptions = LayoutOptions.Center,
             BackgroundColor = Color.FromArgb("#e0e8f0"),
             TextColor = Color.FromArgb("#1a3a5c")
         };
@@ -1685,6 +1700,7 @@ public class ScoreBoardPage : ContentPage
             CornerRadius = 8,
             Padding = new Thickness(0),
             FontSize = 18,
+            VerticalOptions = LayoutOptions.Center,
             BackgroundColor = Color.FromArgb("#1a3a5c"),
             TextColor = Colors.White
         };
@@ -1720,6 +1736,8 @@ public class ScoreBoardPage : ContentPage
             },
             ColumnSpacing = 6
         };
+        nameLabel.VerticalOptions = LayoutOptions.Center;
+        entry.VerticalOptions = LayoutOptions.Center;
         grid.Add(nameLabel, 0, 0);
         grid.Add(minusBtn, 1, 0);
         grid.Add(entry, 2, 0);
