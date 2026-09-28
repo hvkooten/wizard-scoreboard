@@ -16,7 +16,7 @@ public class MainActivity : MauiAppCompatActivity
 {
     const string TAG = "AppDiagnostics";
 
-    protected override void OnCreate(Bundle savedInstanceState)
+    protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
 

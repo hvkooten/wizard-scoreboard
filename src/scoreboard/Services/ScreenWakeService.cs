@@ -32,9 +32,25 @@ public class ScreenWakeService : IScreenWakeService
 
     private static void SetKeepScreenOn(bool keepOn)
     {
-        if (DeviceDisplay.Current.KeepScreenOn != keepOn)
+        // DeviceDisplay needs the current Activity on Android. During early startup the page
+        // can be constructed (via DI) before the Activity is ready, in which case accessing
+        // KeepScreenOn throws "The current Activity cannot be detected". Keeping the screen on
+        // is best-effort UX, so any timing issue is swallowed instead of crashing the app.
+        try
         {
-            DeviceDisplay.Current.KeepScreenOn = keepOn;
+            var display = DeviceDisplay.Current;
+            if (display.KeepScreenOn != keepOn)
+            {
+                display.KeepScreenOn = keepOn;
+            }
+        }
+        catch (NullReferenceException)
+        {
+            // Current Activity not available yet; ignore and let a later Apply/Refresh retry.
+        }
+        catch (InvalidOperationException)
+        {
+            // Platform display not ready; ignore.
         }
     }
 }
