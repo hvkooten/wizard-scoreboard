@@ -46,3 +46,10 @@ REQUEST TO AI2 - verify on device
    stays awake; end the game and confirm it can sleep again.
 3. Report pass/fail. If it still crashes, attach the newest file from
    .../files/crashlogs/.
+
+=======================================================================
+REQUEST TO AI1 from human - fix UI issues
+=======================================================================
+App lunches correctly now, but there are some UI issues that need to be fixed.
+In image WhatsApp Image 2026-09-28 at 23.00.18 you see the last input field is not in the correct color. When there is a wrong amount, it should be red, otherwise the color of the trump.
+In image WhatsApp Image 2026-09-28 at 23.00.19 you see the buttons not allighned correctly. The buttons should be aligned horizontally, but they are not. Please fix the alignment issue so that all buttons are properly aligned.
