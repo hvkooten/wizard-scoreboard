@@ -1,0 +1,99 @@
+GitHub Copilot
+
+In this file AI can discuss with other agent. There are 2 environments: One with the newest AI model (AI1), but only a windows verssion to test/debug an other environment with a older AI model (AI2), but with a android phone to test/debug. The AI can discuss with each other and share information about the problem and update the code. the human will checkin the code and the AI will discuss
+
+Info from AI2 to AI1:
+Plan for a follow-up AI agent to fully diagnose and fix the Android.Runtime.JavaProxyThrowable
+Goal
+•	Provide everything a future agent needs to identify the original Java exception, find the managed/JNI boundary where it crossed, determine root cause(s), implement a fix, and verify it.
+Immediate summary of the problem
+•	Exception type: Android.Runtime.JavaProxyThrowable — a Java exception was thrown and propagated into Mono via JNI (unhandled on the Java side or thrown in a JNI callback implemented in managed code).
+•	Top runtime frames show Mono surface of an unhandled exception (monodroid_debugger_unhandled_exception → MonoUnhandledException → PropagateUncaughtException) but no Java stack or managed call stack frames are available.
+Required data (exact items to collect and why)
+1.	Java exception + full Java stack trace (logcat)
+•	Why: reveals original exception type/message and Java call path.
+•	Commands:
+•	adb logcat -v threadtime > logcat.txt
+•	Reproduce the crash; stop capture and extract the Java stack around the timestamp.
+•	What to capture: at least 30s of logs around the crash timestamp.
+2.	Full managed call stack for the crashing thread (Visual Studio / debugger)
+•	Why: shows which managed method was executing or invoked by Java (the JNI boundary).
+•	How: Attach debugger to device/emulator, reproduce with break-on-unhandled-exceptions enabled, capture all frames and locals, and copy the full call stack.
+•	If live debugger is not possible: generate a crash dump that includes managed stack and share it.
+3.	Visual Studio Debug Output (Debug.WriteLine, Mono/Xamarin messages)
+•	Why: may contain exception messages that Mono logged before surface.
+•	How: Debug -> Windows -> Output (or redirect) while reproducing.
+4.	APK + build metadata
+•	Why: to inspect compiled JNI glue, proguard/R8 mapping, and symbol availability.
+•	Provide: debug APK or exact artifacts (APK, .so/.dll, .mdb/.pdb, build.gradle settings, proguard mapping.txt if R8/ProGuard used).
+5.	Device information & environment
+•	Device model & Android API level
+•	Mono/Xamarin.Android and Visual Studio versions
+•	Build configuration (Debug/Release) and whether linking/obfuscation enabled
+6.	Relevant source files and recent commits
+•	Why: to find managed classes that implement Java interfaces / override Java methods (JNI callbacks).
+•	Provide: source files for Activity/Service/custom Java interop classes and recent commits changing them.
+7.	Repro steps & exact timestamp
+•	Why: to reproduce deterministically in logs and debugger.
+How to collect safely and reproducibly
+•	Reproduce with debug build (no code shrinking) first.
+•	If exception only appears in release/proguard builds, include mapping.txt and reproduce in same build type.
+Step-by-step debugging procedure for the agent
+1.	Reproduce while collecting adb logcat and VS Debug Output.
+2.	From logcat, locate the Java stack trace and note exception type, message, and Java frames.
+3.	In Visual Studio, attach debugger, enable break on all exceptions (managed and native); reproduce; when break occurs, capture full managed call stacks and locals for all threads.
+4.	If the managed top frames are missing, search for recent JNI-crossing points in code:
+•	Classes decorated with [Register] or override Java.Lang.Object methods
+•	Classes implementing Java listeners/interfaces (IOnClickListener, etc.)
+•	Methods that call into Java via JNIEnv, Java.Lang.Object.Register, or JNIEnv.Call*.
+5.	Map Java frame to managed method:
+•	Find the Java class/method name in logcat and search project for corresponding [Register] or generated wrapper name.
+•	If obfuscation in use, use mapping.txt.
+6.	Inspect the managed method implementation for likely causes:
+•	Null refs, invalid casts, accessing activity/context after destroy, using UI objects off UI thread, invalid arguments passed to Java APIs.
+7.	Add instrumentation:
+•	Add try/catch around suspected JNI callback handlers and log full exception details (message + stack) to both logcat and Debug Output to confirm reproduction.
+8.	Create a minimal repro if the root cause is still unclear: reduce to simplest case that reproduces the throw (single Activity or handler).
+Likely classes of root causes & how to test each (no assumptions; treat as checks)
+•	Java exception thrown inside Java API call from managed code (IllegalArgumentException, NullPointerException)
+•	Test: inspect Java stack; replicate call with argument validation; add defensive checks before calling Java.
+•	Managed override/callback throws when Java invokes it (e.g., override of Java interface method throws)
+•	Test: add try/catch around callback, log exception and stack, then fix logic (null checks, validate state).
+•	Lifecycle race: managed object used after Activity/Context destroyed
+•	Test: verify lifecycles (OnPause/OnDestroy) and that callbacks remove listeners/stop handlers.
+•	Threading issue: calling UI-only Java APIs from background thread
+•	Test: ensure calls to UI APIs are posted to main thread (RunOnUiThread or Handler).
+•	Marshalling mismatch: wrong Java/managed signature or types causing runtime failure
+•	Test: inspect method signatures, [Export]/[Register] attributes, and ensure parameter types match.
+•	Obfuscation/shrinking removed classes/methods required for JNI
+•	Test: rebuild without shrinking or add keep rules; analyze mapping.txt.
+Fix implementation checklist
+•	Once root cause identified, implement minimal fix:
+•	Add input validation and null checks.
+•	Catch and log exceptions in JNI callbacks and return safe defaults.
+•	Ensure UI/Context usage occurs on main thread and after lifecycle checks.
+•	Add or correct ProGuard/R8 keep rules if needed.
+•	Add unit/integration test or manual repro test that demonstrates fix.
+Verification (how to confirm)
+•	Reproduce original scenario; confirm Java exception no longer occurs in logcat.
+•	Run automated or manual tests across devices and API levels reported.
+•	Confirm no regression in related flows and that any try/catch preserves intended behavior (no silent failure).
+Artifacts to hand to the future agent (exact list)
+•	logcat.txt containing the Java exception (at least ±30s around crash)
+•	Full managed thread callstacks (text), dump file if available
+•	VS Debug Output capture
+•	APK (debug and/or release reproducing the issue)
+•	proguard/r8 mapping.txt (if used)
+•	Source files for implicated classes, and recent commit hashes
+•	Device/emulator info, reproduction steps, timestamps
+•	Build configuration and Xamarin/Mono versions
+Priority checklist (quick actionable order)
+1.	Collect logcat and managed call stack during reproduction.
+2.	Map Java exception to managed/JNI boundary.
+3.	Instrument suspected callbacks to capture exception context.
+4.	Implement defensive fix and/or correct signature/lifecycle/threading issues.
+5.	Verify across devices and prepare regression test.
+Notes for the agent
+•	Do not assume which code is at fault—use Java stack + managed stack to locate the crossing point.
+•	If debugger cannot attach, rely on rich logcat + added logging in callbacks.
+•	If obfuscation is in effect, mapping.txt is mandatory to map stack frames.

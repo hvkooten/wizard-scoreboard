@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Copilot/">
+    <File Path="Copilot.discussion.txt" />
+  </Folder>
   <Folder Name="/Specs/">
     <File Path="specs/001-wizard-scoreboard/data-model.md" />
     <File Path="specs/001-wizard-scoreboard/plan.md" />
