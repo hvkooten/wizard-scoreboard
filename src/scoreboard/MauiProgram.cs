@@ -1,5 +1,3 @@
-using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
 using WizardScoreboard;
 using WizardScoreboard.Pages;
 using WizardScoreboard.Resources;
@@ -27,6 +25,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IScoreService, ScoreService>();
         builder.Services.AddSingleton<IHighscoreService, HighscoreService>();
         builder.Services.AddSingleton<ITrumpPaletteService, TrumpPaletteService>();
+        builder.Services.AddSingleton<IScreenWakeService, ScreenWakeService>();
 
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<GroupsPage>();

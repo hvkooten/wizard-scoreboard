@@ -1,5 +1,3 @@
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.ApplicationModel;
 using WizardScoreboard.Resources;
 
 namespace WizardScoreboard.Pages;

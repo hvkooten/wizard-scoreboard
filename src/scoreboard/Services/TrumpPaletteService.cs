@@ -1,4 +1,3 @@
-using Microsoft.Maui.Storage;
 using WizardScoreboard.Resources;
 
 namespace WizardScoreboard.Services;

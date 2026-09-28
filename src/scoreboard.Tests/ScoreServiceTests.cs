@@ -428,4 +428,194 @@ public class ScoreServiceTests
         Assert.NotNull(current);
         Assert.AreEqual(activeSession.Id, current!.Id);
     }
+
+    [Test]
+    public void DeleteSavedGame_RemovesPausedSession_FromSavedGames()
+    {
+        var scoreService = new ScoreService();
+
+        var group = new Group
+        {
+            Name = "A",
+            Players = new List<Player>
+            {
+                new Player { Name = "A1", Order = 0 },
+                new Player { Name = "A2", Order = 1 },
+                new Player { Name = "A3", Order = 2 }
+            }
+        };
+
+        var session = scoreService.StartGame(group);
+        scoreService.PauseGame(session);
+
+        scoreService.DeleteSavedGame(session.Id);
+
+        Assert.IsEmpty(scoreService.GetSavedGames());
+    }
+
+    [Test]
+    public void DeleteSavedGame_ClearsCurrentSession_WhenDeletingSelectedGame()
+    {
+        var scoreService = new ScoreService();
+
+        var group = new Group
+        {
+            Name = "A",
+            Players = new List<Player>
+            {
+                new Player { Name = "A1", Order = 0 },
+                new Player { Name = "A2", Order = 1 },
+                new Player { Name = "A3", Order = 2 }
+            }
+        };
+
+        var session = scoreService.StartGame(group);
+        scoreService.PauseGame(session);
+        scoreService.SelectSavedGame(session.Id);
+
+        scoreService.DeleteSavedGame(session.Id);
+
+        Assert.IsNull(scoreService.GetCurrentSession());
+    }
+
+    [Test]
+    public void DeleteSavedGame_DoesNotRemoveActiveNonPausedSession()
+    {
+        var scoreService = new ScoreService();
+
+        var group = new Group
+        {
+            Name = "A",
+            Players = new List<Player>
+            {
+                new Player { Name = "A1", Order = 0 },
+                new Player { Name = "A2", Order = 1 },
+                new Player { Name = "A3", Order = 2 }
+            }
+        };
+
+        var pausedSession = scoreService.StartGame(group);
+        scoreService.PauseGame(pausedSession);
+        var activeSession = scoreService.StartGame(group);
+
+        scoreService.DeleteSavedGame(activeSession.Id);
+
+        Assert.IsNotNull(scoreService.GetCurrentSession());
+        Assert.AreEqual(activeSession.Id, scoreService.GetCurrentSession()!.Id);
+    }
+
+    [Test]
+    public void CancelRound_RemovesStartedRound_AndRestoresRoundCounter()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "CancelGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        var bids = session.Players.ToDictionary(p => p.Id, _ => 1);
+        scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+
+        scoreService.CancelRound(session);
+
+        Assert.AreEqual(0, session.CurrentRound);
+        Assert.IsEmpty(session.Rounds);
+    }
+
+    [Test]
+    public void CancelRound_DoesNotChangePlayerScores()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "CancelScoreGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        var bids = session.Players.ToDictionary(p => p.Id, _ => 1);
+        scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+
+        scoreService.CancelRound(session);
+
+        Assert.IsTrue(session.Players.All(p => p.CurrentPoints == 0));
+    }
+
+    [Test]
+    public void CancelRound_RestoresTrumpFromPreviousRound()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "CancelTrumpGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
+        scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+        scoreService.FinishRound(session, bids);
+
+        var secondBids = session.Players.ToDictionary(p => p.Id, _ => 1);
+        scoreService.StartRound(session, TrumpSuit.Spades, secondBids);
+
+        scoreService.CancelRound(session);
+
+        Assert.AreEqual(1, session.CurrentRound);
+        Assert.AreEqual(TrumpSuit.Hearts, session.Trump);
+    }
+
+    [Test]
+    public void CancelRound_WithoutRounds_ThrowsInvalidOperationException()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "NoRoundCancelGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        Assert.Throws<InvalidOperationException>(() => scoreService.CancelRound(session));
+    }
+
+    [Test]
+    public void CancelRound_AfterRoundFinished_ThrowsInvalidOperationException()
+    {
+        var scoreService = new ScoreService();
+
+        var players = new List<Player>
+        {
+            new Player { Name = "A", Order = 0 },
+            new Player { Name = "B", Order = 1 },
+            new Player { Name = "C", Order = 2 }
+        };
+
+        var group = new Group { Name = "FinishedCancelGroup", Players = players };
+        var session = scoreService.StartGame(group);
+
+        var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
+        scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+        scoreService.FinishRound(session, bids);
+
+        Assert.Throws<InvalidOperationException>(() => scoreService.CancelRound(session));
+    }
 }

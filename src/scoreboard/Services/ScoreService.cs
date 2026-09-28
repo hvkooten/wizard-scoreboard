@@ -1,4 +1,3 @@
-using Microsoft.Maui.Storage;
 using System.Text.Json;
 using WizardScoreboard.Models;
 
@@ -150,6 +149,23 @@ public class ScoreService : IScoreService
         session.Rounds.Add(round);
         SavePausedSessions();
         return round;
+    }
+
+    public void CancelRound(ScoreSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+
+        var round = session.Rounds.LastOrDefault();
+        if (round == null)
+            throw new InvalidOperationException("Geen actieve ronde om te annuleren.");
+
+        if (round.ActualByPlayer.Count > 0)
+            throw new InvalidOperationException("Ronde is al afgesloten en kan niet meer geannuleerd worden.");
+
+        session.Rounds.Remove(round);
+        session.CurrentRound--;
+        session.Trump = session.Rounds.LastOrDefault()?.Trump ?? TrumpSuit.None;
+        SavePausedSessions();
     }
 
     public void FinishRound(ScoreSession session, Dictionary<Guid, int> actuals)

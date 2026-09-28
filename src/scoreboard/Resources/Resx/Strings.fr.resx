@@ -5,6 +5,7 @@
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>L'enchère de {0} doit être comprise entre 0 et {1}.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Règle du total des mises à partir de la manche :</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Back" xml:space="preserve"><value>Retour</value></data>
   <data name="Blue" xml:space="preserve"><value>Bleu</value></data>
   <data name="Clubs" xml:space="preserve"><value>Trèfles</value></data>
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Cette partie est encore en cours. Voulez-vous l'arrêter ?</value></data>
@@ -82,6 +83,9 @@ Si le PDF ne se charge pas, utilisez le lien.</value></data>
   <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Le total des enchères ne peut pas être égal au numéro de manche ({0}).</value></data>
   <data name="TotalBidsLabel" xml:space="preserve"><value>Total enchères : {0} / {1}</value></data>
   <data name="TotalHeader" xml:space="preserve"><value>Total</value></data>
+  <data name="KeepScreenAwake" xml:space="preserve"><value>Garder l'écran allumé pendant une partie</value></data>
+  <data name="BoldAllText" xml:space="preserve"><value>Tout le texte en gras</value></data>
+  <data name="ScoreInlineLabel" xml:space="preserve"><value>score : {0}</value></data>
   <data name="Trump" xml:space="preserve"><value>Atout</value></data>
   <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Style de couleur d'atout</value></data>
   <data name="TrumpHeader" xml:space="preserve"><value>Atout</value></data>

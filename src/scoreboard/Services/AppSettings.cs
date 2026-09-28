@@ -1,4 +1,3 @@
-using Microsoft.Maui.Storage;
 using WizardScoreboard.Models;
 
 namespace WizardScoreboard.Services;
@@ -7,6 +6,22 @@ namespace WizardScoreboard.Services;
 public static class AppSettings
 {
     private const string DefaultBidTotalRuleKey = "default_bid_total_rule";
+    private const string KeepScreenAwakeKey = "keep_screen_awake";
+    private const string BoldAllTextKey = "bold_all_text";
+
+    // When true, the device screen is kept on while a game is in progress.
+    public static bool KeepScreenAwakeDuringGame
+    {
+        get => Preferences.Default.Get(KeepScreenAwakeKey, false);
+        set => Preferences.Default.Set(KeepScreenAwakeKey, value);
+    }
+
+    // When true, all label text throughout the app is rendered bold.
+    public static bool BoldAllText
+    {
+        get => Preferences.Default.Get(BoldAllTextKey, false);
+        set => Preferences.Default.Set(BoldAllTextKey, value);
+    }
 
     // Default bid-total-rule start round applied when creating a new group.
     // Group.PlayerCountRule means "follow the number of players".

@@ -24,6 +24,7 @@
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bid for {0} must be between 0 and {1}.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Bid total rule from round:</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Back" xml:space="preserve"><value>Back</value></data>
   <data name="Blue" xml:space="preserve"><value>Blue</value></data>
   <data name="Clubs" xml:space="preserve"><value>Clubs</value></data>
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>This game is still in progress. Do you want to stop it?</value></data>
@@ -99,6 +100,9 @@ If PDF cannot render, use the link.</value></data>
   <data name="TotalActualsLabel" xml:space="preserve"><value>Total wins: {0} / {1}</value></data>
   <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Total bids cannot equal the round number ({0}).</value></data>
   <data name="TotalBidsLabel" xml:space="preserve"><value>Total bids: {0} / {1}</value></data>
+  <data name="KeepScreenAwake" xml:space="preserve"><value>Keep screen on during a game</value></data>
+  <data name="BoldAllText" xml:space="preserve"><value>Bold all text</value></data>
+  <data name="ScoreInlineLabel" xml:space="preserve"><value>score: {0}</value></data>
   <data name="TotalHeader" xml:space="preserve"><value>Total</value></data>
   <data name="Trump" xml:space="preserve"><value>Trump</value></data>
   <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Trump color style</value></data>

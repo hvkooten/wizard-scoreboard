@@ -1,4 +1,3 @@
-using Microsoft.Maui.Controls;
 using WizardScoreboard.Pages;
 using WizardScoreboard.Resources;
 

@@ -1,8 +1,5 @@
-using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
-using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
-using System.Linq;
 using WizardScoreboard.Models;
 using WizardScoreboard.Resources;
 using WizardScoreboard.Services;
@@ -21,16 +18,18 @@ public class SettingsPage : ContentPage
     };
 
     private readonly ITrumpPaletteService trumpPaletteService;
+    private readonly IScreenWakeService screenWakeService;
     private readonly Picker languagePicker;
     private readonly Picker trumpPalettePicker;
     private readonly HorizontalStackLayout trumpPalettePreviewLayout;
     private readonly Picker bidTotalRulePicker;
 
-    public SettingsPage(ITrumpPaletteService trumpPaletteService)
+    public SettingsPage(ITrumpPaletteService trumpPaletteService, IScreenWakeService screenWakeService)
     {
         PageTitleHelper.Apply(this, Localization.GetString("Settings"));
 
         this.trumpPaletteService = trumpPaletteService;
+        this.screenWakeService = screenWakeService;
 
         languagePicker = new Picker { Title = Localization.GetString("SelectLanguage") };
         foreach (var option in LanguageOptions)
@@ -116,6 +115,60 @@ public class SettingsPage : ContentPage
             }
         };
 
+        var keepScreenAwakeSwitch = new Switch
+        {
+            IsToggled = AppSettings.KeepScreenAwakeDuringGame,
+            VerticalOptions = LayoutOptions.Center
+        };
+        keepScreenAwakeSwitch.Toggled += (s, e) =>
+        {
+            AppSettings.KeepScreenAwakeDuringGame = e.Value;
+            screenWakeService.Refresh();
+        };
+
+        var keepScreenAwakeRow = new HorizontalStackLayout
+        {
+            Spacing = 8,
+            VerticalOptions = LayoutOptions.Center,
+            Children =
+            {
+                new Label
+                {
+                    Text = Localization.GetString("KeepScreenAwake"),
+                    VerticalTextAlignment = TextAlignment.Center,
+                    HorizontalOptions = LayoutOptions.Start
+                },
+                keepScreenAwakeSwitch
+            }
+        };
+
+        var boldAllTextSwitch = new Switch
+        {
+            IsToggled = AppSettings.BoldAllText,
+            VerticalOptions = LayoutOptions.Center
+        };
+        boldAllTextSwitch.Toggled += (s, e) =>
+        {
+            AppSettings.BoldAllText = e.Value;
+            App.ApplyGlobalTextStyle();
+        };
+
+        var boldAllTextRow = new HorizontalStackLayout
+        {
+            Spacing = 8,
+            VerticalOptions = LayoutOptions.Center,
+            Children =
+            {
+                new Label
+                {
+                    Text = Localization.GetString("BoldAllText"),
+                    VerticalTextAlignment = TextAlignment.Center,
+                    HorizontalOptions = LayoutOptions.Start
+                },
+                boldAllTextSwitch
+            }
+        };
+
         Content = new ScrollView
         {
             Content = new StackLayout
@@ -127,7 +180,9 @@ public class SettingsPage : ContentPage
                     languagePicker,
                     trumpStyleHeaderRow,
                     trumpPalettePicker,
-                    bidTotalRulePicker
+                    bidTotalRulePicker,
+                    keepScreenAwakeRow,
+                    boldAllTextRow
                 }
             }
         };

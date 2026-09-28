@@ -10,6 +10,7 @@ public interface IScoreService
     void ResumeGame(ScoreSession session);
     void EndGame(ScoreSession session);
     RoundEntry StartRound(ScoreSession session, TrumpSuit trump, Dictionary<Guid, int> bids);
+    void CancelRound(ScoreSession session);
     void FinishRound(ScoreSession session, Dictionary<Guid, int> actuals);
     IEnumerable<ScoreSession> GetActiveSessions();
     IEnumerable<ScoreSession> GetSavedGames();

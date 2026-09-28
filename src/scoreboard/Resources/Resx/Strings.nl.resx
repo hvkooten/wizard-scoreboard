@@ -5,13 +5,14 @@
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bod van {0} moet tussen 0 en {1} liggen.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Bied-totaal-regel vanaf ronde:</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuleren</value></data>
+  <data name="Back" xml:space="preserve"><value>Terug</value></data>
   <data name="Blue" xml:space="preserve"><value>Blauw</value></data>
   <data name="Clubs" xml:space="preserve"><value>Klaveren</value></data>
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dit spel is nog bezig. Wil je het toch stoppen?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spel beëindigen?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Groep aanmaken</value></data>
-  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Croupier) mag niet bieden: {1}</value></data>
-  <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Croupier) mag een willekeurig aantal bieden</value></data>
+  <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Deler) mag niet bieden: {1}</value></data>
+  <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Deler) mag een willekeurig aantal bieden</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Wil je groep '{0}' verwijderen?</value></data>
   <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>Groep verwijderen?</value></data>
@@ -81,6 +82,9 @@ Als de PDF niet laadt, gebruik de link.</value></data>
   <data name="TotalActualsLabel" xml:space="preserve"><value>Totaal gewonnen: {0} / {1}</value></data>
   <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Totaal biedingen kan niet gelijk zijn aan het rondenummer ({0}).</value></data>
   <data name="TotalBidsLabel" xml:space="preserve"><value>Totaal biedingen: {0} / {1}</value></data>
+  <data name="KeepScreenAwake" xml:space="preserve"><value>Scherm aan houden tijdens een spel</value></data>
+  <data name="BoldAllText" xml:space="preserve"><value>Alle tekst vet</value></data>
+  <data name="ScoreInlineLabel" xml:space="preserve"><value>score: {0}</value></data>
   <data name="TotalHeader" xml:space="preserve"><value>Totaal</value></data>
   <data name="Trump" xml:space="preserve"><value>Troef</value></data>
   <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Troefkleurstijl</value></data>

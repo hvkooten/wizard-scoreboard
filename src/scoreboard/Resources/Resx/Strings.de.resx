@@ -5,6 +5,7 @@
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Gebotssummenregel ab Runde:</value></data>
   <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Wie viele Stiche bietet jeder Spieler?</value></data>
   <data name="Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="Back" xml:space="preserve"><value>Zurück</value></data>
   <data name="Blue" xml:space="preserve"><value>Blau</value></data>
   <data name="Clubs" xml:space="preserve"><value>Kreuz</value></data>
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dieses Spiel lauft noch. Wirklich beenden?</value></data>
@@ -82,6 +83,9 @@ Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
   <data name="TotalBidsEqualRoundError" xml:space="preserve"><value>Gesamtgebote können nicht gleich der Rundenzahl ({0}) sein.</value></data>
   <data name="TotalBidsLabel" xml:space="preserve"><value>Gesamtgebote: {0} / {1}</value></data>
   <data name="TotalHeader" xml:space="preserve"><value>Gesamt</value></data>
+  <data name="KeepScreenAwake" xml:space="preserve"><value>Bildschirm während eines Spiels eingeschaltet lassen</value></data>
+  <data name="BoldAllText" xml:space="preserve"><value>Gesamten Text fett</value></data>
+  <data name="ScoreInlineLabel" xml:space="preserve"><value>Punkte: {0}</value></data>
   <data name="Trump" xml:space="preserve"><value>Trumpf</value></data>
   <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Trumpffarbstil</value></data>
   <data name="TrumpHeader" xml:space="preserve"><value>Trumpf</value></data>

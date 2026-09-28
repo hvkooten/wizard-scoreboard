@@ -1,4 +1,3 @@
-using Microsoft.Maui.Controls;
 using WizardScoreboard.Models;
 using WizardScoreboard.Resources;
 using WizardScoreboard.Services;
@@ -11,6 +10,7 @@ public class ScoreBoardPage : ContentPage
     private readonly IHighscoreService highscoreService;
     private readonly IScoreService scoreService;
     private readonly ITrumpPaletteService trumpPaletteService;
+    private readonly IScreenWakeService screenWakeService;
     private ScoreSession? currentSession;
 
     // Live-updated UI elements
@@ -25,24 +25,25 @@ public class ScoreBoardPage : ContentPage
     private ScrollView scoreboardScrollView;
 
     // Palette for header colours
-    private static readonly Color HeaderBg   = Color.FromArgb("#1a3a5c");
-    private static readonly Color HeaderFg   = Colors.White;
-    private static readonly Color RowEven    = Color.FromArgb("#f0f4f8");
-    private static readonly Color RowOdd     = Colors.White;
-    private static readonly Color WinBg      = Color.FromArgb("#c8f7c5");
-    private static readonly Color LoseBg     = Color.FromArgb("#fde8e8");
-    private static readonly Color WinFg      = Color.FromArgb("#1a6b2a");
-    private static readonly Color LoseFg     = Color.FromArgb("#a32020");
-    private static readonly Color TotalBg    = Color.FromArgb("#ddeeff");
+    private static readonly Color HeaderBg = Color.FromArgb("#1a3a5c");
+    private static readonly Color HeaderFg = Colors.White;
+    private static readonly Color RowEven = Color.FromArgb("#f0f4f8");
+    private static readonly Color RowOdd = Colors.White;
+    private static readonly Color WinBg = Color.FromArgb("#c8f7c5");
+    private static readonly Color LoseBg = Color.FromArgb("#fde8e8");
+    private static readonly Color WinFg = Color.FromArgb("#1a6b2a");
+    private static readonly Color LoseFg = Color.FromArgb("#a32020");
+    private static readonly Color TotalBg = Color.FromArgb("#ddeeff");
 
-    public ScoreBoardPage(IGroupService groupService, IHighscoreService highscoreService, IScoreService scoreService, ITrumpPaletteService trumpPaletteService)
+    public ScoreBoardPage(IGroupService groupService, IHighscoreService highscoreService, IScoreService scoreService, ITrumpPaletteService trumpPaletteService, IScreenWakeService screenWakeService)
     {
         PageTitleHelper.Apply(this, Localization.GetString("Scoreboard"));
 
-        this.groupService    = groupService;
+        this.groupService = groupService;
         this.highscoreService = highscoreService;
-        this.scoreService    = scoreService;
+        this.scoreService = scoreService;
         this.trumpPaletteService = trumpPaletteService;
+        this.screenWakeService = screenWakeService;
 
         statusLabel = new Label
         {
@@ -55,14 +56,14 @@ public class ScoreBoardPage : ContentPage
         headerGrid = new Grid();
         footerGrid = new Grid();
 
-        startButton     = new Button { Text = Localization.GetString("StartGame") };
-        pauseButton     = new Button { Text = Localization.GetString("PauseGame") };
-        endButton       = new Button { Text = Localization.GetString("EndGame") };
+        startButton = new Button { Text = Localization.GetString("StartGame") };
+        pauseButton = new Button { Text = Localization.GetString("PauseGame") };
+        endButton = new Button { Text = Localization.GetString("EndGame") };
         nextRoundButton = new Button { Text = Localization.GetString("NextRound") };
 
-        startButton.Clicked     += async (s, e) => await StartGameAsync();
-        pauseButton.Clicked     += async (s, e) => await TogglePauseAsync();
-        endButton.Clicked       += async (s, e) => await EndGameAsync();
+        startButton.Clicked += async (s, e) => await StartGameAsync();
+        pauseButton.Clicked += async (s, e) => await TogglePauseAsync();
+        endButton.Clicked += async (s, e) => await EndGameAsync();
         nextRoundButton.Clicked += async (s, e) => await StartNextRoundAsync();
 
         var buttonRow = new HorizontalStackLayout
@@ -71,8 +72,8 @@ public class ScoreBoardPage : ContentPage
             Children = { startButton, nextRoundButton, pauseButton, endButton }
         };
 
-        scoreboardScrollView = new ScrollView 
-        { 
+        scoreboardScrollView = new ScrollView
+        {
             BackgroundColor = Colors.White,
             Padding = new Thickness(12)
         };
@@ -111,7 +112,7 @@ public class ScoreBoardPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        
+
         // Ensure the last used group is automatically loaded
         if (currentSession == null)
         {
@@ -159,6 +160,16 @@ public class ScoreBoardPage : ContentPage
             : Localization.GetString("PauseGame");
         nextRoundButton.IsEnabled = hasRoundsRemaining;
         endButton.IsEnabled = hasSession;
+
+        // Keep the screen on only while a game is actually in progress.
+        if (isActiveSession && !isPausedSession)
+        {
+            screenWakeService.RequestKeepAwake();
+        }
+        else
+        {
+            screenWakeService.ReleaseKeepAwake();
+        }
 
         // Show only actions that are currently available.
         startButton.IsVisible = startButton.IsEnabled;
@@ -300,7 +311,7 @@ public class ScoreBoardPage : ContentPage
 
             // Trump symbol (spans 2 rows) — shows dot for future rounds
             string trumpText = round != null ? TrumpSymbol(round.Trump) : FutureRoundTrumpSymbol();
-            Color trumpFg    = round != null ? TrumpColor(round.Trump) : Colors.LightGray;
+            Color trumpFg = round != null ? TrumpColor(round.Trump) : Colors.LightGray;
             var trumpLbl = MakeLabel(trumpText, bold: true, fontSize: 16, center: true, bg: rowBg, fg: trumpFg);
             scoreGrid.Add(trumpLbl, 1, gridRow);
             Grid.SetRowSpan(trumpLbl, 2);
@@ -317,7 +328,7 @@ public class ScoreBoardPage : ContentPage
                     continue;
                 }
 
-                var bid    = round.BidByPlayer.GetValueOrDefault(pid, -1);
+                var bid = round.BidByPlayer.GetValueOrDefault(pid, -1);
                 var actual = round.ActualByPlayer.GetValueOrDefault(pid, -1);
 
                 Color cellBg;
@@ -328,7 +339,7 @@ public class ScoreBoardPage : ContentPage
                     var delta = bid == actual ? 2 + actual : -(Math.Abs(bid - actual));
                     runningTotals[pid] += delta;
                     cellBg = delta >= 0 ? WinBg : LoseBg;
-                    bidFg  = delta >= 0 ? WinFg : LoseFg;
+                    bidFg = delta >= 0 ? WinFg : LoseFg;
                 }
                 else
                 {
@@ -503,23 +514,23 @@ public class ScoreBoardPage : ContentPage
 
         return trump switch
         {
-            TrumpSuit.Hearts   => "♥",
+            TrumpSuit.Hearts => "♥",
             TrumpSuit.Diamonds => "♦",
-            TrumpSuit.Clubs    => "♣",
-            TrumpSuit.Spades   => "♠",
-            _                  => "—"
+            TrumpSuit.Clubs => "♣",
+            TrumpSuit.Spades => "♠",
+            _ => "—"
         };
     }
 
     private Color TrumpColor(TrumpSuit trump) => trump switch
     {
-        TrumpSuit.Hearts   => Colors.Red,
+        TrumpSuit.Hearts => Colors.Red,
         TrumpSuit.Diamonds => trumpPaletteService.GetMode() == TrumpPaletteMode.FourColors
             ? Colors.Goldenrod
             : Color.FromArgb("#e05000"),
-        TrumpSuit.Clubs    => Colors.DarkGreen,
-        TrumpSuit.Spades   => Colors.DarkBlue,
-        _                  => Colors.Gray
+        TrumpSuit.Clubs => Colors.DarkGreen,
+        TrumpSuit.Spades => Colors.DarkBlue,
+        _ => Colors.Gray
     };
 
     private async Task StartGameAsync()
@@ -814,7 +825,7 @@ public class ScoreBoardPage : ContentPage
             HorizontalTextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 12, 0, 4)
         };
-        
+
         var bidRuleMinusBtn = new Button
         {
             Text = "−",
@@ -983,7 +994,7 @@ public class ScoreBoardPage : ContentPage
         }
     }
 
-    private async Task DisplayRoundPopupAsync()
+    private async Task DisplayRoundPopupAsync(Dictionary<Guid, int>? initialBids = null, int initialTrumpIndex = -1)
     {
         if (currentSession == null)
             return;
@@ -997,6 +1008,9 @@ public class ScoreBoardPage : ContentPage
             .Skip(dealerIndexForEntry + 1)
             .Concat(orderedPlayers.Take(dealerIndexForEntry + 1))
             .ToList();
+
+        // Running totals so far, shown behind each player's name during bidding.
+        var scoreTotals = SessionScoreCalculator.CalculateSessionScores(currentSession);
 
         var trumpOptions = trumpPaletteService.GetTrumpLabels();
         int trumpSelectionIndex = 0;
@@ -1022,21 +1036,21 @@ public class ScoreBoardPage : ContentPage
         Button? doneButton = null;
         Func<int>? getTrumpIndexAccessor = null;
         Label? trumpHintLabelRef = null;
-        var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector(() => UpdateTrumpSelectionState());
+        var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector(() => UpdateTrumpSelectionState(), initialTrumpIndex);
         population.Children.Add(trumpSelectorView);
-       // Friendly hint label
-       var trumpHintLabel = new Label
-       {
-           Text = Localization.GetString("SelectTrumpHint"),
-           FontSize = 18,
-           FontAttributes = FontAttributes.Bold,
-           TextColor = Colors.Gray,
-           HorizontalTextAlignment = TextAlignment.Center,
-           Margin = new Thickness(0, 8, 0, 0),
-           IsVisible = true
-       };
-       getTrumpIndexAccessor = getTrumpIndex;
-       trumpHintLabelRef = trumpHintLabel;
+        // Friendly hint label
+        var trumpHintLabel = new Label
+        {
+            Text = Localization.GetString("SelectTrumpHint"),
+            FontSize = 18,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = Colors.Gray,
+            HorizontalTextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 8, 0, 0),
+            IsVisible = true
+        };
+        getTrumpIndexAccessor = getTrumpIndex;
+        trumpHintLabelRef = trumpHintLabel;
 
         void UpdateTrumpSelectionState()
         {
@@ -1049,6 +1063,13 @@ public class ScoreBoardPage : ContentPage
             {
                 doneButton.IsEnabled = hasTrumpSelection;
             }
+
+            // Tint the popup background to match the chosen/switched trump color.
+            var popupBg = hasTrumpSelection
+                ? FlattenOverWhite(GetTrumpColor(MapSelectionToTrump(getTrumpIndexAccessor!())))
+                : Colors.White;
+            scroll.BackgroundColor = popupBg;
+            population.BackgroundColor = popupBg;
         }
 
 
@@ -1062,7 +1083,7 @@ public class ScoreBoardPage : ContentPage
             Margin = new Thickness(0, 8, 0, 0),
             IsVisible = isBidTotalRuleEnabled && currentRoundNumber >= currentSession.BidTotalRuleStartRound
         };
-        
+
         void UpdateDealerWarning()
         {
             if (isBidTotalRuleEnabled && currentRoundNumber >= currentSession.BidTotalRuleStartRound)
@@ -1071,7 +1092,7 @@ public class ScoreBoardPage : ContentPage
                 var otherPlayersBidsSum = bidEntries
                     .Where(kvp => kvp.Key != dealerForEntry.Id)
                     .Sum(kvp => int.TryParse(kvp.Value.Text, out var v) ? v : 0);
-                
+
                 var forbiddenBids = new List<int>();
                 for (var bid = 0; bid <= currentRoundNumber; bid++)
                 {
@@ -1124,7 +1145,7 @@ public class ScoreBoardPage : ContentPage
                 dealerBidEntry.BackgroundColor = Colors.White;
             }
         }
-        
+
         if (dealerWarningLabel.IsVisible)
         {
             population.Children.Add(dealerWarningLabel);
@@ -1162,12 +1183,18 @@ public class ScoreBoardPage : ContentPage
         foreach (var player in entryOrder)
         {
             var isDealer = player.Id == dealerForEntry.Id;
+            var currentScore = scoreTotals.GetValueOrDefault(player.Id);
+            var scoreSuffix = string.Format(Localization.GetString("ScoreInlineLabel"), currentScore);
+            var initialBidText = initialBids != null && initialBids.TryGetValue(player.Id, out var restoredBid)
+                ? restoredBid.ToString()
+                : "0";
             var bidEntry = new Entry
             {
                 Keyboard = Keyboard.Numeric,
-                Text = "0",
+                Text = initialBidText,
                 WidthRequest = 52,
                 Placeholder = $"0–{currentRoundNumber}",
+                FontAttributes = FontAttributes.Bold,
                 HorizontalTextAlignment = TextAlignment.Center
             };
             bidEntry.TextChanged += (s, e) =>
@@ -1176,6 +1203,10 @@ public class ScoreBoardPage : ContentPage
                 UpdateBidTotal();
             };
             bidEntries[player.Id] = bidEntry;
+            if (initialBids != null && initialBids.ContainsKey(player.Id))
+            {
+                touchedBids.Add(player.Id);
+            }
             if (isDealer)
             {
                 dealerBidEntry = bidEntry;
@@ -1184,8 +1215,8 @@ public class ScoreBoardPage : ContentPage
             var playerLabel = new Label
             {
                 Text = isDealer
-                    ? $"{player.Name} ({Localization.GetString("DealerLabel")})"
-                    : player.Name,
+                    ? $"{player.Name} ({Localization.GetString("DealerLabel")}, {scoreSuffix})"
+                    : $"{player.Name} ({scoreSuffix})",
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
                 TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
                 VerticalTextAlignment = TextAlignment.Center,
@@ -1202,11 +1233,13 @@ public class ScoreBoardPage : ContentPage
         {
             Text = Localization.GetString("Ok"),
             IsEnabled = false,
+            HeightRequest = 44,
             HorizontalOptions = LayoutOptions.Fill
         };
         var cancelButton = new Button
         {
             Text = Localization.GetString("Cancel"),
+            HeightRequest = 44,
             HorizontalOptions = LayoutOptions.Fill
         };
         var buttonsRow = new Grid
@@ -1235,7 +1268,7 @@ public class ScoreBoardPage : ContentPage
             // Trump must be selected.
             if (getTrumpIndex() < 0)
             {
-                   trumpHintLabel.IsVisible = true;
+                trumpHintLabel.IsVisible = true;
                 await DisplayAlertAsync(
                        Localization.GetString("InfoTitle"),
                     Localization.GetString("TrumpRequiredError"),
@@ -1243,7 +1276,7 @@ public class ScoreBoardPage : ContentPage
                 return;
             }
 
-               trumpHintLabel.IsVisible = false;
+            trumpHintLabel.IsVisible = false;
             // Validate all bids.
             foreach (var player in entryOrder)
             {
@@ -1405,12 +1438,34 @@ public class ScoreBoardPage : ContentPage
         doneActuals = new Button
         {
             Text = Localization.GetString("Ok"),
-            Margin = new Thickness(0, 12, 0, 0)
+            Margin = new Thickness(0, 12, 0, 0),
+            HeightRequest = 44,
+            HorizontalOptions = LayoutOptions.Fill
         };
-        popActuals.Children.Add(doneActuals);
+        var backActuals = new Button
+        {
+            Text = Localization.GetString("Back"),
+            HeightRequest = 44,
+            HorizontalOptions = LayoutOptions.Fill
+        };
+        var actualsButtonsRow = new Grid
+        {
+            ColumnSpacing = 8,
+            Margin = new Thickness(0, 12, 0, 0),
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = GridLength.Star }
+            }
+        };
+        actualsButtonsRow.Add(backActuals, 0);
+        actualsButtonsRow.Add(doneActuals, 1);
+        popActuals.Children.Add(actualsButtonsRow);
         UpdateActualsTotal();
 
+        // true = confirm results, false = go back to bidding to correct the bids.
         var tcsActuals = new TaskCompletionSource<bool>();
+        backActuals.Clicked += (s, e) => tcsActuals.TrySetResult(false);
         doneActuals.Clicked += async (s, e) =>
         {
             var totalActuals = 0;
@@ -1436,12 +1491,31 @@ public class ScoreBoardPage : ContentPage
                     Localization.GetString("Ok"));
                 return;
             }
-            tcsActuals.SetResult(true);
+            tcsActuals.TrySetResult(true);
         };
 
         await Navigation.PushModalAsync(new ContentPage { Content = scrollActuals, BackgroundColor = lightBg });
-        await tcsActuals.Task;
+        var confirmActuals = await tcsActuals.Task;
         await Navigation.PopModalAsync();
+
+        // User clicked "Back": undo the started round and reopen the bidding popup
+        // with the previously entered bids and trump so they can be corrected.
+        if (!confirmActuals)
+        {
+            try
+            {
+                scoreService.CancelRound(currentSession);
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlertAsync(Localization.GetString("ErrorTitle"), ex.Message, Localization.GetString("Ok"));
+                RefreshUI();
+                return;
+            }
+
+            await DisplayRoundPopupAsync(new Dictionary<Guid, int>(bids), trumpSelectionIndex);
+            return;
+        }
 
         var actuals = new Dictionary<Guid, int>();
         foreach (var player in orderedPlayers)
@@ -1496,7 +1570,7 @@ public class ScoreBoardPage : ContentPage
         groupService.UpdateGroup(group);
     }
 
-    private (View view, Func<int> getSelectedIndex) BuildTrumpIconSelector(Action? onSelectionChanged = null)
+    private (View view, Func<int> getSelectedIndex) BuildTrumpIconSelector(Action? onSelectionChanged = null, int initialSelectedIndex = -1)
     {
         var mode = trumpPaletteService.GetMode();
 
@@ -1518,11 +1592,11 @@ public class ScoreBoardPage : ContentPage
                 ("♠",  Colors.DarkBlue,                Colors.White),
             };
 
-        int selectedIndex = -1;  // nothing pre-selected; user must pick
+        int selectedIndex = initialSelectedIndex;  // -1 = nothing pre-selected; user must pick
         var buttons = new List<Border>();
         var labels = new List<Label>();
 
-        Color SelectedStroke  = Colors.Black;
+        Color SelectedStroke = Colors.Black;
         Color UnselectedStroke = Colors.LightGray;
 
         void UpdateHighlight()
@@ -1580,6 +1654,11 @@ public class ScoreBoardPage : ContentPage
 
             buttons.Add(border);
             row.Children.Add(border);
+        }
+
+        if (selectedIndex >= 0)
+        {
+            UpdateHighlight();
         }
 
         return (row, () => selectedIndex);
@@ -1654,20 +1733,20 @@ public class ScoreBoardPage : ContentPage
         {
             return trump switch
             {
-                TrumpSuit.Hearts   => ("●", Colors.White, Colors.Red),
+                TrumpSuit.Hearts => ("●", Colors.White, Colors.Red),
                 TrumpSuit.Diamonds => ("●", Colors.White, Colors.Yellow),
-                TrumpSuit.Clubs    => ("●", Colors.White, Colors.Green),
-                TrumpSuit.Spades   => ("●", Colors.White, Colors.Blue),
-                _                  => ("?", Colors.Gray, Colors.White)
+                TrumpSuit.Clubs => ("●", Colors.White, Colors.Green),
+                TrumpSuit.Spades => ("●", Colors.White, Colors.Blue),
+                _ => ("?", Colors.Gray, Colors.White)
             };
         }
         return trump switch
         {
-            TrumpSuit.Hearts   => ("♥", Colors.Red,                   Colors.White),
-            TrumpSuit.Diamonds => ("♦", Color.FromArgb("#e05000"),    Colors.White),
-            TrumpSuit.Clubs    => ("♣", Colors.DarkGreen,              Colors.White),
-            TrumpSuit.Spades   => ("♠", Colors.DarkBlue,              Colors.White),
-            _                  => ("?", Colors.Gray,                   Colors.White)
+            TrumpSuit.Hearts => ("♥", Colors.Red, Colors.White),
+            TrumpSuit.Diamonds => ("♦", Color.FromArgb("#e05000"), Colors.White),
+            TrumpSuit.Clubs => ("♣", Colors.DarkGreen, Colors.White),
+            TrumpSuit.Spades => ("♠", Colors.DarkBlue, Colors.White),
+            _ => ("?", Colors.Gray, Colors.White)
         };
     }
 

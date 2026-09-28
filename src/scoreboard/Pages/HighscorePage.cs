@@ -1,4 +1,3 @@
-using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
 using WizardScoreboard.Resources;
 using WizardScoreboard.Services;
