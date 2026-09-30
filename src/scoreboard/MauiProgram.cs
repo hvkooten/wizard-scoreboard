@@ -21,15 +21,13 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 // Free/open-source medieval display font (SIL OFL) used for the "Wizard" title.
                 fonts.AddFont("MedievalSharp.ttf", "WizardFont");
-            });
-
+            })
+            .ConfigureMauiHandlers(handlers =>
+            {
 #if ANDROID
-        // MedievalSharp has no real bold weight. Android re-resolves the typeface whenever the font
-        // or text is (re)mapped, which drops the synthesized bold and makes the header flip to
-        // non-bold. Re-apply bold after every such mapping so the header stays consistently bold.
-        Microsoft.Maui.Handlers.LabelHandler.Mapper.AppendToMapping(nameof(ILabel.Font), ForceHeaderBold);
-        Microsoft.Maui.Handlers.LabelHandler.Mapper.AppendToMapping(nameof(ILabel.Text), ForceHeaderBold);
+                handlers.AddHandler<HeaderLabel, HeaderLabelHandler>();
 #endif
+            });
 
         builder.Services.AddSingleton<IGroupService, GroupService>();
         builder.Services.AddSingleton<IScoreService, ScoreService>();
@@ -48,18 +46,4 @@ public static class MauiProgram
 
         return builder.Build();
     }
-
-#if ANDROID
-    private static void ForceHeaderBold(Microsoft.Maui.Handlers.ILabelHandler handler, ILabel label)
-    {
-        if (label is not HeaderLabel)
-        {
-            return;
-        }
-
-        var textView = handler.PlatformView;
-        textView.SetTypeface(textView.Typeface, Android.Graphics.TypefaceStyle.Bold);
-        textView.Paint.FakeBoldText = true;
-    }
-#endif
 }

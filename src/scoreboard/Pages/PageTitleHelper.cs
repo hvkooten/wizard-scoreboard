@@ -81,7 +81,7 @@ internal static class PageTitleHelper
         grid.Add(titleRow, 0, 0);
 
         // The header stays bold regardless of the "bold all text" setting. The labels are HeaderLabel
-        // instances, which the global bold walk skips; on Android bold is enforced in MauiProgram.
+        // instances, which the global bold walk skips; on Android bold is enforced by HeaderLabelHandler.
         void SyncTitleWidth()
         {
             if (page.Width > 0)
