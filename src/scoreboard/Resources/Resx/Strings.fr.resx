@@ -4,6 +4,7 @@
   <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Combien de plis chaque joueur annonce-t-il ?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>L'enchère de {0} doit être comprise entre 0 et {1}.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Règle du total des mises à partir de la manche :</value></data>
+  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Règle du total des mises par défaut à partir de la manche :</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuler</value></data>
   <data name="Back" xml:space="preserve"><value>Retour</value></data>
   <data name="Blue" xml:space="preserve"><value>Bleu</value></data>

@@ -4,6 +4,7 @@
   <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Hoeveel slagen biedt elke speler?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bod van {0} moet tussen 0 en {1} liggen.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Bied-totaal-regel vanaf ronde:</value></data>
+  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Standaard bied-totaal-regel vanaf ronde:</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuleren</value></data>
   <data name="Back" xml:space="preserve"><value>Terug</value></data>
   <data name="Blue" xml:space="preserve"><value>Blauw</value></data>

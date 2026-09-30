@@ -4,6 +4,7 @@
   <data name="BidsPerPlayerLabel" xml:space="preserve"><value>¿Cuántas bazas apuesta cada jugador?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>La apuesta de {0} debe estar entre 0 y {1}.</value></data>
   <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Regla del total de apuestas desde la ronda:</value></data>
+  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Regla del total de apuestas predeterminada desde la ronda:</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancelar</value></data>
   <data name="Back" xml:space="preserve"><value>Atrás</value></data>
   <data name="Blue" xml:space="preserve"><value>Azul</value></data>
