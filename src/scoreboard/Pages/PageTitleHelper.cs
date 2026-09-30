@@ -15,9 +15,11 @@ internal static class PageTitleHelper
         {
             RowDefinitions =
             {
-                new RowDefinition { Height = GridLength.Auto },
                 new RowDefinition { Height = GridLength.Auto }
             },
+            // On Android leave room on the left for the flyout (hamburger) icon and a small
+            // gap on the right so the "Wizard" title is not clipped by the screen edge.
+            Padding = isAndroid ? new Thickness(8, 0, 16, 0) : new Thickness(0),
             HorizontalOptions = LayoutOptions.Fill,
             VerticalOptions = LayoutOptions.Center,
             MinimumWidthRequest = 260
@@ -33,7 +35,7 @@ internal static class PageTitleHelper
             ColumnSpacing = 12
         };
 
-        var titleLabel = new Label
+        var titleLabel = new HeaderLabel
         {
             Text = leftTitle,
             FontFamily = "WizardFont",
@@ -53,7 +55,7 @@ internal static class PageTitleHelper
             LineBreakMode = LineBreakMode.TailTruncation
         };
 
-        var appLabel = new Label
+        var appLabel = new HeaderLabel
         {
             Text = "Wizard",
             FontFamily = "WizardFont",
@@ -78,75 +80,16 @@ internal static class PageTitleHelper
         titleRow.Add(appLabel, 1, 0);
         grid.Add(titleRow, 0, 0);
 
-        // The header must always stay bold, independent of the "bold all text" setting.
-        // Toggling that setting off removes the global bold style and rebuilds pages, which
-        // can drop the header's synthetic bold, so re-assert it whenever the style changes.
-        void EnforceBoldHeader()
-        {
-            titleLabel.FontAttributes = FontAttributes.Bold;
-            appLabel.FontAttributes = FontAttributes.Bold;
-        }
-
-        App.GlobalTextStyleChanged += EnforceBoldHeader;
-        page.Unloaded += (_, _) => App.GlobalTextStyleChanged -= EnforceBoldHeader;
-
-        if (isAndroid)
-        {
-            var navRow = new HorizontalStackLayout
-            {
-                Spacing = 8,
-                Padding = new Thickness(0, 8, 0, 0)
-            };
-
-            var activeRoute = page.GetType().Name;
-
-            AddNavButton(Localization.GetString("Scoreboard"), nameof(ScoreBoardPage));
-            AddNavButton(Localization.GetString("Highscore"), nameof(HighscorePage));
-            AddNavButton(Localization.GetString("SavedGames"), nameof(SavedGamesPage));
-            AddNavButton(Localization.GetString("Rules"), nameof(RulesPage));
-            AddNavButton(Localization.GetString("Groups"), nameof(GroupsPage));
-            AddNavButton(Localization.GetString("Settings"), nameof(SettingsPage));
-
-            var navScroller = new ScrollView
-            {
-                Orientation = ScrollOrientation.Horizontal,
-                Content = navRow
-            };
-            grid.Add(navScroller, 0, 1);
-
-            void AddNavButton(string text, string route)
-            {
-                var isActive = string.Equals(activeRoute, route, StringComparison.Ordinal);
-
-                var button = new Button
-                {
-                    Text = text,
-                    FontSize = 16,
-                    FontAttributes = FontAttributes.Bold,
-                    CornerRadius = 10,
-                    Padding = new Thickness(12, 8),
-                    BackgroundColor = isActive ? AppColors.NavActiveBg : AppColors.NavInactiveBg,
-                    TextColor = AppColors.NavText
-                };
-
-                // Use an absolute route so tabs switch in place instead of pushing a new page (no back button/stacking).
-                button.Clicked += async (_, _) =>
-                {
-                    if (!isActive)
-                    {
-                        await Shell.Current.GoToAsync($"//{route}");
-                    }
-                };
-                navRow.Children.Add(button);
-            }
-        }
-
+        // The header must always stay bold, independent of the "bold all text" setting. The header
+        // labels use the HeaderLabel subclass, which the global implicit Style(typeof(Label)) never
+        // matches (implicit styles are exact-type only), so their bold styling is never overridden.
         void SyncTitleWidth()
         {
             if (page.Width > 0)
             {
-                // Keep title view width in sync with window size so the right label stays anchored.
-                grid.WidthRequest = Math.Max(260, page.Width - 48);
+                // Keep title view width in sync with window size so the right label stays anchored
+                // and visible. Android reserves extra space on the left for the flyout icon.
+                grid.WidthRequest = Math.Max(240, page.Width - (isAndroid ? 88 : 48));
             }
         }
 

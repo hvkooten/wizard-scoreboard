@@ -16,71 +16,96 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ScoreBoardPage), typeof(ScoreBoardPage));
         Routing.RegisterRoute(nameof(GroupsPage), typeof(GroupsPage));
 
-        Items.Add(new TabBar
+        FlyoutBehavior = FlyoutBehavior.Flyout;
+        // Light-grey flyout backdrop so the fiery header/logo stands out.
+        FlyoutBackgroundColor = Color.FromArgb("#E8E8E8");
+
+        if (DeviceInfo.Platform == DevicePlatform.Android)
         {
-            Items =
+            // On Android every page lives in the flyout menu (no bottom tab bar).
+            AddFlyoutItem("Scoreboard", nameof(ScoreBoardPage), scoreBoardPage);
+            AddFlyoutItem("Highscore", nameof(HighscorePage), highscorePage);
+            AddFlyoutItem("SavedGames", nameof(SavedGamesPage), savedGamesPage);
+            AddFlyoutItem("Rules", nameof(RulesPage), rulesPage);
+            AddFlyoutItem("Groups", nameof(GroupsPage), groupsPage);
+            AddFlyoutItem("Settings", nameof(SettingsPage), settingsPage);
+            AddFlyoutItem("About", nameof(AboutPage), aboutPage);
+        }
+        else
+        {
+            Items.Add(new TabBar
             {
-                new Tab
+                Items =
                 {
-                    Title = Localization.GetString("Scoreboard"),
-                    Items =
+                    new Tab
                     {
-                        new ShellContent { Route = nameof(ScoreBoardPage), Content = scoreBoardPage }
-                    }
-                },
-                new Tab
-                {
-                    Title = Localization.GetString("Highscore"),
-                    Items =
+                        Title = Localization.GetString("Scoreboard"),
+                        Items =
+                        {
+                            new ShellContent { Route = nameof(ScoreBoardPage), Content = scoreBoardPage }
+                        }
+                    },
+                    new Tab
                     {
-                        new ShellContent { Route = nameof(HighscorePage), Content = highscorePage }
-                    }
-                },
-                new Tab
-                {
-                    Title = Localization.GetString("SavedGames"),
-                    Items =
+                        Title = Localization.GetString("Highscore"),
+                        Items =
+                        {
+                            new ShellContent { Route = nameof(HighscorePage), Content = highscorePage }
+                        }
+                    },
+                    new Tab
                     {
-                        new ShellContent { Route = nameof(SavedGamesPage), Content = savedGamesPage }
-                    }
-                },
-                new Tab
-                {
-                    Title = Localization.GetString("Rules"),
-                    Items =
+                        Title = Localization.GetString("SavedGames"),
+                        Items =
+                        {
+                            new ShellContent { Route = nameof(SavedGamesPage), Content = savedGamesPage }
+                        }
+                    },
+                    new Tab
                     {
-                        new ShellContent { Route = nameof(RulesPage), Content = rulesPage }
-                    }
-                },
-                new Tab
-                {
-                    Title = Localization.GetString("Groups"),
-                    Items =
+                        Title = Localization.GetString("Rules"),
+                        Items =
+                        {
+                            new ShellContent { Route = nameof(RulesPage), Content = rulesPage }
+                        }
+                    },
+                    new Tab
                     {
-                        new ShellContent { Route = nameof(GroupsPage), Content = groupsPage }
+                        Title = Localization.GetString("Groups"),
+                        Items =
+                        {
+                            new ShellContent { Route = nameof(GroupsPage), Content = groupsPage }
+                        }
+                    },
+                    new Tab
+                    {
+                        Title = Localization.GetString("Settings"),
+                        Items =
+                        {
+                            new ShellContent { Route = nameof(SettingsPage), Content = settingsPage }
+                        }
+                    },
+                    new Tab
+                    {
+                        Title = Localization.GetString("About"),
+                        Items =
+                        {
+                            new ShellContent { Route = nameof(AboutPage), Content = aboutPage }
+                        }
                     }
                 }
-            }
-        });
-
-        // Android's bottom navigation bar only shows up to 5 tabs, so the less-frequently
-        // used pages live in the flyout menu instead of the tab bar.
-        FlyoutBehavior = FlyoutBehavior.Flyout;
-
-        Items.Add(new ShellContent
-        {
-            Title = Localization.GetString("Settings"),
-            Route = nameof(SettingsPage),
-            Content = settingsPage
-        });
-
-        Items.Add(new ShellContent
-        {
-            Title = Localization.GetString("About"),
-            Route = nameof(AboutPage),
-            Content = aboutPage
-        });
+            });
+        }
     }
+
+    // Adds a page to the Shell flyout menu using a localized title and a fixed route.
+    private void AddFlyoutItem(string localizationKey, string route, Page content) =>
+        Items.Add(new ShellContent
+        {
+            Title = Localization.GetString(localizationKey),
+            Route = route,
+            Content = content
+        });
 
     protected override void OnHandlerChanged()
     {
