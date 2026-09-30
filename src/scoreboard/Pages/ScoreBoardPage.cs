@@ -951,7 +951,7 @@ public class ScoreBoardPage : ContentPage
         }
     }
 
-    private async Task DisplayRoundPopupAsync(Dictionary<Guid, int>? initialBids = null, int initialTrumpIndex = -1)
+    private async Task DisplayRoundPopupAsync(Dictionary<Guid, int>? initialBids = null, int initialTrumpIndex = -1, ContentPage? existingModal = null)
     {
         if (currentSession == null)
             return;
@@ -1089,6 +1089,7 @@ public class ScoreBoardPage : ContentPage
                     if (dealerBidEntry != null)
                     {
                         dealerBidEntry.BackgroundColor = GetDealerValidColor();
+                        dealerBidEntry.TextColor = AppColors.TextPrimary;
                     }
                     return;
                 }
@@ -1115,11 +1116,15 @@ public class ScoreBoardPage : ContentPage
                     dealerBidEntry.BackgroundColor = isForbidden
                         ? Color.FromArgb("#ffcccc")
                         : GetDealerValidColor();
+                    dealerBidEntry.TextColor = isForbidden
+                        ? Color.FromArgb("#8b0000")
+                        : AppColors.TextPrimary;
                 }
             }
             else if (dealerBidEntry != null)
             {
                 dealerBidEntry.BackgroundColor = GetDealerValidColor();
+                dealerBidEntry.TextColor = AppColors.TextPrimary;
             }
         }
 
@@ -1215,7 +1220,14 @@ public class ScoreBoardPage : ContentPage
         population.Children.Add(trumpHintLabel);
         UpdateTrumpSelectionState();
 
-        var modal = new ContentPage { Content = bidBackdrop, BackgroundColor = noTrumpBg };
+        // Bids and actuals share one modal page; only its content is swapped between the steps.
+        var modal = existingModal ?? new ContentPage();
+        modal.Content = bidBackdrop;
+        modal.BackgroundColor = noTrumpBg;
+        if (existingModal != null)
+        {
+            App.ApplyBoldToVisualTree(modal, AppSettings.BoldAllText);
+        }
         var tcs = new TaskCompletionSource<bool>();
 
         cancelButton.Clicked += (s, e) => tcs.TrySetResult(false);
@@ -1263,13 +1275,16 @@ public class ScoreBoardPage : ContentPage
             tcs.SetResult(true);
         };
 
-        await Navigation.PushModalAsync(modal);
+        if (existingModal == null)
+        {
+            await Navigation.PushModalAsync(modal, animated: false);
+        }
         var proceed = await tcs.Task;
-        await Navigation.PopModalAsync();
 
         // Cancelled: return to the scoreboard without starting the round.
         if (!proceed)
         {
+            await Navigation.PopModalAsync(animated: false);
             RefreshUI();
             return;
         }
@@ -1290,6 +1305,7 @@ public class ScoreBoardPage : ContentPage
         }
         catch (Exception ex)
         {
+            await Navigation.PopModalAsync(animated: false);
             await this.ShowMessageAsync("ErrorTitle", ex.Message);
             return;
         }
@@ -1316,6 +1332,7 @@ public class ScoreBoardPage : ContentPage
             Margin = new Thickness(0, 6, 0, 0)
         };
         Button? doneActuals = null;
+        Button? backActuals = null;
 
         void UpdateActualsTotal()
         {
@@ -1326,6 +1343,10 @@ public class ScoreBoardPage : ContentPage
             if (doneActuals != null)
             {
                 doneActuals.IsEnabled = sum == currentSession.CurrentRound;
+            }
+            if (backActuals != null)
+            {
+                backActuals.IsEnabled = sum == 0;
             }
         }
 
@@ -1402,7 +1423,7 @@ public class ScoreBoardPage : ContentPage
         popActuals.Children.Add(totalActualsLabel);
 
         doneActuals = CreateDialogButton("Ok");
-        var backActuals = CreateDialogButton("Back");
+        backActuals = CreateDialogButton("Back");
         var actualsButtonsRow = CreateTwoButtonRow(backActuals, doneActuals);
         popActuals.Children.Add(actualsButtonsRow);
         UpdateActualsTotal();
@@ -1438,12 +1459,14 @@ public class ScoreBoardPage : ContentPage
             tcsActuals.TrySetResult(true);
         };
 
-        await Navigation.PushModalAsync(new ContentPage { Content = actualsBackdrop, BackgroundColor = lightBg });
+        modal.BackgroundColor = lightBg;
+        modal.Content = actualsBackdrop;
+        // Swapping content does not trigger Shell navigation, so apply the bold-text setting here.
+        App.ApplyBoldToVisualTree(modal, AppSettings.BoldAllText);
         var confirmActuals = await tcsActuals.Task;
-        await Navigation.PopModalAsync();
 
-        // User clicked "Back": undo the started round and reopen the bidding popup
-        // with the previously entered bids and trump so they can be corrected.
+        // User clicked "Back": undo the started round and show the bidding step again
+        // in the same popup with the previously entered bids and trump so they can be corrected.
         if (!confirmActuals)
         {
             try
@@ -1452,14 +1475,17 @@ public class ScoreBoardPage : ContentPage
             }
             catch (Exception ex)
             {
+                await Navigation.PopModalAsync(animated: false);
                 await this.ShowMessageAsync("ErrorTitle", ex.Message);
                 RefreshUI();
                 return;
             }
 
-            await DisplayRoundPopupAsync(new Dictionary<Guid, int>(bids), trumpSelectionIndex);
+            await DisplayRoundPopupAsync(new Dictionary<Guid, int>(bids), trumpSelectionIndex, modal);
             return;
         }
+
+        await Navigation.PopModalAsync(animated: false);
 
         var actuals = new Dictionary<Guid, int>();
         foreach (var player in orderedPlayers)
