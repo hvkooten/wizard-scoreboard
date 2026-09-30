@@ -33,10 +33,15 @@ public class AboutPage : ContentPage
             },
             HorizontalTextAlignment = TextAlignment.Center
         };
+#if ANDROID
+        var version = string.Format(Localization.GetString("VersionTemplate"), $"{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString})");
+#else
+        var version = string.Format(Localization.GetString("VersionTemplate"), $"{AppInfo.Current.VersionString}");
+#endif
 
         var versionLabel = new Label
         {
-            Text = string.Format(Localization.GetString("VersionTemplate"), $"{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString})"),
+            Text = version,
             FontSize = 16,
             HorizontalTextAlignment = TextAlignment.Center
         };
