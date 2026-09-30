@@ -23,6 +23,14 @@ public static class MauiProgram
                 fonts.AddFont("MedievalSharp.ttf", "WizardFont");
             });
 
+#if ANDROID
+        // MedievalSharp has no real bold weight. Android re-resolves the typeface whenever the font
+        // or text is (re)mapped, which drops the synthesized bold and makes the header flip to
+        // non-bold. Re-apply bold after every such mapping so the header stays consistently bold.
+        Microsoft.Maui.Handlers.LabelHandler.Mapper.AppendToMapping(nameof(ILabel.Font), ForceHeaderBold);
+        Microsoft.Maui.Handlers.LabelHandler.Mapper.AppendToMapping(nameof(ILabel.Text), ForceHeaderBold);
+#endif
+
         builder.Services.AddSingleton<IGroupService, GroupService>();
         builder.Services.AddSingleton<IScoreService, ScoreService>();
         builder.Services.AddSingleton<IHighscoreService, HighscoreService>();
@@ -40,4 +48,18 @@ public static class MauiProgram
 
         return builder.Build();
     }
+
+#if ANDROID
+    private static void ForceHeaderBold(Microsoft.Maui.Handlers.ILabelHandler handler, ILabel label)
+    {
+        if (label is not HeaderLabel)
+        {
+            return;
+        }
+
+        var textView = handler.PlatformView;
+        textView.SetTypeface(textView.Typeface, Android.Graphics.TypefaceStyle.Bold);
+        textView.Paint.FakeBoldText = true;
+    }
+#endif
 }

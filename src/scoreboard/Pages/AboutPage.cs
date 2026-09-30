@@ -36,7 +36,7 @@ public class AboutPage : ContentPage
 
         var versionLabel = new Label
         {
-            Text = string.Format(Localization.GetString("VersionTemplate"), AppInfo.Current.VersionString),
+            Text = string.Format(Localization.GetString("VersionTemplate"), $"{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString})"),
             FontSize = 16,
             HorizontalTextAlignment = TextAlignment.Center
         };

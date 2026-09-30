@@ -42,8 +42,8 @@ public class App : Application
     }
 
     // Recursively walks the visual tree, setting FontAttributes on font-bearing controls.
-    // HeaderLabel is deliberately excluded: the Shell header always stays non-bold regardless of
-    // the setting (its font has no real bold weight and looks unstable when faux-bolded).
+    // HeaderLabel is deliberately excluded: the Shell header always stays bold regardless of
+    // the setting.
     internal static void ApplyBoldToVisualTree(IVisualTreeElement? root, bool bold)
     {
         if (root is null)

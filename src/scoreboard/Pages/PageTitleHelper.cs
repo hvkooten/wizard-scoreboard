@@ -80,10 +80,8 @@ internal static class PageTitleHelper
         titleRow.Add(appLabel, 1, 0);
         grid.Add(titleRow, 0, 0);
 
-        // The header stays visually stable regardless of the "bold all text" setting. The labels are
-        // HeaderLabel instances (never targeted by the global implicit Label style) and deliberately
-        // avoid FontAttributes.Bold: the MedievalSharp font has no real bold weight, so faux-bold would
-        // be re-rasterized inconsistently on re-layout. Distinction comes from size, color and glow.
+        // The header stays bold regardless of the "bold all text" setting. The labels are HeaderLabel
+        // instances, which the global bold walk skips; on Android bold is enforced in MauiProgram.
         void SyncTitleWidth()
         {
             if (page.Width > 0)
