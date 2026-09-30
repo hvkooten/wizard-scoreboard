@@ -92,6 +92,7 @@ If PDF cannot render, use the link.</value></data>
   <data name="DragToReorderHint" xml:space="preserve"><value>Use the arrows to change the order</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Choose a trump suit to continue</value></data>
   <data name="Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Groups" xml:space="preserve"><value>Groups</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Game Rules</value></data>
   <data name="Spades" xml:space="preserve"><value>Spades</value></data>
   <data name="StartGame" xml:space="preserve"><value>Start Game</value></data>

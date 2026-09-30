@@ -74,6 +74,7 @@ Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
   <data name="DragToReorderHint" xml:space="preserve"><value>Mit den Pfeilen die Reihenfolge ändern</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Wählen Sie eine Trumpffarbe, um fortzufahren</value></data>
   <data name="Settings" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="Groups" xml:space="preserve"><value>Gruppen</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Regeln anzeigen</value></data>
   <data name="Spades" xml:space="preserve"><value>Pik</value></data>
   <data name="StartGame" xml:space="preserve"><value>Spiel starten</value></data>
