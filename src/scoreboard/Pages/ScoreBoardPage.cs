@@ -554,8 +554,9 @@ public class ScoreBoardPage : ContentPage
         {
             var result = await SelectPlayersAsync(group);
 
-            if (result.CreateNewGroup)
+            if (result.CreateNewGroup || result.EditGroup)
             {
+                GroupsPage.SelectNewGroupOnAppearing = result.CreateNewGroup;
                 await Shell.Current.GoToAsync($"//{nameof(GroupsPage)}");
                 return;
             }
@@ -576,7 +577,7 @@ public class ScoreBoardPage : ContentPage
         }
     }
 
-    private sealed record PlayerSelectionResult(List<Player>? Players, bool SwitchGroup, bool CreateNewGroup);
+    private sealed record PlayerSelectionResult(List<Player>? Players, bool SwitchGroup = false, bool EditGroup = false, bool CreateNewGroup = false);
 
     private async Task EndGameAsync()
     {
@@ -688,7 +689,7 @@ public class ScoreBoardPage : ContentPage
                 return;
 
             groupService.SetSelectedGroup(chosen.Id);
-            tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: true, CreateNewGroup: false));
+            tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: true));
         };
 
         var newGroupBtn = new Button
@@ -698,7 +699,17 @@ public class ScoreBoardPage : ContentPage
             HorizontalOptions = LayoutOptions.Fill
         };
         newGroupBtn.Clicked += (s, e) =>
-            tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: false, CreateNewGroup: true));
+            tcs.TrySetResult(new PlayerSelectionResult(null, CreateNewGroup: true));
+
+        // Opens the Groups page with the current group selected so it can be edited.
+        var editGroupBtn = new Button
+        {
+            Text = Localization.GetString("EditGroup"),
+            HeightRequest = 44,
+            HorizontalOptions = LayoutOptions.Fill
+        };
+        editGroupBtn.Clicked += (s, e) =>
+            tcs.TrySetResult(new PlayerSelectionResult(null, EditGroup: true));
 
         groupPicker.HorizontalOptions = LayoutOptions.Fill;
         layout.Children.Add(groupPicker);
@@ -865,7 +876,18 @@ public class ScoreBoardPage : ContentPage
         buttonRow.Add(startBtn, 0);
         buttonRow.Add(cancelBtn, 1);
         layout.Children.Add(buttonRow);
-        layout.Children.Add(newGroupBtn);
+        var groupButtonRow = new Grid
+        {
+            ColumnSpacing = 8,
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = GridLength.Star }
+            }
+        };
+        groupButtonRow.Add(editGroupBtn, 0);
+        groupButtonRow.Add(newGroupBtn, 1);
+        layout.Children.Add(groupButtonRow);
         UpdateUI();
 
         var modal = new ContentPage { Content = new ScrollView { Content = layout } };
@@ -885,15 +907,15 @@ public class ScoreBoardPage : ContentPage
             // game about to start uses it, without overwriting the persisted follow-player-count mode.
             group.BidTotalRuleStartRound = bidRuleValue;
             var result = orderedPlayers.Where(p => selected.Contains(p.Id)).ToList();
-            tcs.TrySetResult(new PlayerSelectionResult(result, SwitchGroup: false, CreateNewGroup: false));
+            tcs.TrySetResult(new PlayerSelectionResult(result));
         };
 
         cancelBtn.Clicked += (s, e) =>
         {
-            tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: false, CreateNewGroup: false));
+            tcs.TrySetResult(new PlayerSelectionResult(null));
         };
 
-        modal.Disappearing += (s, e) => tcs.TrySetResult(new PlayerSelectionResult(null, SwitchGroup: false, CreateNewGroup: false));
+        modal.Disappearing += (s, e) => tcs.TrySetResult(new PlayerSelectionResult(null));
 
         await Navigation.PushModalAsync(modal);
         var selectionResult = await tcs.Task;

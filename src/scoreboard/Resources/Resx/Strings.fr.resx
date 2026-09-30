@@ -75,6 +75,8 @@ Si le PDF ne se charge pas, utilisez le lien.</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Choisissez une couleur pour continuer</value></data>
   <data name="Settings" xml:space="preserve"><value>Paramètres</value></data>
   <data name="Groups" xml:space="preserve"><value>Groupes</value></data>
+  <data name="NewGroup" xml:space="preserve"><value>Nouveau groupe</value></data>
+  <data name="EditGroup" xml:space="preserve"><value>Modifier le groupe</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Voir les règles</value></data>
   <data name="Spades" xml:space="preserve"><value>Piques</value></data>
   <data name="StartGame" xml:space="preserve"><value>Démarrer le jeu</value></data>

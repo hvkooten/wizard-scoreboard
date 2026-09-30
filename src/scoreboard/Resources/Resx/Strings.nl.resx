@@ -75,6 +75,8 @@ Als de PDF niet laadt, gebruik de link.</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Kies een troefkleur om door te gaan</value></data>
   <data name="Settings" xml:space="preserve"><value>Instellingen</value></data>
   <data name="Groups" xml:space="preserve"><value>Groepen</value></data>
+  <data name="NewGroup" xml:space="preserve"><value>Nieuwe groep</value></data>
+  <data name="EditGroup" xml:space="preserve"><value>Groep aanpassen</value></data>
   <data name="ShowRules" xml:space="preserve"><value>Spelregels tonen</value></data>
   <data name="Spades" xml:space="preserve"><value>Schoppen</value></data>
   <data name="StartGame" xml:space="preserve"><value>Start spel</value></data>

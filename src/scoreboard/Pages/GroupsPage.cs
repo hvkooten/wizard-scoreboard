@@ -25,6 +25,9 @@ public class GroupsPage : ContentPage
     private readonly CollectionView groupListView;
     private int bidTotalRuleStartRoundValue = AppSettings.DefaultBidTotalRuleStartRound;
 
+    // Set before navigating here to open the page with the "New group" entry selected.
+    public static bool SelectNewGroupOnAppearing { get; set; }
+
     public GroupsPage(IGroupService groupService)
     {
         PageTitleHelper.Apply(this, Localization.GetString("Groups"));
@@ -151,6 +154,12 @@ public class GroupsPage : ContentPage
     {
         base.OnAppearing();
         RefreshGroups();
+
+        if (SelectNewGroupOnAppearing)
+        {
+            SelectNewGroupOnAppearing = false;
+            groupPicker.SelectedIndex = 0;
+        }
     }
 
     private void RefreshGroups()
