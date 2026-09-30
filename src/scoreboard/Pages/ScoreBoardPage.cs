@@ -539,6 +539,20 @@ public class ScoreBoardPage : ContentPage
 
     private async Task StartGameAsync()
     {
+        await DisableGameButtonsAsync();
+
+        try
+        {
+            await StartGameCoreAsync();
+        }
+        finally
+        {
+            RefreshUI();
+        }
+    }
+
+    private async Task StartGameCoreAsync()
+    {
         var group = groupService.GetSelectedGroup() ?? groupService.GetGroups().FirstOrDefault();
         if (group == null)
         {
@@ -572,7 +586,6 @@ public class ScoreBoardPage : ContentPage
 
             currentSession = scoreService.StartGame(group, result.Players);
             await DisplayRoundPopupAsync();
-            RefreshUI();
             return;
         }
     }
@@ -949,17 +962,23 @@ public class ScoreBoardPage : ContentPage
         RefreshUI();
     }
 
+    // Block further clicks until RefreshUI restores the button states, and give the UI
+    // one frame to show the disabled state before the (slower) work starts.
+    private async Task DisableGameButtonsAsync()
+    {
+        startButton.IsEnabled = false;
+        pauseButton.IsEnabled = false;
+        endButton.IsEnabled = false;
+        nextRoundButton.IsEnabled = false;
+        await Task.Delay(16);
+    }
+
     private async Task TogglePauseAsync()
     {
         if (currentSession == null || !currentSession.IsActive)
             return;
 
-        // Rebuilding the scoreboard takes a moment; block further clicks until RefreshUI
-        // restores the button states, and give the UI one frame to show the disabled state.
-        startButton.IsEnabled = false;
-        pauseButton.IsEnabled = false;
-        endButton.IsEnabled = false;
-        await Task.Delay(16);
+        await DisableGameButtonsAsync();
 
         try
         {
