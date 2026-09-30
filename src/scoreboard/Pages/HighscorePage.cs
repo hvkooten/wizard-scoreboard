@@ -137,9 +137,12 @@ public class HighscorePage : ContentPage
 
     private static Label CreateCellLabel(string bindingPath, TextAlignment alignment)
     {
+        // Template cells are created lazily after the visual-tree bold walk has run, so apply the
+        // current bold-text preference here directly.
         var label = new Label
         {
             FontSize = 14,
+            FontAttributes = AppSettings.BoldAllText ? FontAttributes.Bold : FontAttributes.None,
             HorizontalTextAlignment = alignment,
             VerticalTextAlignment = TextAlignment.Center,
             LineBreakMode = LineBreakMode.TailTruncation

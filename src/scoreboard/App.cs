@@ -1,4 +1,5 @@
 using Microsoft.Maui.Controls;
+using WizardScoreboard.Pages;
 using WizardScoreboard.Services;
 
 namespace WizardScoreboard;
@@ -10,9 +11,6 @@ public class App : Application
 
     private readonly AppShell shell;
     private readonly IScreenWakeService screenWakeService;
-
-    // Holds the currently applied bold-text implicit style so it can be toggled at runtime.
-    private static ResourceDictionary? boldTextDictionary;
 
     // Raised whenever the global text style is (re)applied, e.g. when "bold all text" is toggled.
     // Pages that build their content dynamically can subscribe to rebuild themselves immediately.
@@ -26,82 +24,70 @@ public class App : Application
         ApplyGlobalTextStyle();
     }
 
-    // Applies (or removes) an app-wide implicit Label style that renders all text bold,
-    // based on the AppSettings.BoldAllText preference. Safe to call repeatedly.
+    // Applies the app-wide bold-text preference (AppSettings.BoldAllText) directly to the
+    // currently displayed page's visual tree. An implicit Style is not used here: MAUI does not
+    // reliably re-evaluate implicit styles on controls that are already alive when the style
+    // dictionary is added or removed, so toggling the setting would not consistently take effect
+    // (or revert) on existing pages. Setting FontAttributes directly avoids that limitation.
     public static void ApplyGlobalTextStyle()
     {
-        var resources = Current?.Resources;
-        if (resources is null)
-        {
-            return;
-        }
-
-        // Native Shell tab bar text ignores implicit styles, so update it explicitly.
+        // Native Shell tab bar text ignores MAUI styles/attributes, so update it explicitly.
         (Shell.Current as AppShell)?.ApplyTabBarTextStyle();
 
-        if (boldTextDictionary is not null)
-        {
-            resources.MergedDictionaries.Remove(boldTextDictionary);
-            boldTextDictionary = null;
-        }
+        ApplyBoldToVisualTree(Shell.Current?.CurrentPage, AppSettings.BoldAllText);
 
-        if (!AppSettings.BoldAllText)
-        {
-            // Notify subscribers so already-rendered pages can rebuild without the bold style.
-            GlobalTextStyleChanged?.Invoke();
-            return;
-        }
-
-        var boldLabelStyle = new Style(typeof(Label));
-        boldLabelStyle.Setters.Add(new Setter
-        {
-            Property = Label.FontAttributesProperty,
-            Value = FontAttributes.Bold
-        });
-
-        boldTextDictionary = new ResourceDictionary();
-        boldTextDictionary.Add(boldLabelStyle);
-
-        // Labels are not the only text-bearing controls; apply bold to the other common
-        // text controls too so the "bold all text" setting is truly app-wide.
-        foreach (var controlType in new[]
-        {
-            typeof(Button),
-            typeof(Entry),
-            typeof(Editor),
-            typeof(Picker),
-            typeof(DatePicker),
-            typeof(TimePicker),
-            typeof(SearchBar)
-        })
-        {
-            var style = new Style(controlType);
-            style.Setters.Add(new Setter
-            {
-                Property = FontElementFontAttributesProperty(controlType),
-                Value = FontAttributes.Bold
-            });
-            boldTextDictionary.Add(style);
-        }
-
-        resources.MergedDictionaries.Add(boldTextDictionary);
-
-        // Notify subscribers so already-rendered pages can rebuild with the bold style applied.
+        // Notify subscribers so already-rendered pages can rebuild their dynamic content, e.g. to
+        // pick up the current bold state for items created after this call.
         GlobalTextStyleChanged?.Invoke();
     }
 
-    // Resolves the FontAttributes bindable property for a given text control type.
-    private static BindableProperty FontElementFontAttributesProperty(Type controlType) => controlType switch
+    // Recursively walks the visual tree, setting FontAttributes on font-bearing controls.
+    // HeaderLabel is deliberately excluded: the Shell header always stays non-bold regardless of
+    // the setting (its font has no real bold weight and looks unstable when faux-bolded).
+    internal static void ApplyBoldToVisualTree(IVisualTreeElement? root, bool bold)
     {
-        _ when controlType == typeof(Button) => Button.FontAttributesProperty,
-        _ when controlType == typeof(Entry) => Entry.FontAttributesProperty,
-        _ when controlType == typeof(Editor) => Editor.FontAttributesProperty,
-        _ when controlType == typeof(Picker) => Picker.FontAttributesProperty,
-        _ when controlType == typeof(DatePicker) => DatePicker.FontAttributesProperty,
-        _ when controlType == typeof(TimePicker) => TimePicker.FontAttributesProperty,
-        _ when controlType == typeof(SearchBar) => SearchBar.FontAttributesProperty,
-        _ => Label.FontAttributesProperty
-    };
+        if (root is null)
+        {
+            return;
+        }
+
+        var attributes = bold ? FontAttributes.Bold : FontAttributes.None;
+
+        switch (root)
+        {
+            case HeaderLabel:
+                break;
+            case Label label:
+                label.FontAttributes = attributes;
+                break;
+            case Button button:
+                button.FontAttributes = attributes;
+                break;
+            case Entry entry:
+                entry.FontAttributes = attributes;
+                break;
+            case Editor editor:
+                editor.FontAttributes = attributes;
+                break;
+            case Picker picker:
+                picker.FontAttributes = attributes;
+                break;
+            case DatePicker datePicker:
+                datePicker.FontAttributes = attributes;
+                break;
+            case TimePicker timePicker:
+                timePicker.FontAttributes = attributes;
+                break;
+            case SearchBar searchBar:
+                searchBar.FontAttributes = attributes;
+                break;
+        }
+
+        foreach (var child in root.GetVisualChildren())
+        {
+            ApplyBoldToVisualTree(child, bold);
+        }
+    }
 
     // Release the wake lock when the app is no longer in the foreground.
     protected override void OnSleep() => screenWakeService.Suspend();

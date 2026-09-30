@@ -40,8 +40,8 @@ internal static class PageTitleHelper
             Text = leftTitle,
             FontFamily = "WizardFont",
             FontSize = 26,
-            FontAttributes = FontAttributes.Bold,
             CharacterSpacing = 1,
+            FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb("#8A1C0A"),
             Shadow = new Shadow
             {
@@ -61,8 +61,8 @@ internal static class PageTitleHelper
             FontFamily = "WizardFont",
             // Evoke the fiery "Wizard" box-art logo: deep lava-red glyphs with a glowing amber halo.
             FontSize = 28,
-            FontAttributes = FontAttributes.Bold,
             CharacterSpacing = 2,
+            FontAttributes = FontAttributes.Bold,
             TextColor = Color.FromArgb("#8A1C0A"),
             Shadow = new Shadow
             {
@@ -80,9 +80,10 @@ internal static class PageTitleHelper
         titleRow.Add(appLabel, 1, 0);
         grid.Add(titleRow, 0, 0);
 
-        // The header must always stay bold, independent of the "bold all text" setting. The header
-        // labels use the HeaderLabel subclass, which the global implicit Style(typeof(Label)) never
-        // matches (implicit styles are exact-type only), so their bold styling is never overridden.
+        // The header stays visually stable regardless of the "bold all text" setting. The labels are
+        // HeaderLabel instances (never targeted by the global implicit Label style) and deliberately
+        // avoid FontAttributes.Bold: the MedievalSharp font has no real bold weight, so faux-bold would
+        // be re-rasterized inconsistently on re-layout. Distinction comes from size, color and glow.
         void SyncTitleWidth()
         {
             if (page.Width > 0)

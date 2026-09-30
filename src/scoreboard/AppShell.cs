@@ -118,6 +118,10 @@ public partial class AppShell : Shell
         base.OnNavigated(args);
         // Tab items can be (re)created while navigating, so re-apply the bold styling.
         ApplyTabBarTextStyle();
+
+        // The newly navigated-to page's content is built fresh and does not know the current
+        // bold-text preference, so apply it directly to the new page's visual tree.
+        App.ApplyBoldToVisualTree(CurrentPage, AppSettings.BoldAllText);
     }
 
     // Applies bold (or normal) styling to the native tab bar text, following the
