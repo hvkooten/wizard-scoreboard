@@ -632,10 +632,11 @@ public class ScoreBoardPage : ContentPage
         // When the group's bid-total rule follows the player count, the start round tracks the
         // number of selected players (optionally doubled) and resets to it on every player change
         // (a manual +/- override via the buttons below lasts only until the next player change).
-        var followsPlayerCount = group.BidTotalRuleStartRound is < 0 or > 13;
+        var followsPlayerCount = group.BidTotalRuleStartRound is < 0 or > Group.MaxRoundLimit;
         var followsDoublePlayerCount = group.BidTotalRuleStartRound == Group.DoublePlayerCountRule;
-        int FollowValue() => followsDoublePlayerCount ? selected.Count * 2 : selected.Count;
-        var bidRuleValue = followsPlayerCount ? Math.Min(FollowValue(), 13) : group.BidTotalRuleStartRound;
+        int FollowValue() => Group.PlayerCountStartRound(selected.Count, followsDoublePlayerCount);
+        int MaxRound() => Group.MaxRounds(selected.Count);
+        var bidRuleValue = Math.Min(followsPlayerCount ? FollowValue() : group.BidTotalRuleStartRound, MaxRound());
         Action? syncBidRuleWithPlayers = null;
         var countLabel = new Label
         {
@@ -811,7 +812,7 @@ public class ScoreBoardPage : ContentPage
                 : bidRuleValue.ToString();
             bidRuleLabel.Text = $"{Localization.GetString("BidTotalRuleStartRound")}: {bidRuleDisplay}";
             bidRuleMinusBtn.IsEnabled = bidRuleValue > 0;
-            bidRulePlusBtn.IsEnabled = bidRuleValue < 13;
+            bidRulePlusBtn.IsEnabled = bidRuleValue < MaxRound();
         }
 
         bidRuleMinusBtn.Clicked += (s, e) =>
@@ -825,7 +826,7 @@ public class ScoreBoardPage : ContentPage
 
         bidRulePlusBtn.Clicked += (s, e) =>
         {
-            if (bidRuleValue < 13)
+            if (bidRuleValue < MaxRound())
             {
                 bidRuleValue++;
                 UpdateBidRuleUI();
@@ -834,11 +835,10 @@ public class ScoreBoardPage : ContentPage
 
         syncBidRuleWithPlayers = () =>
         {
-            if (followsPlayerCount)
-            {
-                bidRuleValue = Math.Min(FollowValue(), 13);
-                UpdateBidRuleUI();
-            }
+            bidRuleValue = followsPlayerCount
+                ? Math.Min(FollowValue(), MaxRound())
+                : Math.Min(bidRuleValue, MaxRound());
+            UpdateBidRuleUI();
         };
 
         UpdateBidRuleUI();
@@ -983,7 +983,8 @@ public class ScoreBoardPage : ContentPage
         // Large watermark of the current round number shown behind the bidding form.
         // Its color follows a dark version of the chosen trump, or gray when none is selected yet.
         var roundWatermark = CreateRoundWatermark(currentRoundNumber, TrumpSuit.None);
-        var bidBackdrop = CreateWatermarkBackdrop(AppColors.Surface, roundWatermark, scroll);
+        var noTrumpBg = AppColors.IsDark ? Colors.Black : AppColors.Surface;
+        var bidBackdrop = CreateWatermarkBackdrop(noTrumpBg, roundWatermark, scroll);
 
         // Header: round number
         population.Children.Add(new Label
@@ -1033,7 +1034,7 @@ public class ScoreBoardPage : ContentPage
                 : TrumpSuit.None;
             var popupBg = hasTrumpSelection
                 ? FlattenOverSurface(GetTrumpColor(selectedTrump))
-                : AppColors.Surface;
+                : noTrumpBg;
             bidBackdrop.BackgroundColor = popupBg;
             roundWatermark.TextColor = GetWatermarkColor(selectedTrump);
 
@@ -1196,7 +1197,7 @@ public class ScoreBoardPage : ContentPage
                     ? $"{player.Name} ({Localization.GetString("DealerLabel")}, {scoreSuffix})"
                     : $"{player.Name} ({scoreSuffix})",
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
-                TextColor = isDealer ? Color.FromArgb("#b26a00") : AppColors.TextPrimary,
+                TextColor = isDealer ? AppColors.DealerText : AppColors.TextPrimary,
                 VerticalTextAlignment = TextAlignment.Center,
                 HorizontalOptions = LayoutOptions.Fill
             };
@@ -1214,7 +1215,7 @@ public class ScoreBoardPage : ContentPage
         population.Children.Add(trumpHintLabel);
         UpdateTrumpSelectionState();
 
-        var modal = new ContentPage { Content = bidBackdrop, BackgroundColor = AppColors.Surface };
+        var modal = new ContentPage { Content = bidBackdrop, BackgroundColor = noTrumpBg };
         var tcs = new TaskCompletionSource<bool>();
 
         cancelButton.Clicked += (s, e) => tcs.TrySetResult(false);
@@ -1365,6 +1366,7 @@ public class ScoreBoardPage : ContentPage
             Margin = new Thickness(0, 8, 0, 0)
         });
 
+        var actualsRefreshes = new List<Action>();
         foreach (var player in entryOrder)
         {
             var bid = bids.GetValueOrDefault(player.Id);
@@ -1387,12 +1389,14 @@ public class ScoreBoardPage : ContentPage
                     ? $"{player.Name} ({Localization.GetString("DealerLabel")}, bod: {bid})"
                     : $"{player.Name} (bod: {bid})",
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
-                TextColor = isDealer ? Color.FromArgb("#b26a00") : AppColors.TextPrimary,
+                TextColor = isDealer ? AppColors.DealerText : AppColors.TextPrimary,
                 VerticalTextAlignment = TextAlignment.Center,
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            popActuals.Children.Add(CreateStepperRow(playerLabel, actualEntry, 0, currentSession.CurrentRound));
+            popActuals.Children.Add(CreateStepperRow(playerLabel, actualEntry, 0, currentSession.CurrentRound,
+                () => actualEntries.Values.Sum(e => int.TryParse(e.Text, out var n) ? n : 0) >= currentSession.CurrentRound,
+                actualsRefreshes));
         }
 
         popActuals.Children.Add(totalActualsLabel);
@@ -1604,7 +1608,7 @@ public class ScoreBoardPage : ContentPage
         return (row, () => selectedIndex);
     }
 
-    private static View CreateStepperRow(Label nameLabel, Entry entry, int min, int max)
+    private static View CreateStepperRow(Label nameLabel, Entry entry, int min, int max, Func<bool>? isPlusBlocked = null, List<Action>? linkedRefreshes = null)
     {
         var minusBtn = new Button
         {
@@ -1616,8 +1620,8 @@ public class ScoreBoardPage : ContentPage
             FontSize = 18,
             FontAttributes = FontAttributes.Bold,
             VerticalOptions = LayoutOptions.Center,
-            BackgroundColor = AppColors.ToggleInactiveBg,
-            TextColor = AppColors.Primary
+            BackgroundColor = AppColors.Primary,
+            TextColor = Colors.White
         };
         var plusBtn = new Button
         {
@@ -1637,7 +1641,7 @@ public class ScoreBoardPage : ContentPage
         {
             int.TryParse(entry.Text, out var v);
             minusBtn.IsEnabled = v > min;
-            plusBtn.IsEnabled = v < max;
+            plusBtn.IsEnabled = v < max && !(isPlusBlocked?.Invoke() ?? false);
         }
 
         minusBtn.Clicked += (s, e) =>
@@ -1650,7 +1654,15 @@ public class ScoreBoardPage : ContentPage
             if (int.TryParse(entry.Text, out var v) && v < max)
                 entry.Text = (v + 1).ToString();
         };
-        entry.TextChanged += (s, e) => Refresh();
+        if (linkedRefreshes != null)
+        {
+            linkedRefreshes.Add(Refresh);
+            entry.TextChanged += (s, e) => linkedRefreshes.ForEach(r => r());
+        }
+        else
+        {
+            entry.TextChanged += (s, e) => Refresh();
+        }
         Refresh();
 
         var grid = new Grid
@@ -1698,7 +1710,8 @@ public class ScoreBoardPage : ContentPage
 
     private static Color FlattenOverSurface(Color color)
     {
-        var a = color.Alpha;
+        // In dark mode a softer tint keeps colored text (warnings, dealer) readable.
+        var a = color.Alpha * (AppColors.IsDark ? 0.5f : 1f);
         var surface = AppColors.Surface;
         return Color.FromRgb(
             color.Red * a + surface.Red * (1 - a),

@@ -86,13 +86,8 @@ public class SettingsPage : ContentPage
 
         // Default bid total rule start round applied when creating a new group.
         bidTotalRulePicker = new Picker { Title = Localization.GetString("DefaultBidTotalRuleStartRound") };
-        bidTotalRulePicker.Items.Add(Localization.GetString("Disabled"));
-        bidTotalRulePicker.Items.Add(Localization.GetString("Player Count"));
-        bidTotalRulePicker.Items.Add(Localization.GetString("DoublePlayerCount"));
-        for (var round = 1; round <= 13; round++)
-        {
-            bidTotalRulePicker.Items.Add(round.ToString());
-        }
+        // The default is not tied to a player count, so offer every possible round.
+        BidTotalRulePicker.PopulateItems(bidTotalRulePicker, Group.MaxRoundLimit);
         bidTotalRulePicker.SelectedIndex = BidTotalRulePicker.IndexFromValue(AppSettings.DefaultBidTotalRuleStartRound);
         bidTotalRulePicker.SelectedIndexChanged += (s, e) =>
         {

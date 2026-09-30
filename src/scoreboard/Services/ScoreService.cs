@@ -51,9 +51,9 @@ public class ScoreService : IScoreService
         // Use group-specific setting; fallback to player count for migrated groups.
         var bidTotalRuleStartRound = group.BidTotalRuleStartRound switch
         {
-            >= 0 and <= 13 => group.BidTotalRuleStartRound,
-            Group.DoublePlayerCountRule => sessionPlayers.Count * 2,
-            _ => sessionPlayers.Count
+            >= 0 and <= Group.MaxRoundLimit => group.BidTotalRuleStartRound,
+            Group.DoublePlayerCountRule => Group.PlayerCountStartRound(sessionPlayers.Count, doublePlayerCount: true),
+            _ => Group.PlayerCountStartRound(sessionPlayers.Count, doublePlayerCount: false)
         };
 
         var session = new ScoreSession
@@ -285,7 +285,12 @@ public class ScoreService : IScoreService
                 return;
 
             sessions.Clear();
-            sessions.AddRange(saved.Where(s => s.IsActive && s.IsPaused));
+            // Games that were still in progress when the app closed are restored as saved games.
+            foreach (var session in saved.Where(s => s.IsActive))
+            {
+                session.IsPaused = true;
+                sessions.Add(session);
+            }
             selectedSessionId = sessions
                 .OrderByDescending(s => s.StartDate)
                 .Select(s => (Guid?)s.Id)
@@ -300,8 +305,8 @@ public class ScoreService : IScoreService
 
     private void SavePausedSessions()
     {
-        var paused = sessions.Where(s => s.IsActive && s.IsPaused).ToList();
-        var raw = JsonSerializer.Serialize(paused);
+        var active = sessions.Where(s => s.IsActive).ToList();
+        var raw = JsonSerializer.Serialize(active);
         try
         {
             Preferences.Default.Set(PausedSessionsStorageKey, raw);

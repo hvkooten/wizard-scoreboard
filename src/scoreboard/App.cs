@@ -91,7 +91,35 @@ public class App : Application
             style.Setters.Add(new Setter { Property = property, Value = value });
         }
 
+        if (typeof(T) == typeof(Button))
+        {
+            style.Setters.Add(new Setter
+            {
+                Property = VisualStateManager.VisualStateGroupsProperty,
+                Value = CreateDisabledFadeStates()
+            });
+        }
+
         return style;
+    }
+
+    // The explicit button colors hide the platform's disabled look, so fade disabled buttons instead.
+    // Opacity is never set locally on buttons, so this also works for buttons with explicit colors.
+    private static VisualStateGroupList CreateDisabledFadeStates()
+    {
+        var normal = new VisualState { Name = VisualStateManager.CommonStates.Normal };
+        normal.Setters.Add(new Setter { Property = VisualElement.OpacityProperty, Value = 1.0 });
+
+        var disabled = new VisualState { Name = VisualStateManager.CommonStates.Disabled };
+        disabled.Setters.Add(new Setter { Property = VisualElement.OpacityProperty, Value = 0.35 });
+
+        var group = new VisualStateGroup { Name = nameof(VisualStateManager.CommonStates) };
+        group.States.Add(normal);
+        group.States.Add(disabled);
+        group.States.Add(new VisualState { Name = VisualStateManager.CommonStates.PointerOver });
+        group.States.Add(new VisualState { Name = "Pressed" });
+
+        return new VisualStateGroupList { group };
     }
 
     // Applies and persists the selected theme and rebuilds the UI so all pages pick up the new colors.

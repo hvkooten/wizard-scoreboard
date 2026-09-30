@@ -41,7 +41,10 @@ internal static class AppColors
     public static Color TextPrimary => Pick("#000000", "#e6edf5");
     public static Color TextMuted => Pick("#808080", "#9aa8b8");
     public static Color SuccessText => Pick("#006400", "#8fe39f");
-    public static Color WarningText => Pick("#8b0000", "#ff8a8a");
+    public static Color WarningText => Pick("#8b0000", "#ffb0b0");
+
+    // Highlight for the dealer's name in the bid/actuals forms.
+    public static Color DealerText => Pick("#b26a00", "#ffd27a");
 
     // Fiery page-title color.
     public static Color TitleText => Pick("#8A1C0A", "#ff9a6a");

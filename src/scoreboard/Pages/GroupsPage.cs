@@ -33,13 +33,7 @@ public class GroupsPage : ContentPage
 
         // Bid total rule start round setting (per group).
         bidTotalRulePicker = new Picker { Title = Localization.GetString("BidTotalRuleStartRound") };
-        bidTotalRulePicker.Items.Add(Localization.GetString("Disabled"));
-        bidTotalRulePicker.Items.Add(Localization.GetString("Player Count"));
-        bidTotalRulePicker.Items.Add(Localization.GetString("DoublePlayerCount"));
-        for (var round = 1; round <= 13; round++)
-        {
-            bidTotalRulePicker.Items.Add(round.ToString());
-        }
+        BidTotalRulePicker.PopulateItems(bidTotalRulePicker, Group.MaxRounds(selectedPlayerCount));
         bidTotalRulePicker.SelectedIndex = BidTotalRulePicker.IndexFromValue(bidTotalRuleStartRoundValue);
         bidTotalRulePicker.SelectedIndexChanged += (s, e) =>
         {
@@ -322,6 +316,8 @@ public class GroupsPage : ContentPage
             var entry = new Entry
             {
                 Placeholder = $"Speler {i + 1}",
+                // Entries are recreated here (e.g. after saving), so apply the bold-text setting directly.
+                FontAttributes = AppSettings.BoldAllText ? FontAttributes.Bold : FontAttributes.None,
                 Text = string.IsNullOrWhiteSpace(previous)
                     ? string.Format(Localization.GetString("PlayerPlaceholder"), i + 1)
                     : previous
@@ -489,12 +485,17 @@ public class GroupsPage : ContentPage
         if (bidTotalRuleStartRoundValue == previousCount)
         {
             bidTotalRuleStartRoundValue = count;
-            var alignedIndex = BidTotalRulePicker.IndexFromValue(bidTotalRuleStartRoundValue);
-            if (bidTotalRulePicker.SelectedIndex != alignedIndex)
-            {
-                bidTotalRulePicker.SelectedIndex = alignedIndex;
-            }
         }
+
+        // Only offer rounds that exist for this player count; clamp a fixed round that no longer fits.
+        var maxRound = Group.MaxRounds(count);
+        if (bidTotalRuleStartRoundValue > maxRound)
+        {
+            bidTotalRuleStartRoundValue = maxRound;
+        }
+
+        BidTotalRulePicker.PopulateItems(bidTotalRulePicker, maxRound);
+        bidTotalRulePicker.SelectedIndex = BidTotalRulePicker.IndexFromValue(bidTotalRuleStartRoundValue);
 
         ApplyPlayerCountButtonStyles();
         RebuildPlayerNameInputs();
@@ -545,8 +546,8 @@ public class GroupsPage : ContentPage
         SetGroupNameFromCode(selected.Name);
 
         SetPlayerCount(selected.Players.Count, updateGroupName: false);
-        bidTotalRuleStartRoundValue = selected.BidTotalRuleStartRound is (>= 0 and <= 13) or Group.DoublePlayerCountRule
-            ? selected.BidTotalRuleStartRound
+        bidTotalRuleStartRoundValue = selected.BidTotalRuleStartRound is (>= 0 and <= Group.MaxRoundLimit) or Group.DoublePlayerCountRule
+            ? Math.Min(selected.BidTotalRuleStartRound, Group.MaxRounds(selected.Players.Count))
             : Group.PlayerCountRule;
         bidTotalRulePicker.SelectedIndex = BidTotalRulePicker.IndexFromValue(bidTotalRuleStartRoundValue);
 
