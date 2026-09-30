@@ -954,6 +954,13 @@ public class ScoreBoardPage : ContentPage
         if (currentSession == null || !currentSession.IsActive)
             return;
 
+        // Rebuilding the scoreboard takes a moment; block further clicks until RefreshUI
+        // restores the button states, and give the UI one frame to show the disabled state.
+        startButton.IsEnabled = false;
+        pauseButton.IsEnabled = false;
+        endButton.IsEnabled = false;
+        await Task.Delay(16);
+
         try
         {
             if (currentSession.IsPaused)
@@ -969,6 +976,7 @@ public class ScoreBoardPage : ContentPage
         }
         catch (Exception ex)
         {
+            RefreshUI();
             await this.ShowMessageAsync("ErrorTitle", ex.Message);
         }
     }
