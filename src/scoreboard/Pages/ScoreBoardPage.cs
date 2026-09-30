@@ -958,11 +958,19 @@ public class ScoreBoardPage : ContentPage
             return;
         }
 
-        await DisplayRoundPopupAsync();
-        RefreshUI();
+        await DisableGameButtonsAsync();
+
+        try
+        {
+            await DisplayRoundPopupAsync();
+        }
+        finally
+        {
+            RefreshUI();
+        }
     }
 
-    // Block further clicks until RefreshUI restores the button states, and give the UI
+    // Block further clicks
     // one frame to show the disabled state before the (slower) work starts.
     private async Task DisableGameButtonsAsync()
     {
