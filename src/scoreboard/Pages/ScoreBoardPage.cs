@@ -1059,6 +1059,7 @@ public class ScoreBoardPage : ContentPage
                 : noTrumpBg;
             bidBackdrop.BackgroundColor = popupBg;
             roundWatermark.TextColor = GetWatermarkColor(selectedTrump);
+            ApplyWatermarkText(roundWatermark, currentRoundNumber, selectedTrump);
 
             // Refresh the dealer's (last) bid field so its color follows the trump selection.
             refreshDealerColor?.Invoke();
@@ -1588,23 +1589,28 @@ public class ScoreBoardPage : ContentPage
         var buttons = new List<Border>();
         var labels = new List<Label>();
 
-        Color SelectedStroke = Colors.Black;
+        Color SelectedStroke = AppColors.IsDark ? Colors.White : Colors.Black;
         Color UnselectedStroke = Colors.LightGray;
 
         void UpdateHighlight()
         {
             for (var i = 0; i < buttons.Count; i++)
             {
-                buttons[i].Stroke = i == selectedIndex ? SelectedStroke : UnselectedStroke;
+                var isSelected = i == selectedIndex;
+                buttons[i].Stroke = isSelected ? SelectedStroke : UnselectedStroke;
+                buttons[i].StrokeThickness = isSelected ? 4 : 2;
+                // Enlarge the chosen trump and fade the others so the selection stands out.
+                buttons[i].Scale = isSelected ? 1.2 : 1.0;
+                buttons[i].Opacity = selectedIndex < 0 || isSelected ? 1.0 : 0.4;
                 if (mode == TrumpPaletteMode.FourColors)
                 {
-                    labels[i].TextColor = i == selectedIndex ? Colors.Black : Colors.White;
+                    labels[i].TextColor = isSelected ? Colors.Black : Colors.White;
                 }
             }
             onSelectionChanged?.Invoke();
         }
 
-        var row = new HorizontalStackLayout { Spacing = 8 };
+        var row = new HorizontalStackLayout { Spacing = 14, HorizontalOptions = LayoutOptions.Center, Padding = new Thickness(0, 6) };
 
         for (var i = 0; i < options.Length; i++)
         {
@@ -1781,28 +1787,42 @@ public class ScoreBoardPage : ContentPage
             };
         }
 
+        // Card suits: red suits get a red background, black suits a blue one.
         return trump switch
         {
-            TrumpSuit.Hearts => Colors.Red.WithAlpha(0.2f),
-            TrumpSuit.Diamonds => Colors.Orange.WithAlpha(0.2f),
-            TrumpSuit.Clubs => Colors.Green.WithAlpha(0.2f),
-            TrumpSuit.Spades => Colors.Blue.WithAlpha(0.2f),
+            TrumpSuit.Hearts or TrumpSuit.Diamonds => Colors.Red.WithAlpha(0.2f),
+            TrumpSuit.Clubs or TrumpSuit.Spades => Colors.Blue.WithAlpha(0.2f),
             _ => AppColors.Surface
         };
     }
 
     // Dark, opaque version of the trump color used for the round watermark shown
     // behind the bidding form. Falls back to gray when no trump is selected yet.
-    private Color GetDarkTrumpColor(TrumpSuit trump) => trump switch
+    private Color GetDarkTrumpColor(TrumpSuit trump) => trumpPaletteService.GetMode() == TrumpPaletteMode.FourColors
+        ? trump switch
+        {
+            TrumpSuit.Hearts => Color.FromArgb("#7a1020"),
+            TrumpSuit.Diamonds => Color.FromArgb("#8a6d00"),
+            TrumpSuit.Clubs => Color.FromArgb("#0f3d1a"),
+            TrumpSuit.Spades => Color.FromArgb("#0f2a5c"),
+            _ => Color.FromArgb("#555555")
+        }
+        : trump switch
+        {
+            TrumpSuit.Hearts or TrumpSuit.Diamonds => Color.FromArgb("#7a1020"),
+            TrumpSuit.Clubs or TrumpSuit.Spades => Color.FromArgb("#0f2a5c"),
+            _ => Color.FromArgb("#555555")
+        };
+
+    // In card-suit mode the watermark shows the round number followed by the trump symbol.
+    private void ApplyWatermarkText(Label watermark, int roundNumber, TrumpSuit trump)
     {
-        TrumpSuit.Hearts => Color.FromArgb("#7a1020"),
-        TrumpSuit.Diamonds => trumpPaletteService.GetMode() == TrumpPaletteMode.FourColors
-            ? Color.FromArgb("#8a6d00")
-            : Color.FromArgb("#8a3000"),
-        TrumpSuit.Clubs => Color.FromArgb("#0f3d1a"),
-        TrumpSuit.Spades => Color.FromArgb("#0f2a5c"),
-        _ => Color.FromArgb("#555555")
-    };
+        var showSuit = trumpPaletteService.GetMode() == TrumpPaletteMode.CardSuits && trump != TrumpSuit.None;
+        watermark.Text = showSuit
+            ? $"{roundNumber}{GetTrumpDisplayInfo(trump).symbol}"
+            : roundNumber.ToString();
+        watermark.FontSize = showSuit ? 180 : 260;
+    }
 
     // Semi-transparent dark trump color used for the large round-number watermark.
     private Color GetWatermarkColor(TrumpSuit trump) => AppColors.IsDark
@@ -1810,18 +1830,22 @@ public class ScoreBoardPage : ContentPage
         : GetDarkTrumpColor(trump).WithAlpha(0.18f);
 
     // Large round-number watermark shown behind the bidding and actuals forms.
-    private Label CreateRoundWatermark(int roundNumber, TrumpSuit trump) => new()
+    private Label CreateRoundWatermark(int roundNumber, TrumpSuit trump)
     {
-        Text = roundNumber.ToString(),
-        FontSize = 260,
-        FontAttributes = FontAttributes.Bold,
-        TextColor = GetWatermarkColor(trump),
-        HorizontalOptions = LayoutOptions.Center,
-        VerticalOptions = LayoutOptions.Center,
-        HorizontalTextAlignment = TextAlignment.Center,
-        VerticalTextAlignment = TextAlignment.Center,
-        InputTransparent = true
-    };
+        var watermark = new Label
+        {
+            FontAttributes = FontAttributes.Bold,
+            TextColor = GetWatermarkColor(trump),
+            LineBreakMode = LineBreakMode.NoWrap,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center,
+            InputTransparent = true
+        };
+        ApplyWatermarkText(watermark, roundNumber, trump);
+        return watermark;
+    }
 
     // Layers the watermark behind the popup content on a tinted backdrop.
     private static Grid CreateWatermarkBackdrop(Color backgroundColor, Label watermark, View content)
