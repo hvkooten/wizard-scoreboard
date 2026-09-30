@@ -63,6 +63,9 @@ public class HighscorePage : ContentPage
                 gridView
             }
         };
+
+        // Rebuild when the global bold-text setting changes so the page updates immediately.
+        App.GlobalTextStyleChanged += RefreshHighscores;
     }
 
     protected override void OnAppearing()
@@ -101,7 +104,7 @@ public class HighscorePage : ContentPage
             },
             ColumnSpacing = 8,
             Padding = new Thickness(8, 8),
-            BackgroundColor = Color.FromArgb("#1a3a5c")
+            BackgroundColor = AppColors.Primary
         };
 
         headerGrid.Add(CreateHeaderLabel("#", TextAlignment.Center), 0, 0);

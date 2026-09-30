@@ -79,22 +79,7 @@ public class SettingsPage : ContentPage
             UpdateTrumpPalettePreview(mode);
         };
 
-        var trumpStyleHeaderRow = new HorizontalStackLayout
-        {
-            Spacing = 8,
-            VerticalOptions = LayoutOptions.Center,
-            Children =
-            {
-                new Label
-                {
-                    Text = Localization.GetString("TrumpColorStyleTitle"),
-                    FontAttributes = FontAttributes.Bold,
-                    VerticalTextAlignment = TextAlignment.Center,
-                    HorizontalOptions = LayoutOptions.Start
-                },
-                trumpPalettePreviewLayout
-            }
-        };
+        var trumpStyleHeaderRow = CreateSettingRow(Localization.GetString("TrumpColorStyleTitle"), trumpPalettePreviewLayout, boldLabel: true);
         UpdateTrumpPalettePreview(trumpPaletteService.GetMode());
 
         // Default bid total rule start round applied when creating a new group.
@@ -126,21 +111,7 @@ public class SettingsPage : ContentPage
             screenWakeService.Refresh();
         };
 
-        var keepScreenAwakeRow = new HorizontalStackLayout
-        {
-            Spacing = 8,
-            VerticalOptions = LayoutOptions.Center,
-            Children =
-            {
-                new Label
-                {
-                    Text = Localization.GetString("KeepScreenAwake"),
-                    VerticalTextAlignment = TextAlignment.Center,
-                    HorizontalOptions = LayoutOptions.Start
-                },
-                keepScreenAwakeSwitch
-            }
-        };
+        var keepScreenAwakeRow = CreateSettingRow(Localization.GetString("KeepScreenAwake"), keepScreenAwakeSwitch);
 
         var boldAllTextSwitch = new Switch
         {
@@ -153,21 +124,7 @@ public class SettingsPage : ContentPage
             App.ApplyGlobalTextStyle();
         };
 
-        var boldAllTextRow = new HorizontalStackLayout
-        {
-            Spacing = 8,
-            VerticalOptions = LayoutOptions.Center,
-            Children =
-            {
-                new Label
-                {
-                    Text = Localization.GetString("BoldAllText"),
-                    VerticalTextAlignment = TextAlignment.Center,
-                    HorizontalOptions = LayoutOptions.Start
-                },
-                boldAllTextSwitch
-            }
-        };
+        var boldAllTextRow = CreateSettingRow(Localization.GetString("BoldAllText"), boldAllTextSwitch);
 
         Content = new ScrollView
         {
@@ -177,10 +134,10 @@ public class SettingsPage : ContentPage
                 Spacing = 15,
                 Children =
                 {
-                    languagePicker,
+                    CreatePickerSection(Localization.GetString("SelectLanguage"), languagePicker),
                     trumpStyleHeaderRow,
                     trumpPalettePicker,
-                    bidTotalRulePicker,
+                    CreatePickerSection(Localization.GetString("DefaultBidTotalRuleStartRound"), bidTotalRulePicker),
                     keepScreenAwakeRow,
                     boldAllTextRow
                 }
@@ -188,13 +145,62 @@ public class SettingsPage : ContentPage
         };
     }
 
-    private static View CreateColorIcon(Color color)
+    // Builds a vertical section with a caption header above the picker. Using a real Label
+    // (instead of Picker.Title) lets the caption follow the app-wide "bold all text" style.
+    private static VerticalStackLayout CreatePickerSection(string caption, Picker picker)
+    {
+        // Clear the native title so the caption is not shown twice.
+        picker.Title = string.Empty;
+
+        return new VerticalStackLayout
+        {
+            Spacing = 4,
+            Children =
+            {
+                new Label
+                {
+                    Text = caption,
+                    VerticalTextAlignment = TextAlignment.Center
+                },
+                picker
+            }
+        };
+    }
+
+    // Builds a settings row with a caption label and a trailing control.
+    private static HorizontalStackLayout CreateSettingRow(string caption, View control, bool boldLabel = false)
+    {
+        var label = new Label
+        {
+            Text = caption,
+            VerticalTextAlignment = TextAlignment.Center,
+            HorizontalOptions = LayoutOptions.Start
+        };
+
+        // Only force bold here; leaving the default lets the app-wide "bold all text" style apply.
+        if (boldLabel)
+        {
+            label.FontAttributes = FontAttributes.Bold;
+        }
+
+        return new HorizontalStackLayout
+        {
+            Spacing = 8,
+            VerticalOptions = LayoutOptions.Center,
+            Children =
+            {
+                label,
+                control
+            }
+        };
+    }
+
+    private static Border CreateIconBorder()
     {
         return new Border
         {
             WidthRequest = 28,
             HeightRequest = 28,
-            BackgroundColor = color,
             Stroke = Colors.Black,
             StrokeThickness = 1,
             Padding = 0,
@@ -202,27 +208,27 @@ public class SettingsPage : ContentPage
         };
     }
 
+    private static View CreateColorIcon(Color color)
+    {
+        var border = CreateIconBorder();
+        border.BackgroundColor = color;
+        return border;
+    }
+
     private static View CreateSuitIcon(string symbol, Color color)
     {
-        return new Border
+        var border = CreateIconBorder();
+        border.BackgroundColor = Colors.White;
+        border.Content = new Label
         {
-            WidthRequest = 28,
-            HeightRequest = 28,
-            BackgroundColor = Colors.White,
-            Stroke = Colors.Black,
-            StrokeThickness = 1,
-            Padding = 0,
-            StrokeShape = new RoundRectangle { CornerRadius = 14 },
-            Content = new Label
-            {
-                Text = symbol,
-                TextColor = color,
-                FontAttributes = FontAttributes.Bold,
-                FontSize = 15,
-                HorizontalTextAlignment = TextAlignment.Center,
-                VerticalTextAlignment = TextAlignment.Center
-            }
+            Text = symbol,
+            TextColor = color,
+            FontAttributes = FontAttributes.Bold,
+            FontSize = 15,
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalTextAlignment = TextAlignment.Center
         };
+        return border;
     }
 
     private void UpdateTrumpPalettePreview(TrumpPaletteMode mode)

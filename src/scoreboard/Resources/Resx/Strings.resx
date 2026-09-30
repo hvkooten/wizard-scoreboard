@@ -111,6 +111,9 @@ If PDF cannot render, use the link.</value></data>
   <data name="TrumpPaletteColors" xml:space="preserve"><value>Colors (Red, Yellow, Green, Blue)</value></data>
   <data name="TrumpRequiredError" xml:space="preserve"><value>Please select a trump suit.</value></data>
   <data name="WinnerTemplate" xml:space="preserve"><value>Winner: {0} with {1} points</value></data>
+  <data name="About" xml:space="preserve"><value>About</value></data>
+  <data name="VersionTemplate" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="Copyright" xml:space="preserve"><value>© 2026 Nodorum Solutio B.V. All rights reserved.</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="Yellow" xml:space="preserve"><value>Yellow</value></data>
 </root>

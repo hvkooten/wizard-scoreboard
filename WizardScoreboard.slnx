@@ -18,4 +18,5 @@
   <Project Path="src/scoreboard/WizardScoreboard.csproj">
     <Deploy Solution="Debug|*" />
   </Project>
+  <Project Path="tools/LogoGen/LogoGen.csproj" />
 </Solution>

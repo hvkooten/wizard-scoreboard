@@ -112,16 +112,7 @@ public class GroupsPage : ContentPage
                 };
                 nameLabel.SetBinding(Label.TextProperty, nameof(Group.Name));
 
-                var deleteButton = new Button
-                {
-                    Text = "🗑",
-                    WidthRequest = 44,
-                    HeightRequest = 36,
-                    Padding = new Thickness(0),
-                    BackgroundColor = Color.FromArgb("#fde8e8"),
-                    TextColor = Color.FromArgb("#a32020"),
-                    CornerRadius = 8
-                };
+                var deleteButton = UiFactory.CreateDeleteButton(44, 36);
                 deleteButton.Clicked += async (s, e) =>
                 {
                     if (deleteButton.BindingContext is Group group)
@@ -157,6 +148,9 @@ public class GroupsPage : ContentPage
         };
 
         RefreshGroups();
+
+        // Rebuild when the global bold-text setting changes so the page updates immediately.
+        App.GlobalTextStyleChanged += RefreshGroups;
     }
 
     protected override void OnAppearing()
@@ -218,7 +212,7 @@ public class GroupsPage : ContentPage
         var groupName = groupNameEntry.Text?.Trim();
         if (string.IsNullOrWhiteSpace(groupName))
         {
-            await DisplayAlertAsync(Localization.GetString("ErrorTitle"), Localization.GetString("GroupNameRequired"), Localization.GetString("Ok"));
+            await this.ShowMessageAsync("ErrorTitle", Localization.GetString("GroupNameRequired"));
             return;
         }
 
@@ -240,10 +234,7 @@ public class GroupsPage : ContentPage
 
             if (players.Count < 3 || players.Count > 6)
             {
-                await DisplayAlertAsync(
-                    Localization.GetString("ErrorTitle"),
-                    Localization.GetString("GroupNameRequired"),
-                    Localization.GetString("Ok"));
+                await this.ShowMessageAsync("ErrorTitle", Localization.GetString("GroupNameRequired"));
                 return;
             }
 
@@ -272,11 +263,11 @@ public class GroupsPage : ContentPage
             var successMsg = editingGroupId.HasValue
                 ? Localization.GetString("GroupUpdated")
                 : Localization.GetString("GroupCreated");
-            await DisplayAlertAsync(Localization.GetString("SuccessTitle"), successMsg, Localization.GetString("Ok"));
+            await this.ShowMessageAsync("SuccessTitle", successMsg);
         }
         catch (Exception ex)
         {
-            await DisplayAlertAsync(Localization.GetString("ErrorTitle"), ex.Message, Localization.GetString("Ok"));
+            await this.ShowMessageAsync("ErrorTitle", ex.Message);
         }
     }
 
@@ -519,8 +510,7 @@ public class GroupsPage : ContentPage
         foreach (var btn in playerCountButtons)
         {
             var isSelected = btn.Text == selectedPlayerCount.ToString();
-            btn.BackgroundColor = isSelected ? Color.FromArgb("#1a3a5c") : Color.FromArgb("#e0e8f0");
-            btn.TextColor = isSelected ? Colors.White : Color.FromArgb("#1a3a5c");
+            UiFactory.ApplyToggleStyle(btn, isSelected);
         }
     }
 

@@ -19,6 +19,8 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                // Free/open-source medieval display font (SIL OFL) used for the "Wizard" title.
+                fonts.AddFont("MedievalSharp.ttf", "WizardFont");
             });
 
         builder.Services.AddSingleton<IGroupService, GroupService>();
@@ -28,6 +30,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IScreenWakeService, ScreenWakeService>();
 
         builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<AboutPage>();
         builder.Services.AddTransient<GroupsPage>();
         builder.Services.AddTransient<RulesPage>();
         builder.Services.AddTransient<HighscorePage>();

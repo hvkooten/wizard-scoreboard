@@ -25,14 +25,14 @@ public class ScoreBoardPage : ContentPage
     private ScrollView scoreboardScrollView;
 
     // Palette for header colours
-    private static readonly Color HeaderBg = Color.FromArgb("#1a3a5c");
+    private static readonly Color HeaderBg = AppColors.Primary;
     private static readonly Color HeaderFg = Colors.White;
     private static readonly Color RowEven = Color.FromArgb("#f0f4f8");
     private static readonly Color RowOdd = Colors.White;
     private static readonly Color WinBg = Color.FromArgb("#c8f7c5");
-    private static readonly Color LoseBg = Color.FromArgb("#fde8e8");
+    private static readonly Color LoseBg = AppColors.DangerBg;
     private static readonly Color WinFg = Color.FromArgb("#1a6b2a");
-    private static readonly Color LoseFg = Color.FromArgb("#a32020");
+    private static readonly Color LoseFg = AppColors.DangerText;
     private static readonly Color TotalBg = Color.FromArgb("#ddeeff");
 
     public ScoreBoardPage(IGroupService groupService, IHighscoreService highscoreService, IScoreService scoreService, ITrumpPaletteService trumpPaletteService, IScreenWakeService screenWakeService)
@@ -105,6 +105,10 @@ public class ScoreBoardPage : ContentPage
         mainGrid.Add(footerGrid, 0, 3);
 
         Content = mainGrid;
+
+        // Rebuild the dynamically-built content when the global bold-text setting changes so the
+        // currently visible page updates immediately instead of only after the next rebuild.
+        App.GlobalTextStyleChanged += RefreshUI;
 
         RefreshUI();
     }
@@ -434,7 +438,7 @@ public class ScoreBoardPage : ContentPage
         return new Border
         {
             BackgroundColor = bg ?? Colors.Transparent,
-            Stroke = Color.FromArgb("#d6dce5"),
+            Stroke = AppColors.Border,
             StrokeThickness = 0.75,
             StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 0 },
             Padding = 0,
@@ -485,7 +489,7 @@ public class ScoreBoardPage : ContentPage
         var border = new Border
         {
             BackgroundColor = bg ?? Colors.Transparent,
-            Stroke = Color.FromArgb("#d6dce5"),
+            Stroke = AppColors.Border,
             StrokeThickness = 0.75,
             StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 0 },
             Padding = 0,
@@ -538,7 +542,7 @@ public class ScoreBoardPage : ContentPage
         var group = groupService.GetSelectedGroup() ?? groupService.GetGroups().FirstOrDefault();
         if (group == null)
         {
-            await DisplayAlertAsync(Localization.GetString("ErrorTitle"), Localization.GetString("NoGroupsAvailable"), Localization.GetString("Ok"));
+            await this.ShowMessageAsync("ErrorTitle", Localization.GetString("NoGroupsAvailable"));
             return;
         }
 
@@ -647,11 +651,7 @@ public class ScoreBoardPage : ContentPage
             startBtn.IsEnabled = selected.Count >= 3;
         }
 
-        void ApplyStyle(Button btn, bool isOn)
-        {
-            btn.BackgroundColor = isOn ? Color.FromArgb("#1a3a5c") : Color.FromArgb("#e0e8f0");
-            btn.TextColor = isOn ? Colors.White : Color.FromArgb("#1a3a5c");
-        }
+        void ApplyStyle(Button btn, bool isOn) => UiFactory.ApplyToggleStyle(btn, isOn);
 
         var layout = new StackLayout { Spacing = 10, Padding = new Thickness(16, 16) };
         layout.Children.Add(new Label
@@ -758,33 +758,8 @@ public class ScoreBoardPage : ContentPage
                     syncBidRuleWithPlayers?.Invoke();
                 };
 
-                var upBtn = new Button
-                {
-                    Text = "\u2191",
-                    WidthRequest = 44,
-                    HeightRequest = 44,
-                    Padding = new Thickness(0),
-                    FontSize = 16,
-                    CornerRadius = 8,
-                    BackgroundColor = Color.FromArgb("#e0e8f0"),
-                    TextColor = Color.FromArgb("#1a3a5c"),
-                    IsEnabled = index > 0
-                };
-                upBtn.Clicked += (s, e) => MovePlayer(capturedId, -1);
-
-                var downBtn = new Button
-                {
-                    Text = "\u2193",
-                    WidthRequest = 44,
-                    HeightRequest = 44,
-                    Padding = new Thickness(0),
-                    FontSize = 16,
-                    CornerRadius = 8,
-                    BackgroundColor = Color.FromArgb("#e0e8f0"),
-                    TextColor = Color.FromArgb("#1a3a5c"),
-                    IsEnabled = index < orderedPlayers.Count - 1
-                };
-                downBtn.Clicked += (s, e) => MovePlayer(capturedId, 1);
+                var upBtn = UiFactory.CreateReorderButton("\u25B2", index > 0, (s, e) => MovePlayer(capturedId, -1));
+                var downBtn = UiFactory.CreateReorderButton("\u25BC", index < orderedPlayers.Count - 1, (s, e) => MovePlayer(capturedId, 1));
 
                 var row = new Grid
                 {
@@ -826,26 +801,8 @@ public class ScoreBoardPage : ContentPage
             Margin = new Thickness(0, 12, 0, 4)
         };
 
-        var bidRuleMinusBtn = new Button
-        {
-            Text = "−",
-            WidthRequest = 36,
-            HeightRequest = 36,
-            Padding = new Thickness(0),
-            FontSize = 16,
-            BackgroundColor = Color.FromArgb("#e0e8f0"),
-            TextColor = Color.FromArgb("#1a3a5c")
-        };
-        var bidRulePlusBtn = new Button
-        {
-            Text = "+",
-            WidthRequest = 36,
-            HeightRequest = 36,
-            Padding = new Thickness(0),
-            FontSize = 16,
-            BackgroundColor = Color.FromArgb("#1a3a5c"),
-            TextColor = Colors.White
-        };
+        var bidRuleMinusBtn = UiFactory.CreateStepperButton("−", isPrimary: false);
+        var bidRulePlusBtn = UiFactory.CreateStepperButton("+", isPrimary: true);
 
         void UpdateBidRuleUI()
         {
@@ -950,19 +907,19 @@ public class ScoreBoardPage : ContentPage
     {
         if (currentSession == null || !currentSession.IsActive)
         {
-            await DisplayAlertAsync(Localization.GetString("InfoTitle"), Localization.GetString("NoActiveGame"), Localization.GetString("Ok"));
+            await this.ShowMessageAsync("InfoTitle", Localization.GetString("NoActiveGame"));
             return;
         }
 
         if (currentSession.IsPaused)
         {
-            await DisplayAlertAsync(Localization.GetString("InfoTitle"), Localization.GetString("GamePausedStatus"), Localization.GetString("Ok"));
+            await this.ShowMessageAsync("InfoTitle", Localization.GetString("GamePausedStatus"));
             return;
         }
 
         if (currentSession.CurrentRound >= currentSession.MaxRounds)
         {
-            await DisplayAlertAsync(Localization.GetString("InfoTitle"), Localization.GetString("GameAlreadyCompleted"), Localization.GetString("Ok"));
+            await this.ShowMessageAsync("InfoTitle", Localization.GetString("GameAlreadyCompleted"));
             return;
         }
 
@@ -990,7 +947,7 @@ public class ScoreBoardPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlertAsync(Localization.GetString("ErrorTitle"), ex.Message, Localization.GetString("Ok"));
+            await this.ShowMessageAsync("ErrorTitle", ex.Message);
         }
     }
 
@@ -1019,9 +976,14 @@ public class ScoreBoardPage : ContentPage
         Entry? dealerBidEntry = null;
         Action? refreshDealerColor = null;
 
-        var scroll = new ScrollView { BackgroundColor = Colors.White };
-        var population = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = Colors.White };
+        var scroll = new ScrollView { BackgroundColor = Colors.Transparent };
+        var population = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = Colors.Transparent };
         scroll.Content = population;
+
+        // Large watermark of the current round number shown behind the bidding form.
+        // Its color follows a dark version of the chosen trump, or gray when none is selected yet.
+        var roundWatermark = CreateRoundWatermark(currentRoundNumber, TrumpSuit.None);
+        var bidBackdrop = CreateWatermarkBackdrop(Colors.White, roundWatermark, scroll);
 
         // Header: round number
         population.Children.Add(new Label
@@ -1066,11 +1028,14 @@ public class ScoreBoardPage : ContentPage
             }
 
             // Tint the popup background to match the chosen/switched trump color.
+            var selectedTrump = hasTrumpSelection
+                ? MapSelectionToTrump(getTrumpIndexAccessor!())
+                : TrumpSuit.None;
             var popupBg = hasTrumpSelection
-                ? FlattenOverWhite(GetTrumpColor(MapSelectionToTrump(getTrumpIndexAccessor!())))
+                ? FlattenOverWhite(GetTrumpColor(selectedTrump))
                 : Colors.White;
-            scroll.BackgroundColor = popupBg;
-            population.BackgroundColor = popupBg;
+            bidBackdrop.BackgroundColor = popupBg;
+            roundWatermark.TextColor = GetWatermarkColor(selectedTrump);
 
             // Refresh the dealer's (last) bid field so its color follows the trump selection.
             refreshDealerColor?.Invoke();
@@ -1088,13 +1053,11 @@ public class ScoreBoardPage : ContentPage
             IsVisible = isBidTotalRuleEnabled && currentRoundNumber >= currentSession.BidTotalRuleStartRound
         };
 
-        // Background color for the dealer's (last) bid field when the bid is valid:
-        // use the selected trump color, or white when no trump is chosen yet.
+        // Background color for the dealer's (last) bid field when the bid is valid.
+        // Bid fields are always white; only an invalid dealer bid is flagged red.
         Color GetDealerValidColor()
         {
-            return getTrumpIndexAccessor != null && getTrumpIndexAccessor() >= 0
-                ? FlattenOverWhite(GetTrumpColor(MapSelectionToTrump(getTrumpIndexAccessor())))
-                : Colors.White;
+            return Colors.White;
         }
 
         void UpdateDealerWarning()
@@ -1209,7 +1172,8 @@ public class ScoreBoardPage : ContentPage
                 WidthRequest = 52,
                 Placeholder = $"0–{currentRoundNumber}",
                 FontAttributes = FontAttributes.Bold,
-                HorizontalTextAlignment = TextAlignment.Center
+                HorizontalTextAlignment = TextAlignment.Center,
+                BackgroundColor = Colors.White
             };
             bidEntry.TextChanged += (s, e) =>
             {
@@ -1243,36 +1207,14 @@ public class ScoreBoardPage : ContentPage
         population.Children.Add(totalBidsLabel);
         UpdateBidTotal();
 
-        doneButton = new Button
-        {
-            Text = Localization.GetString("Ok"),
-            IsEnabled = false,
-            HeightRequest = 44,
-            HorizontalOptions = LayoutOptions.Fill
-        };
-        var cancelButton = new Button
-        {
-            Text = Localization.GetString("Cancel"),
-            HeightRequest = 44,
-            HorizontalOptions = LayoutOptions.Fill
-        };
-        var buttonsRow = new Grid
-        {
-            ColumnSpacing = 8,
-            Margin = new Thickness(0, 12, 0, 0),
-            ColumnDefinitions =
-            {
-                new ColumnDefinition { Width = GridLength.Star },
-                new ColumnDefinition { Width = GridLength.Star }
-            }
-        };
-        buttonsRow.Add(doneButton, 0);
-        buttonsRow.Add(cancelButton, 1);
+        doneButton = CreateDialogButton("Ok", isEnabled: false);
+        var cancelButton = CreateDialogButton("Cancel");
+        var buttonsRow = CreateTwoButtonRow(doneButton, cancelButton);
         population.Children.Add(buttonsRow);
         population.Children.Add(trumpHintLabel);
         UpdateTrumpSelectionState();
 
-        var modal = new ContentPage { Content = scroll, BackgroundColor = Colors.White };
+        var modal = new ContentPage { Content = bidBackdrop, BackgroundColor = Colors.White };
         var tcs = new TaskCompletionSource<bool>();
 
         cancelButton.Clicked += (s, e) => tcs.TrySetResult(false);
@@ -1347,7 +1289,7 @@ public class ScoreBoardPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlertAsync(Localization.GetString("ErrorTitle"), ex.Message, Localization.GetString("Ok"));
+            await this.ShowMessageAsync("ErrorTitle", ex.Message);
             return;
         }
 
@@ -1358,9 +1300,14 @@ public class ScoreBoardPage : ContentPage
         var lightBg = FlattenOverWhite(GetTrumpColor(trump));
 
         var actualEntries = new Dictionary<Guid, Entry>();
-        var scrollActuals = new ScrollView { BackgroundColor = lightBg };
-        var popActuals = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = lightBg };
+        var scrollActuals = new ScrollView { BackgroundColor = Colors.Transparent };
+        var popActuals = new StackLayout { Spacing = 14, Padding = new Thickness(16, 12), BackgroundColor = Colors.Transparent };
         scrollActuals.Content = popActuals;
+
+        // Large watermark of the current round number shown behind the actuals form,
+        // colored with a dark version of the chosen trump (matching the bidding popup).
+        var actualsWatermark = CreateRoundWatermark(currentSession.CurrentRound, trump);
+        var actualsBackdrop = CreateWatermarkBackdrop(lightBg, actualsWatermark, scrollActuals);
         var totalActualsLabel = new Label
         {
             FontSize = 16,
@@ -1428,7 +1375,8 @@ public class ScoreBoardPage : ContentPage
                 Text = "0",
                 WidthRequest = 52,
                 Placeholder = $"0\u2013{currentSession.CurrentRound}",
-                HorizontalTextAlignment = TextAlignment.Center
+                HorizontalTextAlignment = TextAlignment.Center,
+                BackgroundColor = Colors.White
             };
             actualEntry.TextChanged += (s, e) => UpdateActualsTotal();
             actualEntries[player.Id] = actualEntry;
@@ -1449,31 +1397,9 @@ public class ScoreBoardPage : ContentPage
 
         popActuals.Children.Add(totalActualsLabel);
 
-        doneActuals = new Button
-        {
-            Text = Localization.GetString("Ok"),
-            Margin = new Thickness(0, 12, 0, 0),
-            HeightRequest = 44,
-            HorizontalOptions = LayoutOptions.Fill
-        };
-        var backActuals = new Button
-        {
-            Text = Localization.GetString("Back"),
-            HeightRequest = 44,
-            HorizontalOptions = LayoutOptions.Fill
-        };
-        var actualsButtonsRow = new Grid
-        {
-            ColumnSpacing = 8,
-            Margin = new Thickness(0, 12, 0, 0),
-            ColumnDefinitions =
-            {
-                new ColumnDefinition { Width = GridLength.Star },
-                new ColumnDefinition { Width = GridLength.Star }
-            }
-        };
-        actualsButtonsRow.Add(backActuals, 0);
-        actualsButtonsRow.Add(doneActuals, 1);
+        doneActuals = CreateDialogButton("Ok");
+        var backActuals = CreateDialogButton("Back");
+        var actualsButtonsRow = CreateTwoButtonRow(backActuals, doneActuals);
         popActuals.Children.Add(actualsButtonsRow);
         UpdateActualsTotal();
 
@@ -1508,7 +1434,7 @@ public class ScoreBoardPage : ContentPage
             tcsActuals.TrySetResult(true);
         };
 
-        await Navigation.PushModalAsync(new ContentPage { Content = scrollActuals, BackgroundColor = lightBg });
+        await Navigation.PushModalAsync(new ContentPage { Content = actualsBackdrop, BackgroundColor = lightBg });
         var confirmActuals = await tcsActuals.Task;
         await Navigation.PopModalAsync();
 
@@ -1522,7 +1448,7 @@ public class ScoreBoardPage : ContentPage
             }
             catch (Exception ex)
             {
-                await DisplayAlertAsync(Localization.GetString("ErrorTitle"), ex.Message, Localization.GetString("Ok"));
+                await this.ShowMessageAsync("ErrorTitle", ex.Message);
                 RefreshUI();
                 return;
             }
@@ -1555,7 +1481,7 @@ public class ScoreBoardPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlertAsync(Localization.GetString("ErrorTitle"), ex.Message, Localization.GetString("Ok"));
+            await this.ShowMessageAsync("ErrorTitle", ex.Message);
         }
     }
 
@@ -1688,9 +1614,10 @@ public class ScoreBoardPage : ContentPage
             CornerRadius = 8,
             Padding = new Thickness(0),
             FontSize = 18,
+            FontAttributes = FontAttributes.Bold,
             VerticalOptions = LayoutOptions.Center,
-            BackgroundColor = Color.FromArgb("#e0e8f0"),
-            TextColor = Color.FromArgb("#1a3a5c")
+            BackgroundColor = AppColors.ToggleInactiveBg,
+            TextColor = AppColors.Primary
         };
         var plusBtn = new Button
         {
@@ -1700,8 +1627,9 @@ public class ScoreBoardPage : ContentPage
             CornerRadius = 8,
             Padding = new Thickness(0),
             FontSize = 18,
+            FontAttributes = FontAttributes.Bold,
             VerticalOptions = LayoutOptions.Center,
-            BackgroundColor = Color.FromArgb("#1a3a5c"),
+            BackgroundColor = AppColors.Primary,
             TextColor = Colors.White
         };
 
@@ -1801,6 +1729,73 @@ public class ScoreBoardPage : ContentPage
         };
     }
 
+    // Dark, opaque version of the trump color used for the round watermark shown
+    // behind the bidding form. Falls back to gray when no trump is selected yet.
+    private Color GetDarkTrumpColor(TrumpSuit trump) => trump switch
+    {
+        TrumpSuit.Hearts => Color.FromArgb("#7a1020"),
+        TrumpSuit.Diamonds => trumpPaletteService.GetMode() == TrumpPaletteMode.FourColors
+            ? Color.FromArgb("#8a6d00")
+            : Color.FromArgb("#8a3000"),
+        TrumpSuit.Clubs => Color.FromArgb("#0f3d1a"),
+        TrumpSuit.Spades => Color.FromArgb("#0f2a5c"),
+        _ => Color.FromArgb("#555555")
+    };
+
+    // Semi-transparent dark trump color used for the large round-number watermark.
+    private Color GetWatermarkColor(TrumpSuit trump) => GetDarkTrumpColor(trump).WithAlpha(0.18f);
+
+    // Large round-number watermark shown behind the bidding and actuals forms.
+    private Label CreateRoundWatermark(int roundNumber, TrumpSuit trump) => new()
+    {
+        Text = roundNumber.ToString(),
+        FontSize = 260,
+        FontAttributes = FontAttributes.Bold,
+        TextColor = GetWatermarkColor(trump),
+        HorizontalOptions = LayoutOptions.Center,
+        VerticalOptions = LayoutOptions.Center,
+        HorizontalTextAlignment = TextAlignment.Center,
+        VerticalTextAlignment = TextAlignment.Center,
+        InputTransparent = true
+    };
+
+    // Layers the watermark behind the popup content on a tinted backdrop.
+    private static Grid CreateWatermarkBackdrop(Color backgroundColor, Label watermark, View content)
+    {
+        var backdrop = new Grid { BackgroundColor = backgroundColor };
+        backdrop.Add(watermark);
+        backdrop.Add(content);
+        return backdrop;
+    }
+
+    // Standard full-width dialog button; only the text differs between usages.
+    private static Button CreateDialogButton(string textKey, bool isEnabled = true) => new()
+    {
+        Text = Localization.GetString(textKey),
+        IsEnabled = isEnabled,
+        HeightRequest = 44,
+        VerticalOptions = LayoutOptions.Center,
+        HorizontalOptions = LayoutOptions.Fill
+    };
+
+    // Two equally sized dialog buttons side by side.
+    private static Grid CreateTwoButtonRow(Button left, Button right)
+    {
+        var row = new Grid
+        {
+            ColumnSpacing = 8,
+            Margin = new Thickness(0, 12, 0, 0),
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = GridLength.Star }
+            }
+        };
+        row.Add(left, 0);
+        row.Add(right, 1);
+        return row;
+    }
+
     private static TrumpSuit MapSelectionToTrump(int selectedIndex)
     {
         // None removed from selector; 0=Hearts, 1=Diamonds, 2=Clubs, 3=Spades.
@@ -1859,7 +1854,7 @@ public class ScoreBoardPage : ContentPage
         var card = new Border
         {
             BackgroundColor = Colors.White,
-            Stroke = Color.FromArgb("#d6dce5"),
+            Stroke = AppColors.Border,
             StrokeThickness = 1,
             StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 },
             Padding = new Thickness(20, 16),

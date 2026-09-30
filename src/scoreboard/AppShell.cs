@@ -1,13 +1,15 @@
 using WizardScoreboard.Pages;
 using WizardScoreboard.Resources;
+using WizardScoreboard.Services;
 
 namespace WizardScoreboard;
 
-public class AppShell : Shell
+public partial class AppShell : Shell
 {
-    public AppShell(SettingsPage settingsPage, RulesPage rulesPage, HighscorePage highscorePage, SavedGamesPage savedGamesPage, ScoreBoardPage scoreBoardPage, GroupsPage groupsPage)
+    public AppShell(SettingsPage settingsPage, RulesPage rulesPage, HighscorePage highscorePage, SavedGamesPage savedGamesPage, ScoreBoardPage scoreBoardPage, GroupsPage groupsPage, AboutPage aboutPage)
     {
         Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
+        Routing.RegisterRoute(nameof(AboutPage), typeof(AboutPage));
         Routing.RegisterRoute(nameof(RulesPage), typeof(RulesPage));
         Routing.RegisterRoute(nameof(HighscorePage), typeof(HighscorePage));
         Routing.RegisterRoute(nameof(SavedGamesPage), typeof(SavedGamesPage));
@@ -65,8 +67,36 @@ public class AppShell : Shell
                     {
                         new ShellContent { Route = nameof(SettingsPage), Content = settingsPage }
                     }
+                },
+                new Tab
+                {
+                    Title = Localization.GetString("About"),
+                    Items =
+                    {
+                        new ShellContent { Route = nameof(AboutPage), Content = aboutPage }
+                    }
                 }
             }
         });
     }
+
+    protected override void OnHandlerChanged()
+    {
+        base.OnHandlerChanged();
+        ApplyTabBarTextStyle();
+    }
+
+    protected override void OnNavigated(ShellNavigatedEventArgs args)
+    {
+        base.OnNavigated(args);
+        // Tab items can be (re)created while navigating, so re-apply the bold styling.
+        ApplyTabBarTextStyle();
+    }
+
+    // Applies bold (or normal) styling to the native tab bar text, following the
+    // AppSettings.BoldAllText preference. The platform-specific work is done in the
+    // partial implementations under the Platforms folder.
+    public void ApplyTabBarTextStyle() => ApplyTabBarTextStylePlatform(AppSettings.BoldAllText);
+
+    partial void ApplyTabBarTextStylePlatform(bool bold);
 }

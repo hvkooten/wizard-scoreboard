@@ -25,6 +25,9 @@ public class SavedGamesPage : ContentPage
             BackgroundColor = Colors.White,
             Content = listLayout
         };
+
+        // Rebuild when the global bold-text setting changes so the page updates immediately.
+        App.GlobalTextStyleChanged += BuildSavedGamesList;
     }
 
     protected override void OnAppearing()
@@ -90,17 +93,7 @@ public class SavedGamesPage : ContentPage
                 WidthRequest = 36
             };
 
-            var deleteButton = new Button
-            {
-                Text = "🗑",
-                FontSize = 14,
-                WidthRequest = 36,
-                HeightRequest = 32,
-                Padding = new Thickness(0),
-                CornerRadius = 8,
-                BackgroundColor = Color.FromArgb("#fde8e8"),
-                TextColor = Color.FromArgb("#a32020")
-            };
+            var deleteButton = UiFactory.CreateDeleteButton(36, 32, 14);
 
             var sessionScores = SessionScoreCalculator.CalculateSessionScores(session);
 
@@ -186,7 +179,7 @@ public class SavedGamesPage : ContentPage
             var card = new Border
             {
                 BackgroundColor = Color.FromArgb("#f8fbff"),
-                Stroke = Color.FromArgb("#d6dce5"),
+                Stroke = AppColors.Border,
                 StrokeThickness = 1,
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 8 },
                 Padding = new Thickness(12),

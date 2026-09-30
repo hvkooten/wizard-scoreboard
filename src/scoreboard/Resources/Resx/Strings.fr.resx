@@ -93,6 +93,9 @@ Si le PDF ne se charge pas, utilisez le lien.</value></data>
   <data name="TrumpPaletteColors" xml:space="preserve"><value>Couleurs (Rouge, Jaune, Vert, Bleu)</value></data>
   <data name="TrumpRequiredError" xml:space="preserve"><value>Veuillez sélectionner une couleur d'atout.</value></data>
   <data name="WinnerTemplate" xml:space="preserve"><value>Gagnant : {0} avec {1} points</value></data>
+  <data name="About" xml:space="preserve"><value>À propos</value></data>
+  <data name="VersionTemplate" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="Copyright" xml:space="preserve"><value>© 2026 Nodorum Solutio B.V. Tous droits réservés.</value></data>
   <data name="Yes" xml:space="preserve"><value>Oui</value></data>
   <data name="Yellow" xml:space="preserve"><value>Jaune</value></data>
 </root>

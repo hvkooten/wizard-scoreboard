@@ -26,13 +26,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#0b4f6c" />
-    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#081c2d" BaseSize="256,256" />
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" />
+    <MauiSplashScreen Include="Resources\Splash\splash.svg" BaseSize="256,256" />
   </ItemGroup>
 
   <ItemGroup>
     <MauiImage Remove="Resources\AppIcon\appicon.svg" />
     <MauiImage Remove="Resources\AppIcon\appiconfg.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MauiImage Include="Resources\Images\logo.svg" />
   </ItemGroup>
 
   <ItemGroup>

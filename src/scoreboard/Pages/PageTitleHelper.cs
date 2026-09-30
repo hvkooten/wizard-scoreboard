@@ -36,14 +36,17 @@ internal static class PageTitleHelper
         var titleLabel = new Label
         {
             Text = leftTitle,
-            FontSize = 22,
+            FontFamily = "WizardFont",
+            FontSize = 26,
             FontAttributes = FontAttributes.Bold,
+            CharacterSpacing = 1,
+            TextColor = Color.FromArgb("#8A1C0A"),
             Shadow = new Shadow
             {
-                Brush = Colors.White,
+                Brush = Color.FromArgb("#FF7A18"),
                 Offset = new Point(0, 0),
-                Radius = 6,
-                Opacity = 0.95f
+                Radius = 10,
+                Opacity = 1f
             },
             VerticalTextAlignment = TextAlignment.Center,
             HorizontalTextAlignment = TextAlignment.Start,
@@ -52,15 +55,19 @@ internal static class PageTitleHelper
 
         var appLabel = new Label
         {
-            Text = "Wizards",
-            FontSize = 22,
+            Text = "Wizard",
+            FontFamily = "WizardFont",
+            // Evoke the fiery "Wizard" box-art logo: deep lava-red glyphs with a glowing amber halo.
+            FontSize = 28,
             FontAttributes = FontAttributes.Bold,
+            CharacterSpacing = 2,
+            TextColor = Color.FromArgb("#8A1C0A"),
             Shadow = new Shadow
             {
-                Brush = Colors.White,
+                Brush = Color.FromArgb("#FF7A18"),
                 Offset = new Point(0, 0),
-                Radius = 6,
-                Opacity = 0.95f
+                Radius = 10,
+                Opacity = 1f
             },
             VerticalTextAlignment = TextAlignment.Center,
             HorizontalTextAlignment = TextAlignment.End,
@@ -106,8 +113,8 @@ internal static class PageTitleHelper
                     FontAttributes = FontAttributes.Bold,
                     CornerRadius = 10,
                     Padding = new Thickness(12, 8),
-                    BackgroundColor = isActive ? Color.FromArgb("#d7e9ff") : Color.FromArgb("#edf4ff"),
-                    TextColor = Color.FromArgb("#163a5f")
+                    BackgroundColor = isActive ? AppColors.NavActiveBg : AppColors.NavInactiveBg,
+                    TextColor = AppColors.NavText
                 };
 
                 // Use an absolute route so tabs switch in place instead of pushing a new page (no back button/stacking).
