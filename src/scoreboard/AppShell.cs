@@ -59,24 +59,26 @@ public partial class AppShell : Shell
                     {
                         new ShellContent { Route = nameof(GroupsPage), Content = groupsPage }
                     }
-                },
-                new Tab
-                {
-                    Title = Localization.GetString("Settings"),
-                    Items =
-                    {
-                        new ShellContent { Route = nameof(SettingsPage), Content = settingsPage }
-                    }
-                },
-                new Tab
-                {
-                    Title = Localization.GetString("About"),
-                    Items =
-                    {
-                        new ShellContent { Route = nameof(AboutPage), Content = aboutPage }
-                    }
                 }
             }
+        });
+
+        // Android's bottom navigation bar only shows up to 5 tabs, so the less-frequently
+        // used pages live in the flyout menu instead of the tab bar.
+        FlyoutBehavior = FlyoutBehavior.Flyout;
+
+        Items.Add(new ShellContent
+        {
+            Title = Localization.GetString("Settings"),
+            Route = nameof(SettingsPage),
+            Content = settingsPage
+        });
+
+        Items.Add(new ShellContent
+        {
+            Title = Localization.GetString("About"),
+            Route = nameof(AboutPage),
+            Content = aboutPage
         });
     }
 

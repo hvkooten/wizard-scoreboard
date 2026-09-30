@@ -78,6 +78,18 @@ internal static class PageTitleHelper
         titleRow.Add(appLabel, 1, 0);
         grid.Add(titleRow, 0, 0);
 
+        // The header must always stay bold, independent of the "bold all text" setting.
+        // Toggling that setting off removes the global bold style and rebuilds pages, which
+        // can drop the header's synthetic bold, so re-assert it whenever the style changes.
+        void EnforceBoldHeader()
+        {
+            titleLabel.FontAttributes = FontAttributes.Bold;
+            appLabel.FontAttributes = FontAttributes.Bold;
+        }
+
+        App.GlobalTextStyleChanged += EnforceBoldHeader;
+        page.Unloaded += (_, _) => App.GlobalTextStyleChanged -= EnforceBoldHeader;
+
         if (isAndroid)
         {
             var navRow = new HorizontalStackLayout
