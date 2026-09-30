@@ -8,6 +8,14 @@ public static class AppSettings
     private const string DefaultBidTotalRuleKey = "default_bid_total_rule";
     private const string KeepScreenAwakeKey = "keep_screen_awake";
     private const string BoldAllTextKey = "bold_all_text";
+    private const string AppThemeKey = "app_theme";
+
+    // User-selected theme. AppTheme.Unspecified means "follow the system setting".
+    public static AppTheme Theme
+    {
+        get => (AppTheme)Preferences.Default.Get(AppThemeKey, (int)AppTheme.Unspecified);
+        set => Preferences.Default.Set(AppThemeKey, (int)value);
+    }
 
     // When true, the device screen is kept on while a game is in progress.
     public static bool KeepScreenAwakeDuringGame

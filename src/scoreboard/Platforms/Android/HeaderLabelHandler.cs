@@ -20,7 +20,7 @@ internal sealed class HeaderLabelHandler : LabelHandler
             set
             {
                 base.Typeface = Typeface.Create(value, TypefaceStyle.Bold);
-                Paint.FakeBoldText = true;
+                Paint?.FakeBoldText = true;
             }
         }
     }

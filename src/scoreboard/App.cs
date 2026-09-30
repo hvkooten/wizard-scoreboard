@@ -9,19 +9,114 @@ public class App : Application
     private const string PrefWidth = "window_width_v1";
     private const string PrefHeight = "window_height_v1";
 
-    private readonly AppShell shell;
+    private readonly IServiceProvider services;
     private readonly IScreenWakeService screenWakeService;
 
     // Raised whenever the global text style is (re)applied, e.g. when "bold all text" is toggled.
     // Pages that build their content dynamically can subscribe to rebuild themselves immediately.
     public static event Action? GlobalTextStyleChanged;
 
-    public App(AppShell shell, IScreenWakeService screenWakeService)
+    public App(IServiceProvider services, IScreenWakeService screenWakeService)
     {
-        this.shell = shell;
+        this.services = services;
         this.screenWakeService = screenWakeService;
 
+        UserAppTheme = AppSettings.Theme;
+        ApplyThemeResources();
+        // Page colors are resolved when pages are built, so rebuild the UI when the system theme
+        // changes while the user follows the system setting.
+        RequestedThemeChanged += (s, e) =>
+        {
+            ApplyThemeResources();
+            RebuildShell();
+        };
+
         ApplyGlobalTextStyle();
+    }
+
+    // Registers implicit styles with the current theme colors. Platform defaults do not reliably
+    // follow UserAppTheme (e.g. black text on Windows), so every control gets explicit colors.
+    // Styles are recreated on each theme change and picked up by the rebuilt pages.
+    private void ApplyThemeResources()
+    {
+        Resources = new ResourceDictionary
+        {
+            CreateStyle<Page>(
+                (Page.BackgroundColorProperty, AppColors.Surface)),
+            CreateStyle<Label>(
+                (Label.TextColorProperty, AppColors.TextPrimary)),
+            CreateStyle<Button>(
+                (Button.BackgroundColorProperty, AppColors.Primary),
+                (Button.TextColorProperty, Colors.White)),
+            CreateStyle<Entry>(
+                (Entry.BackgroundColorProperty, AppColors.InputBackground),
+                (Entry.TextColorProperty, AppColors.TextPrimary),
+                (Entry.PlaceholderColorProperty, AppColors.TextMuted)),
+            CreateStyle<Editor>(
+                (Editor.BackgroundColorProperty, AppColors.InputBackground),
+                (Editor.TextColorProperty, AppColors.TextPrimary),
+                (Editor.PlaceholderColorProperty, AppColors.TextMuted)),
+            CreateStyle<Picker>(
+                (Picker.BackgroundColorProperty, AppColors.InputBackground),
+                (Picker.TextColorProperty, AppColors.TextPrimary),
+                (Picker.TitleColorProperty, AppColors.TextMuted)),
+            CreateStyle<DatePicker>(
+                (DatePicker.BackgroundColorProperty, AppColors.InputBackground),
+                (DatePicker.TextColorProperty, AppColors.TextPrimary)),
+            CreateStyle<TimePicker>(
+                (TimePicker.BackgroundColorProperty, AppColors.InputBackground),
+                (TimePicker.TextColorProperty, AppColors.TextPrimary)),
+            CreateStyle<SearchBar>(
+                (SearchBar.BackgroundColorProperty, AppColors.InputBackground),
+                (SearchBar.TextColorProperty, AppColors.TextPrimary),
+                (SearchBar.PlaceholderColorProperty, AppColors.TextMuted)),
+            CreateStyle<CheckBox>(
+                (CheckBox.ColorProperty, AppColors.Primary)),
+            CreateStyle<Shell>(
+                (Shell.BackgroundColorProperty, AppColors.Surface),
+                (Shell.ForegroundColorProperty, AppColors.TextPrimary),
+                (Shell.TitleColorProperty, AppColors.TextPrimary),
+                (Shell.TabBarBackgroundColorProperty, AppColors.NavInactiveBg),
+                (Shell.TabBarForegroundColorProperty, AppColors.NavText),
+                (Shell.TabBarTitleColorProperty, AppColors.NavText),
+                (Shell.TabBarUnselectedColorProperty, AppColors.TextMuted))
+        };
+    }
+
+    private static Style CreateStyle<T>(params (BindableProperty Property, object Value)[] setters)
+    {
+        var style = new Style(typeof(T)) { ApplyToDerivedTypes = true };
+        foreach (var (property, value) in setters)
+        {
+            style.Setters.Add(new Setter { Property = property, Value = value });
+        }
+
+        return style;
+    }
+
+    // Applies and persists the selected theme and rebuilds the UI so all pages pick up the new colors.
+    public static void ApplyTheme(AppTheme theme)
+    {
+        AppSettings.Theme = theme;
+        if (Current is null)
+        {
+            return;
+        }
+
+        // Setting UserAppTheme raises RequestedThemeChanged when the effective theme changes,
+        // which rebuilds the shell.
+        Current.UserAppTheme = theme;
+    }
+
+    // Replaces the window's root page with a fresh AppShell so every page is rebuilt.
+    private static void RebuildShell()
+    {
+        var shell = Current?.Handler?.MauiContext?.Services.GetService<AppShell>();
+        var window = Current?.Windows.FirstOrDefault();
+        if (shell != null && window != null)
+        {
+            window.Page = shell;
+        }
     }
 
     // Applies the app-wide bold-text preference (AppSettings.BoldAllText) directly to the
@@ -97,7 +192,8 @@ public class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        var window = new Window(shell);
+        // Resolve the shell here (not in the constructor) so pages are built after the theme is set.
+        var window = new Window(services.GetRequiredService<AppShell>());
 
         // Keep splash screen visible for 1.5 seconds on app startup
         window.Created += async (s, e) =>

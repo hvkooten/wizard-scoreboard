@@ -85,6 +85,10 @@ Si el PDF no se carga, usa el enlace.</value></data>
   <data name="TotalHeader" xml:space="preserve"><value>Total</value></data>
   <data name="KeepScreenAwake" xml:space="preserve"><value>Mantener la pantalla encendida durante una partida</value></data>
   <data name="BoldAllText" xml:space="preserve"><value>Todo el texto en negrita</value></data>
+  <data name="AppThemeTitle" xml:space="preserve"><value>Tema</value></data>
+  <data name="AppThemeSystem" xml:space="preserve"><value>Sistema</value></data>
+  <data name="AppThemeLight" xml:space="preserve"><value>Claro</value></data>
+  <data name="AppThemeDark" xml:space="preserve"><value>Oscuro</value></data>
   <data name="ScoreInlineLabel" xml:space="preserve"><value>puntos: {0}</value></data>
   <data name="Trump" xml:space="preserve"><value>Triunfo</value></data>
   <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Estilo de color de triunfo</value></data>

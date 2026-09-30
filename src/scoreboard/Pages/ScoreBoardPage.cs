@@ -25,15 +25,15 @@ public class ScoreBoardPage : ContentPage
     private ScrollView scoreboardScrollView;
 
     // Palette for header colours
-    private static readonly Color HeaderBg = AppColors.Primary;
-    private static readonly Color HeaderFg = Colors.White;
-    private static readonly Color RowEven = Color.FromArgb("#f0f4f8");
-    private static readonly Color RowOdd = Colors.White;
-    private static readonly Color WinBg = Color.FromArgb("#c8f7c5");
-    private static readonly Color LoseBg = AppColors.DangerBg;
-    private static readonly Color WinFg = Color.FromArgb("#1a6b2a");
-    private static readonly Color LoseFg = AppColors.DangerText;
-    private static readonly Color TotalBg = Color.FromArgb("#ddeeff");
+    private static Color HeaderBg => AppColors.Primary;
+    private static Color HeaderFg => Colors.White;
+    private static Color RowEven => AppColors.SurfaceAlt;
+    private static Color RowOdd => AppColors.Surface;
+    private static Color WinBg => Color.FromArgb(AppColors.IsDark ? "#1f4a2a" : "#c8f7c5");
+    private static Color LoseBg => AppColors.DangerBg;
+    private static Color WinFg => Color.FromArgb(AppColors.IsDark ? "#8fe39f" : "#1a6b2a");
+    private static Color LoseFg => AppColors.DangerText;
+    private static Color TotalBg => Color.FromArgb(AppColors.IsDark ? "#1e3550" : "#ddeeff");
 
     public ScoreBoardPage(IGroupService groupService, IHighscoreService highscoreService, IScoreService scoreService, ITrumpPaletteService trumpPaletteService, IScreenWakeService screenWakeService)
     {
@@ -74,7 +74,7 @@ public class ScoreBoardPage : ContentPage
 
         scoreboardScrollView = new ScrollView
         {
-            BackgroundColor = Colors.White,
+            BackgroundColor = AppColors.Surface,
             Padding = new Thickness(12)
         };
         scoreboardScrollView.Content = scoreGrid;
@@ -95,7 +95,7 @@ public class ScoreBoardPage : ContentPage
         {
             Padding = 12,
             Spacing = 8,
-            BackgroundColor = Colors.White,
+            BackgroundColor = AppColors.Surface,
             Children = { statusLabel, buttonRow }
         };
 
@@ -184,9 +184,9 @@ public class ScoreBoardPage : ContentPage
         if (currentSession == null)
         {
             statusLabel.Text = Localization.GetString("NoActiveGame");
-            BackgroundColor = Colors.White;
+            BackgroundColor = AppColors.Surface;
 
-            // Show players from selected group if available
+            // Show players
             var selectedGroup = groupService.GetSelectedGroup();
             if (selectedGroup != null && selectedGroup.Players.Any())
             {
@@ -301,7 +301,7 @@ public class ScoreBoardPage : ContentPage
             var isCurrentRound = roundNum == currentSession.CurrentRound + 1 && currentSession.IsActive;
             var isEven = (roundNum - 1) % 2 == 0;
             var rowBg = isCurrentRound
-                ? Color.FromArgb("#fff8e1")
+                ? Color.FromArgb(AppColors.IsDark ? "#3a3320" : "#fff8e1")
                 : (isEven ? RowEven : RowOdd);
             var gridRow = scoreGrid.RowDefinitions.Count;
             scoreGrid.RowDefinitions.Add(new RowDefinition { Height = 22 });  // bid row
@@ -362,7 +362,7 @@ public class ScoreBoardPage : ContentPage
                 var totalText = actual >= 0 ? runningTotals[pid].ToString() : "";
                 var totalFg = runningTotals[pid] >= 0 ? WinFg : LoseFg;
                 var totalLabel = MakeLabel(totalText, bold: true, fontSize: 15,
-                    center: true, bg: cellBg, fg: actual >= 0 ? totalFg : Colors.Black);
+                    fg: actual >= 0 ? totalFg : AppColors.TextPrimary);
                 scoreGrid.Add(totalLabel, 2 + c, gridRow + 1);
             }
         }
@@ -983,7 +983,7 @@ public class ScoreBoardPage : ContentPage
         // Large watermark of the current round number shown behind the bidding form.
         // Its color follows a dark version of the chosen trump, or gray when none is selected yet.
         var roundWatermark = CreateRoundWatermark(currentRoundNumber, TrumpSuit.None);
-        var bidBackdrop = CreateWatermarkBackdrop(Colors.White, roundWatermark, scroll);
+        var bidBackdrop = CreateWatermarkBackdrop(AppColors.Surface, roundWatermark, scroll);
 
         // Header: round number
         population.Children.Add(new Label
@@ -1032,8 +1032,8 @@ public class ScoreBoardPage : ContentPage
                 ? MapSelectionToTrump(getTrumpIndexAccessor!())
                 : TrumpSuit.None;
             var popupBg = hasTrumpSelection
-                ? FlattenOverWhite(GetTrumpColor(selectedTrump))
-                : Colors.White;
+                ? FlattenOverSurface(GetTrumpColor(selectedTrump))
+                : AppColors.Surface;
             bidBackdrop.BackgroundColor = popupBg;
             roundWatermark.TextColor = GetWatermarkColor(selectedTrump);
 
@@ -1047,7 +1047,7 @@ public class ScoreBoardPage : ContentPage
         {
             FontSize = 14,
             FontAttributes = FontAttributes.Bold,
-            TextColor = Colors.DarkRed,
+            TextColor = AppColors.WarningText,
             HorizontalTextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 8, 0, 0),
             IsVisible = isBidTotalRuleEnabled && currentRoundNumber >= currentSession.BidTotalRuleStartRound
@@ -1057,7 +1057,7 @@ public class ScoreBoardPage : ContentPage
         // Bid fields are always white; only an invalid dealer bid is flagged red.
         Color GetDealerValidColor()
         {
-            return Colors.White;
+            return AppColors.Surface;
         }
 
         void UpdateDealerWarning()
@@ -1145,7 +1145,7 @@ public class ScoreBoardPage : ContentPage
             // While bids are still being entered the total can still be changed, so keep it green.
             var allEntered = touchedBids.Count == bidEntries.Count;
             totalBidsLabel.Text = string.Format(Localization.GetString("TotalBidsLabel"), sum, currentRoundNumber);
-            totalBidsLabel.TextColor = allEntered && sum == currentRoundNumber ? Colors.DarkRed : Colors.DarkGreen;
+            totalBidsLabel.TextColor = allEntered && sum == currentRoundNumber ? AppColors.WarningText : AppColors.SuccessText;
             UpdateDealerWarning();
         }
 
@@ -1173,7 +1173,7 @@ public class ScoreBoardPage : ContentPage
                 Placeholder = $"0–{currentRoundNumber}",
                 FontAttributes = FontAttributes.Bold,
                 HorizontalTextAlignment = TextAlignment.Center,
-                BackgroundColor = Colors.White
+                BackgroundColor = AppColors.Surface
             };
             bidEntry.TextChanged += (s, e) =>
             {
@@ -1196,7 +1196,7 @@ public class ScoreBoardPage : ContentPage
                     ? $"{player.Name} ({Localization.GetString("DealerLabel")}, {scoreSuffix})"
                     : $"{player.Name} ({scoreSuffix})",
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
-                TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
+                TextColor = isDealer ? Color.FromArgb("#b26a00") : AppColors.TextPrimary,
                 VerticalTextAlignment = TextAlignment.Center,
                 HorizontalOptions = LayoutOptions.Fill
             };
@@ -1214,7 +1214,7 @@ public class ScoreBoardPage : ContentPage
         population.Children.Add(trumpHintLabel);
         UpdateTrumpSelectionState();
 
-        var modal = new ContentPage { Content = bidBackdrop, BackgroundColor = Colors.White };
+        var modal = new ContentPage { Content = bidBackdrop, BackgroundColor = AppColors.Surface };
         var tcs = new TaskCompletionSource<bool>();
 
         cancelButton.Clicked += (s, e) => tcs.TrySetResult(false);
@@ -1297,7 +1297,7 @@ public class ScoreBoardPage : ContentPage
         var (trumpSymbol, trumpFgColor, trumpBgColor) = GetTrumpDisplayInfo(trump);
         // The trump color is semi-transparent for use over the scoreboard; flatten it over white
         // so the actuals modal page is fully opaque and doesn't reveal the scoreboard behind it.
-        var lightBg = FlattenOverWhite(GetTrumpColor(trump));
+        var lightBg = FlattenOverSurface(GetTrumpColor(trump));
 
         var actualEntries = new Dictionary<Guid, Entry>();
         var scrollActuals = new ScrollView { BackgroundColor = Colors.Transparent };
@@ -1321,7 +1321,7 @@ public class ScoreBoardPage : ContentPage
             var sum = actualEntries.Values.Sum(entry =>
                 int.TryParse(entry.Text, out var value) ? value : 0);
             totalActualsLabel.Text = string.Format(Localization.GetString("TotalActualsLabel"), sum, currentSession.CurrentRound);
-            totalActualsLabel.TextColor = sum == currentSession.CurrentRound ? Colors.DarkGreen : Colors.DarkRed;
+            totalActualsLabel.TextColor = sum == currentSession.CurrentRound ? AppColors.SuccessText : AppColors.WarningText;
             if (doneActuals != null)
             {
                 doneActuals.IsEnabled = sum == currentSession.CurrentRound;
@@ -1376,7 +1376,7 @@ public class ScoreBoardPage : ContentPage
                 WidthRequest = 52,
                 Placeholder = $"0\u2013{currentSession.CurrentRound}",
                 HorizontalTextAlignment = TextAlignment.Center,
-                BackgroundColor = Colors.White
+                BackgroundColor = AppColors.Surface
             };
             actualEntry.TextChanged += (s, e) => UpdateActualsTotal();
             actualEntries[player.Id] = actualEntry;
@@ -1387,7 +1387,7 @@ public class ScoreBoardPage : ContentPage
                     ? $"{player.Name} ({Localization.GetString("DealerLabel")}, bod: {bid})"
                     : $"{player.Name} (bod: {bid})",
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
-                TextColor = isDealer ? Color.FromArgb("#b26a00") : Colors.Black,
+                TextColor = isDealer ? Color.FromArgb("#b26a00") : AppColors.TextPrimary,
                 VerticalTextAlignment = TextAlignment.Center,
                 HorizontalOptions = LayoutOptions.Fill
             };
@@ -1696,13 +1696,14 @@ public class ScoreBoardPage : ContentPage
         };
     }
 
-    private static Color FlattenOverWhite(Color color)
+    private static Color FlattenOverSurface(Color color)
     {
         var a = color.Alpha;
+        var surface = AppColors.Surface;
         return Color.FromRgb(
-            color.Red * a + (1 - a),
-            color.Green * a + (1 - a),
-            color.Blue * a + (1 - a));
+            color.Red * a + surface.Red * (1 - a),
+            color.Green * a + surface.Green * (1 - a),
+            color.Blue * a + surface.Blue * (1 - a));
     }
 
     private Color GetTrumpColor(TrumpSuit trump)
@@ -1715,7 +1716,7 @@ public class ScoreBoardPage : ContentPage
                 TrumpSuit.Diamonds => Colors.Yellow.WithAlpha(0.25f),
                 TrumpSuit.Clubs => Colors.Green.WithAlpha(0.2f),
                 TrumpSuit.Spades => Colors.Blue.WithAlpha(0.2f),
-                _ => Colors.White
+                _ => AppColors.Surface
             };
         }
 
@@ -1725,7 +1726,7 @@ public class ScoreBoardPage : ContentPage
             TrumpSuit.Diamonds => Colors.Orange.WithAlpha(0.2f),
             TrumpSuit.Clubs => Colors.Green.WithAlpha(0.2f),
             TrumpSuit.Spades => Colors.Blue.WithAlpha(0.2f),
-            _ => Colors.White
+            _ => AppColors.Surface
         };
     }
 
@@ -1743,7 +1744,9 @@ public class ScoreBoardPage : ContentPage
     };
 
     // Semi-transparent dark trump color used for the large round-number watermark.
-    private Color GetWatermarkColor(TrumpSuit trump) => GetDarkTrumpColor(trump).WithAlpha(0.18f);
+    private Color GetWatermarkColor(TrumpSuit trump) => AppColors.IsDark
+        ? Colors.White.WithAlpha(0.10f)
+        : GetDarkTrumpColor(trump).WithAlpha(0.18f);
 
     // Large round-number watermark shown behind the bidding and actuals forms.
     private Label CreateRoundWatermark(int roundNumber, TrumpSuit trump) => new()
@@ -1853,7 +1856,7 @@ public class ScoreBoardPage : ContentPage
 
         var card = new Border
         {
-            BackgroundColor = Colors.White,
+            BackgroundColor = AppColors.Surface,
             Stroke = AppColors.Border,
             StrokeThickness = 1,
             StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 12 },

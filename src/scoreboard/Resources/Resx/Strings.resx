@@ -102,6 +102,10 @@ If PDF cannot render, use the link.</value></data>
   <data name="TotalBidsLabel" xml:space="preserve"><value>Total bids: {0} / {1}</value></data>
   <data name="KeepScreenAwake" xml:space="preserve"><value>Keep screen on during a game</value></data>
   <data name="BoldAllText" xml:space="preserve"><value>Bold all text</value></data>
+  <data name="AppThemeTitle" xml:space="preserve"><value>Theme</value></data>
+  <data name="AppThemeSystem" xml:space="preserve"><value>System</value></data>
+  <data name="AppThemeLight" xml:space="preserve"><value>Light</value></data>
+  <data name="AppThemeDark" xml:space="preserve"><value>Dark</value></data>
   <data name="ScoreInlineLabel" xml:space="preserve"><value>score: {0}</value></data>
   <data name="TotalHeader" xml:space="preserve"><value>Total</value></data>
   <data name="Trump" xml:space="preserve"><value>Trump</value></data>

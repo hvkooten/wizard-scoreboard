@@ -23,7 +23,7 @@ public class AboutPage : ContentPage
             FontFamily = "WizardFont",
             FontSize = 32,
             FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb("#8A1C0A"),
+            TextColor = AppColors.TitleText,
             Shadow = new Shadow
             {
                 Brush = Color.FromArgb("#FF7A18"),

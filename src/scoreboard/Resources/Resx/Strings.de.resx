@@ -85,6 +85,10 @@ Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
   <data name="TotalHeader" xml:space="preserve"><value>Gesamt</value></data>
   <data name="KeepScreenAwake" xml:space="preserve"><value>Bildschirm während eines Spiels eingeschaltet lassen</value></data>
   <data name="BoldAllText" xml:space="preserve"><value>Gesamten Text fett</value></data>
+  <data name="AppThemeTitle" xml:space="preserve"><value>Design</value></data>
+  <data name="AppThemeSystem" xml:space="preserve"><value>System</value></data>
+  <data name="AppThemeLight" xml:space="preserve"><value>Hell</value></data>
+  <data name="AppThemeDark" xml:space="preserve"><value>Dunkel</value></data>
   <data name="ScoreInlineLabel" xml:space="preserve"><value>Punkte: {0}</value></data>
   <data name="Trump" xml:space="preserve"><value>Trumpf</value></data>
   <data name="TrumpColorStyleTitle" xml:space="preserve"><value>Trumpffarbstil</value></data>

@@ -18,7 +18,7 @@ public partial class AppShell : Shell
 
         FlyoutBehavior = FlyoutBehavior.Flyout;
         // Light-grey flyout backdrop so the fiery header/logo stands out.
-        FlyoutBackgroundColor = Color.FromArgb("#E8E8E8");
+        FlyoutBackgroundColor = AppColors.Flyout;
 
         if (DeviceInfo.Platform == DevicePlatform.Android)
         {

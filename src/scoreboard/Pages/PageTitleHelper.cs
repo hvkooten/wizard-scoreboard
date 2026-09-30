@@ -42,7 +42,7 @@ internal static class PageTitleHelper
             FontSize = 26,
             CharacterSpacing = 1,
             FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb("#8A1C0A"),
+            TextColor = AppColors.TitleText,
             Shadow = new Shadow
             {
                 Brush = Color.FromArgb("#FF7A18"),
@@ -63,7 +63,7 @@ internal static class PageTitleHelper
             FontSize = 28,
             CharacterSpacing = 2,
             FontAttributes = FontAttributes.Bold,
-            TextColor = Color.FromArgb("#8A1C0A"),
+            TextColor = AppColors.TitleText,
             Shadow = new Shadow
             {
                 Brush = Color.FromArgb("#FF7A18"),

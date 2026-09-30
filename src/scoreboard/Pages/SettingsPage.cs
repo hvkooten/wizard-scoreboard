@@ -17,6 +17,8 @@ public class SettingsPage : ContentPage
         ("Francais", "fr-FR")
     };
 
+    private static readonly AppTheme[] ThemeOptions = { AppTheme.Unspecified, AppTheme.Light, AppTheme.Dark };
+
     private readonly ITrumpPaletteService trumpPaletteService;
     private readonly IScreenWakeService screenWakeService;
     private readonly Picker languagePicker;
@@ -126,6 +128,19 @@ public class SettingsPage : ContentPage
 
         var boldAllTextRow = CreateSettingRow(Localization.GetString("BoldAllText"), boldAllTextSwitch);
 
+        var themePicker = new Picker();
+        themePicker.Items.Add(Localization.GetString("AppThemeSystem"));
+        themePicker.Items.Add(Localization.GetString("AppThemeLight"));
+        themePicker.Items.Add(Localization.GetString("AppThemeDark"));
+        themePicker.SelectedIndex = Math.Max(0, Array.IndexOf(ThemeOptions, AppSettings.Theme));
+        themePicker.SelectedIndexChanged += (s, e) =>
+        {
+            if (themePicker.SelectedIndex >= 0)
+            {
+                App.ApplyTheme(ThemeOptions[themePicker.SelectedIndex]);
+            }
+        };
+
         Content = new ScrollView
         {
             Content = new StackLayout
@@ -135,6 +150,7 @@ public class SettingsPage : ContentPage
                 Children =
                 {
                     CreatePickerSection(Localization.GetString("SelectLanguage"), languagePicker),
+                    CreatePickerSection(Localization.GetString("AppThemeTitle"), themePicker),
                     trumpStyleHeaderRow,
                     trumpPalettePicker,
                     CreatePickerSection(Localization.GetString("DefaultBidTotalRuleStartRound"), bidTotalRulePicker),

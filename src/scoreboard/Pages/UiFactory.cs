@@ -9,7 +9,7 @@ internal static class UiFactory
     public static void ApplyToggleStyle(Button button, bool isActive)
     {
         button.BackgroundColor = isActive ? AppColors.Primary : AppColors.ToggleInactiveBg;
-        button.TextColor = isActive ? Colors.White : AppColors.Primary;
+        button.TextColor = isActive ? Colors.White : AppColors.ToggleInactiveText;
     }
 
     // Standard red trash/delete button; size and font differ per usage.
@@ -45,7 +45,7 @@ internal static class UiFactory
             FontAttributes = FontAttributes.Bold,
             CornerRadius = 8,
             BackgroundColor = AppColors.ToggleInactiveBg,
-            TextColor = AppColors.Primary,
+            TextColor = AppColors.ToggleInactiveText,
             IsEnabled = isEnabled
         };
         button.Clicked += onClicked;
@@ -64,7 +64,7 @@ internal static class UiFactory
             FontSize = 16,
             FontAttributes = FontAttributes.Bold,
             BackgroundColor = isPrimary ? AppColors.Primary : AppColors.ToggleInactiveBg,
-            TextColor = isPrimary ? Colors.White : AppColors.Primary
+            TextColor = isPrimary ? Colors.White : AppColors.ToggleInactiveText
         };
     }
 

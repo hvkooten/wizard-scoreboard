@@ -22,7 +22,7 @@ public class SavedGamesPage : ContentPage
 
         Content = new ScrollView
         {
-            BackgroundColor = Colors.White,
+            BackgroundColor = AppColors.Surface,
             Content = listLayout
         };
 
@@ -81,7 +81,7 @@ public class SavedGamesPage : ContentPage
             {
                 Text = $"{Localization.GetString("Players")}: {session.Players.Count}",
                 FontSize = 12,
-                TextColor = Colors.Gray
+                TextColor = AppColors.TextMuted
             };
 
             var toggleLabel = new Label
@@ -178,7 +178,7 @@ public class SavedGamesPage : ContentPage
 
             var card = new Border
             {
-                BackgroundColor = Color.FromArgb("#f8fbff"),
+                BackgroundColor = AppColors.Card,
                 Stroke = AppColors.Border,
                 StrokeThickness = 1,
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 8 },
