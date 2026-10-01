@@ -27,6 +27,10 @@ public class GroupsPage : ContentPage
     private readonly Button createGroupButton;
     private readonly CollectionView groupListView;
     private int bidTotalRuleStartRoundValue = AppSettings.DefaultBidTotalRuleStartRound;
+    private readonly ScrollView pageScrollView;
+    // Blank space below the content while the Android keyboard is open, so the page can scroll
+    // far enough to bring lower entries above the keyboard.
+    private readonly BoxView keyboardSpacer = new() { Color = Colors.Transparent, IsVisible = false };
 
     // Set before navigating here to open the page with the "New group" entry selected.
     public static bool SelectNewGroupOnAppearing { get; set; }
@@ -144,7 +148,7 @@ public class GroupsPage : ContentPage
             })
         };
 
-        Content = new ScrollView
+        pageScrollView = new ScrollView
         {
             Content = new StackLayout
             {
@@ -166,10 +170,12 @@ public class GroupsPage : ContentPage
                     playerCountLayout,
                     playerNamesLayout,
                     actionButtonRow,
-                    groupListView
+                    groupListView,
+                    keyboardSpacer
                 }
             }
         };
+        Content = pageScrollView;
 
         RefreshGroups();
 
@@ -448,7 +454,10 @@ public class GroupsPage : ContentPage
                     focusedEntry.CursorPosition = 0;
                     focusedEntry.SelectionLength = textLength;
                 });
+
+                ShowKeyboardSpacer(focusedEntry);
             };
+            entry.Unfocused += (s, e) => HideKeyboardSpacerWhenNoEntryFocused();
 
             var rowIndex = i;
 
@@ -507,6 +516,33 @@ public class GroupsPage : ContentPage
             playerNameEntries.Add(entry);
             playerNamesLayout.Children.Add(rowBorder);
         }
+    }
+
+    private void ShowKeyboardSpacer(Entry focusedEntry)
+    {
+        if (DeviceInfo.Platform != DevicePlatform.Android)
+        {
+            return;
+        }
+
+        keyboardSpacer.HeightRequest = Math.Max(Height, 400);
+        keyboardSpacer.IsVisible = true;
+
+        // Wait for the layout to include the spacer before scrolling the entry to the top.
+        Dispatcher.Dispatch(async () =>
+            await pageScrollView.ScrollToAsync(focusedEntry, ScrollToPosition.Start, true));
+    }
+
+    private void HideKeyboardSpacerWhenNoEntryFocused()
+    {
+        // Focus moves to the next entry after this one loses it, so check after that has happened.
+        Dispatcher.Dispatch(() =>
+        {
+            if (!playerNameEntries.Any(e => e.IsFocused))
+            {
+                keyboardSpacer.IsVisible = false;
+            }
+        });
     }
 
     private void SetGroupNameFromCode(string name)
