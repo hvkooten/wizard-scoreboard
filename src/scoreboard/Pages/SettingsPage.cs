@@ -55,7 +55,7 @@ public class SettingsPage : ContentPage
             if (languagePicker.SelectedIndex >= 0)
             {
                 var selectedOption = LanguageOptions[languagePicker.SelectedIndex];
-                Localization.SetCulture(selectedOption.CultureName);
+                AppSettings.Language = Localization.SetCulture(selectedOption.CultureName);
                 var shell = Application.Current?.Handler?.MauiContext?.Services.GetService<AppShell>();
                 var window = Application.Current?.Windows.FirstOrDefault();
                 if (shell != null && window != null)

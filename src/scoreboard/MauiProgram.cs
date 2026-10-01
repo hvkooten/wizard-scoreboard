@@ -9,6 +9,7 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        AppSettings.ApplyFirstLaunchDefaults();
         Localization.InitializeCulture();
 
         var builder = MauiApp.CreateBuilder();

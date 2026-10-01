@@ -15,7 +15,7 @@ public static class Localization
 
     public static void InitializeCulture()
     {
-        SetCulture(ResolveSupportedCulture(CultureInfo.CurrentUICulture.Name));
+        SetCulture(ResolveSupportedCulture(Services.AppSettings.Language ?? CultureInfo.CurrentUICulture.Name));
     }
 
     public static string ResolveSupportedCulture(string? cultureName)
@@ -45,7 +45,7 @@ public static class Localization
             }
         }
 
-        return "nl-NL";
+        return "en-US";
     }
 
     public static string SetCulture(string cultureName)

@@ -10,6 +10,25 @@ public static class AppSettings
     private const string BoldAllTextKey = "bold_all_text";
     private const string AppThemeKey = "app_theme";
     private const string FirstLaunchKey = "first_launch_done";
+    private const string LanguageKey = "language";
+
+    // Culture name chosen by the user, or null when the system language should be used.
+    public static string? Language
+    {
+        get => Preferences.Default.Get<string?>(LanguageKey, null);
+        set => Preferences.Default.Set(LanguageKey, value);
+    }
+
+    // Applies the defaults for a fresh install: bold text.
+    public static void ApplyFirstLaunchDefaults()
+    {
+        if (!IsFirstLaunch)
+        {
+            return;
+        }
+
+        BoldAllText = true;
+    }
 
     // True until the app has been opened once, so the settings page can be shown first.
     public static bool IsFirstLaunch
