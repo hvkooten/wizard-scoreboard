@@ -99,7 +99,7 @@ Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
   <data name="TotalHeader" xml:space="preserve"><value>Gesamt</value></data>
   <data name="KeepScreenAwake" xml:space="preserve"><value>Bildschirm während eines Spiels eingeschaltet lassen</value></data>
   <data name="BoldAllText" xml:space="preserve"><value>Gesamten Text fett</value></data>
-	<data name="SimplifiedButtons" xml:space="preserve"><value>Vereinfachte Schaltflächen</value></data>
+  <data name="SimplifiedButtons" xml:space="preserve"><value>Vereinfachte Schaltflächen</value></data>
   <data name="AppThemeTitle" xml:space="preserve"><value>Design</value></data>
   <data name="AppThemeSystem" xml:space="preserve"><value>System</value></data>
   <data name="AppThemeLight" xml:space="preserve"><value>Hell</value></data>

@@ -24,9 +24,8 @@ public class ScoreBoardPage : ContentPage
     private Button endButton;
     private Button nextRoundButton;
     private Button editLastRoundButton;
-    private readonly FlexLayout buttonRow;
-    private readonly FlexLayout secondaryButtonRow;
-    private bool? simplifiedButtons;
+    private readonly ContentView buttonBar = new();
+    private bool simplifiedButtons;
     private ScrollView scoreboardScrollView;
     private readonly Dictionary<(Grid Grid, int Row, int Column), Border> scoreboardCells = new();
 
@@ -62,36 +61,9 @@ public class ScoreBoardPage : ContentPage
         headerGrid = new Grid();
         footerGrid = new Grid();
 
-        startButton = new Button { Text = Localization.GetString("StartGame") };
-        pauseButton = new Button { Text = Localization.GetString("PauseGame") };
-        endButton = new Button { Text = Localization.GetString("EndGame") };
-        nextRoundButton = new Button { Text = Localization.GetString("NextRound") };
-        editLastRoundButton = new Button { Text = Localization.GetString("EditLastRound") };
-
-        startButton.Clicked += async (s, e) => await StartGameAsync();
-        pauseButton.Clicked += async (s, e) => await TogglePauseAsync();
-        endButton.Clicked += async (s, e) => await EndGameAsync();
-        nextRoundButton.Clicked += async (s, e) => await StartNextRoundAsync();
-        editLastRoundButton.Clicked += async (s, e) => await EditLastRoundAsync();
-
-        buttonRow = new FlexLayout
-        {
-            Direction = FlexDirection.Row,
-            Wrap = FlexWrap.Wrap,
-            Children = { startButton, nextRoundButton, editLastRoundButton, pauseButton, endButton }
-        };
-        secondaryButtonRow = new FlexLayout
-        {
-            Direction = FlexDirection.Row,
-            JustifyContent = FlexJustify.End,
-            AlignItems = FlexAlignItems.Start
-        };
-        FlexLayout.SetGrow(secondaryButtonRow, 1);
-        FlexLayout.SetShrink(secondaryButtonRow, 0);
-        foreach (var button in buttonRow.Children.OfType<Button>())
-        {
-            button.Margin = new Thickness(0, 0, 8, 8);
-        }
+        simplifiedButtons = AppSettings.SimplifiedButtons;
+        (buttonBar.Content, startButton, nextRoundButton, editLastRoundButton, pauseButton, endButton) =
+            CreateActionBar(simplifiedButtons);
 
         scoreboardScrollView = new ScrollView
         {
@@ -117,7 +89,7 @@ public class ScoreBoardPage : ContentPage
             Padding = 12,
             Spacing = 8,
             BackgroundColor = AppColors.Surface,
-            Children = { statusLabel, buttonRow }
+            Children = { statusLabel, buttonBar }
         };
 
         mainGrid.Add(headerStack, 0, 0);
@@ -161,41 +133,85 @@ public class ScoreBoardPage : ContentPage
         RefreshUI();
     }
 
+    private (View Layout, Button Start, Button NextRound, Button Edit, Button Pause, Button End) CreateActionBar(bool simplified)
+    {
+        var start = CreateActionButton("StartGame", StartGameAsync);
+        var nextRound = CreateActionButton("NextRound", StartNextRoundAsync);
+        var edit = CreateActionButton("EditLastRound", EditLastRoundAsync, simplified ? "\u270E" : null);
+        var pause = CreateActionButton("PauseGame", TogglePauseAsync, simplified ? "\u23F8" : null);
+        var end = CreateActionButton("EndGame", EndGameAsync, simplified ? "\u23F9" : null);
+        var primaryButtons = new FlexLayout
+        {
+            Direction = FlexDirection.Row,
+            Wrap = FlexWrap.Wrap,
+            Children = { start, nextRound }
+        };
+
+        if (!simplified)
+        {
+            var secondaryTextButtons = new FlexLayout
+            {
+                Direction = FlexDirection.Row,
+                Wrap = FlexWrap.Wrap,
+                JustifyContent = FlexJustify.End,
+                Children = { edit, pause, end }
+            };
+            end.Margin = new Thickness(0, 0, 0, 8);
+            var textLayout = new VerticalStackLayout
+            {
+                Children = { primaryButtons, secondaryTextButtons }
+            };
+            return (textLayout, start, nextRound, edit, pause, end);
+        }
+
+        var secondaryButtons = new HorizontalStackLayout
+        {
+            Spacing = 8,
+            HorizontalOptions = LayoutOptions.End,
+            VerticalOptions = LayoutOptions.Start,
+            Margin = new Thickness(0, 0, 0, 8),
+            Children = { edit, pause, end }
+        };
+        var layout = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }
+        };
+        layout.Add(primaryButtons);
+        layout.Add(secondaryButtons, 1);
+        return (layout, start, nextRound, edit, pause, end);
+    }
+
+    private static Button CreateActionButton(string resourceKey, Func<Task> actionAsync, string? icon = null)
+    {
+        var button = new Button
+        {
+            Margin = new Thickness(0, 0, 8, 8),
+            FontAttributes = AppSettings.BoldAllText ? FontAttributes.Bold : FontAttributes.None
+        };
+        if (icon != null)
+        {
+            button.WidthRequest = 48;
+            button.HeightRequest = 48;
+            button.MinimumWidthRequest = 48;
+            button.MinimumHeightRequest = 48;
+            button.Padding = new Thickness(0);
+            button.Margin = new Thickness(0);
+            button.FontSize = 22;
+            button.VerticalOptions = LayoutOptions.Start;
+        }
+        SetActionCaption(button, resourceKey, icon ?? string.Empty, icon != null);
+        button.Clicked += async (s, e) => await actionAsync();
+        return button;
+    }
+
     private void UpdateActionButtons(bool isPaused)
     {
         var simplified = AppSettings.SimplifiedButtons;
         if (simplifiedButtons != simplified)
         {
-            buttonRow.Children.Clear();
-            secondaryButtonRow.Children.Clear();
-            buttonRow.Children.Add(startButton);
-            buttonRow.Children.Add(nextRoundButton);
-
-            var secondaryButtons = simplified ? secondaryButtonRow : buttonRow;
-            secondaryButtons.Children.Add(editLastRoundButton);
-            secondaryButtons.Children.Add(pauseButton);
-            secondaryButtons.Children.Add(endButton);
-            if (simplified)
-                buttonRow.Children.Add(secondaryButtonRow);
-
-            foreach (var button in new[] { editLastRoundButton, pauseButton, endButton })
-            {
-                if (simplified)
-                {
-                    button.WidthRequest = 48;
-                    button.HeightRequest = 48;
-                    button.Padding = new Thickness(0);
-                    button.FontSize = 22;
-                }
-                else
-                {
-                    button.ClearValue(WidthRequestProperty);
-                    button.ClearValue(HeightRequestProperty);
-                    button.ClearValue(Button.PaddingProperty);
-                    button.ClearValue(Button.FontSizeProperty);
-                }
-            }
-            endButton.Margin = new Thickness(0, 0, simplified ? 0 : 8, 8);
+            // Fresh controls avoid retaining native measurements when switching between text and icons.
+            (buttonBar.Content, startButton, nextRoundButton, editLastRoundButton, pauseButton, endButton) =
+                CreateActionBar(simplified);
             simplifiedButtons = simplified;
         }
 
