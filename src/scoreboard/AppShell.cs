@@ -107,6 +107,25 @@ public partial class AppShell : Shell
             Content = content
         });
 
+    // Selects the page with the given route as the current Shell page (tab or flyout item).
+    public void SelectPage(string route)
+    {
+        foreach (var item in Items)
+        {
+            foreach (var section in item.Items)
+            {
+                var content = section.Items.FirstOrDefault(c => c.Route == route);
+                if (content != null)
+                {
+                    section.CurrentItem = content;
+                    item.CurrentItem = section;
+                    CurrentItem = item;
+                    return;
+                }
+            }
+        }
+    }
+
     protected override void OnHandlerChanged()
     {
         base.OnHandlerChanged();

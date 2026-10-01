@@ -10,11 +10,11 @@ public class SettingsPage : ContentPage
 {
     private static readonly (string DisplayName, string CultureName)[] LanguageOptions =
     {
-        ("Nederlands", "nl-NL"),
-        ("English", "en-US"),
-        ("Deutsch", "de-DE"),
-        ("Espanol", "es-ES"),
-        ("Francais", "fr-FR")
+        ("🇳🇱 Nederlands", "nl-NL"),
+        ("🇬🇧 English", "en-US"),
+        ("🇩🇪 Deutsch", "de-DE"),
+        ("🇪🇸 Espanol", "es-ES"),
+        ("🇫🇷 Francais", "fr-FR")
     };
 
     private static readonly AppTheme[] ThemeOptions = { AppTheme.Unspecified, AppTheme.Light, AppTheme.Dark };

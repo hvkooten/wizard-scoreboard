@@ -9,6 +9,14 @@ public static class AppSettings
     private const string KeepScreenAwakeKey = "keep_screen_awake";
     private const string BoldAllTextKey = "bold_all_text";
     private const string AppThemeKey = "app_theme";
+    private const string FirstLaunchKey = "first_launch_done";
+
+    // True until the app has been opened once, so the settings page can be shown first.
+    public static bool IsFirstLaunch
+    {
+        get => !Preferences.Default.Get(FirstLaunchKey, false);
+        set => Preferences.Default.Set(FirstLaunchKey, !value);
+    }
 
     // User-selected theme. AppTheme.Unspecified means "follow the system setting".
     public static AppTheme Theme

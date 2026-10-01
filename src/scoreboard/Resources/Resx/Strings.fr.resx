@@ -104,6 +104,7 @@ Si le PDF ne se charge pas, utilisez le lien.</value></data>
   <data name="About" xml:space="preserve"><value>À propos</value></data>
   <data name="VersionTemplate" xml:space="preserve"><value>Version {0}</value></data>
   <data name="Copyright" xml:space="preserve"><value>© 2026 Nodorum Solutio B.V. Tous droits réservés.</value></data>
+  <data name="Disclaimer" xml:space="preserve"><value>Ceci est une application compagnon indépendante, qui n'est ni affiliée à l'éditeur de Wizard ni approuvée par celui-ci. Le jeu de cartes original est nécessaire pour jouer.</value></data>
   <data name="Yes" xml:space="preserve"><value>Oui</value></data>
   <data name="Yellow" xml:space="preserve"><value>Jaune</value></data>
 </root>

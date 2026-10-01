@@ -104,6 +104,7 @@ Als de PDF niet laadt, gebruik de link.</value></data>
   <data name="About" xml:space="preserve"><value>Info</value></data>
   <data name="VersionTemplate" xml:space="preserve"><value>Versie {0}</value></data>
   <data name="Copyright" xml:space="preserve"><value>© 2026 Nodorum Solutio B.V. Alle rechten voorbehouden.</value></data>
+  <data name="Disclaimer" xml:space="preserve"><value>Dit is een onafhankelijke hulpapplicatie en is niet verbonden aan of goedgekeurd door de uitgever van Wizard. Het originele kaartspel is nodig om te spelen.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="Yellow" xml:space="preserve"><value>Geel</value></data>
 </root>

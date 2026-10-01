@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using WizardScoreboard.Pages;
+using WizardScoreboard.Resources;
 using WizardScoreboard.Services;
 
 namespace WizardScoreboard;
@@ -220,13 +221,21 @@ public class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        // Resolve the shell here (not in the constructor) so pages are built after the theme is set.
-        var window = new Window(services.GetRequiredService<AppShell>());
-
-        // Keep splash screen visible for 1.5 seconds on app startup
+        // Resolve the shell after the splash (not in the constructor) so pages are built after the theme is set.
+        // The splash page shows the version and copyright, which the native Android splash cannot,
+        // and Windows has no native MAUI splash screen at all.
+        var window = new Window(CreateSplashPage());
         window.Created += async (s, e) =>
         {
             await Task.Delay(1500);
+            var shell = services.GetRequiredService<AppShell>();
+            if (AppSettings.IsFirstLaunch)
+            {
+                shell.SelectPage(nameof(SettingsPage));
+                AppSettings.IsFirstLaunch = false;
+            }
+
+            window.Page = shell;
         };
 
         var savedWidth = Preferences.Default.Get(PrefWidth, 0.0);
@@ -248,5 +257,75 @@ public class App : Application
         };
 
         return window;
+    }
+
+private static ContentPage CreateSplashPage() => new()
+    {
+        BackgroundColor = Color.FromArgb("#10161d"),
+        Content = new Grid
+        {
+            Padding = new Thickness(24),
+            RowDefinitions = { new RowDefinition(GridLength.Star), new RowDefinition(GridLength.Auto) },
+            Children =
+            {
+                new VerticalStackLayout
+                {
+            Spacing = 8,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            Children =
+            {
+                new Image
+                {
+                    Source = "splash.png",
+                    Aspect = Aspect.AspectFit,
+                    WidthRequest = 256,
+                    HorizontalOptions = LayoutOptions.Center
+                },
+                new Label
+                {
+                    Text = GetSplashVersionText(),
+                    FontSize = 16,
+                    TextColor = Colors.White,
+                    HorizontalTextAlignment = TextAlignment.Center
+                },
+                new Label
+                {
+                    Text = Localization.GetString("Copyright"),
+                    FontSize = 14,
+                    TextColor = Colors.Gray,
+                    HorizontalTextAlignment = TextAlignment.Center
+                }
+            }
+                },
+                CreateSplashDisclaimer()
+            }
+        }
+    };
+
+    private static Label CreateSplashDisclaimer()
+    {
+        var label = new Label
+        {
+            Text = Localization.GetString("Disclaimer"),
+            FontSize = 11,
+            TextColor = Color.FromArgb("#5c6670"),
+            HorizontalTextAlignment = TextAlignment.Center,
+            MaximumWidthRequest = 480,
+            HorizontalOptions = LayoutOptions.Center
+        };
+        Grid.SetRow(label, 1);
+        return label;
+    }
+
+    // Same version format as the About page.
+    private static string GetSplashVersionText()
+    {
+#if ANDROID
+        var version = $"{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString})";
+#else
+        var version = AppInfo.Current.VersionString;
+#endif
+        return string.Format(Localization.GetString("VersionTemplate"), version);
     }
 }

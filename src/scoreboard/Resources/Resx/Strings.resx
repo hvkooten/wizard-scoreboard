@@ -122,6 +122,7 @@ If PDF cannot render, use the link.</value></data>
   <data name="About" xml:space="preserve"><value>About</value></data>
   <data name="VersionTemplate" xml:space="preserve"><value>Version {0}</value></data>
   <data name="Copyright" xml:space="preserve"><value>© 2026 Nodorum Solutio B.V. All rights reserved.</value></data>
+  <data name="Disclaimer" xml:space="preserve"><value>This is an independent companion application and is not affiliated with or endorsed by the publisher of Wizard. The original card game is required to play.</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="Yellow" xml:space="preserve"><value>Yellow</value></data>
 </root>

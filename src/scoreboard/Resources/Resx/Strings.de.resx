@@ -104,6 +104,7 @@ Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
   <data name="About" xml:space="preserve"><value>Info</value></data>
   <data name="VersionTemplate" xml:space="preserve"><value>Version {0}</value></data>
   <data name="Copyright" xml:space="preserve"><value>© 2026 Nodorum Solutio B.V. Alle Rechte vorbehalten.</value></data>
+  <data name="Disclaimer" xml:space="preserve"><value>Dies ist eine unabhängige Begleit-App, die weder mit dem Verlag von Wizard verbunden ist noch von ihm unterstützt wird. Zum Spielen wird das Original-Kartenspiel benötigt.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="Yellow" xml:space="preserve"><value>Gelb</value></data>
 </root>
