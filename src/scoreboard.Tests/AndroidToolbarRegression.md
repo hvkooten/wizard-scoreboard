@@ -16,6 +16,7 @@ Status: manual verification required. Service/unit tests do not exercise Android
 4. Tap Edit and confirm the latest-round correction dialog opens. Cancel without changing scores.
 5. Disable Simplified buttons and return. Confirm all available actions have their full text labels and normal text-button sizing.
 6. Repeat steps 2-5 at least five times. Edit must appear on the first and every subsequent switch; no icons may disappear or alternate between rectangular and square sizing.
+- At each switch, Start Game and Next Round must never both be visible. Before starting a game only Start Game is available; during an active, unpaused game only Next Round is available; while paused only Start Game is available.
 
 ## State and sizing checks
 

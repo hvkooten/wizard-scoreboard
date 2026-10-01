@@ -256,9 +256,9 @@ public class ScoreBoardPage : ContentPage
             && !isPausedSession
             && currentSession!.CurrentRound < currentSession.MaxRounds;
 
+        UpdateActionButtons(isPausedSession);
         startButton.IsEnabled = hasAvailableGroup && (!hasSession || isPausedSession);
         pauseButton.IsEnabled = isActiveSession;
-        UpdateActionButtons(isPausedSession);
         nextRoundButton.IsEnabled = hasRoundsRemaining;
         editLastRoundButton.IsEnabled = isActiveSession && !isPausedSession
             && currentSession?.Rounds.LastOrDefault()?.ActualByPlayer.Count > 0;
