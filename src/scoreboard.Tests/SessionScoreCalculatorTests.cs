@@ -8,6 +8,42 @@ namespace WizardScoreboard.Tests;
 
 public class SessionScoreCalculatorTests
 {
+    [TestCase(0, 0, 2)]
+    [TestCase(0, 3, -3)]
+    [TestCase(3, 0, -3)]
+    [TestCase(3, 3, 5)]
+    public void CalculateSessionScores_HandlesOverAndUnderBidding(int bid, int actual, int expected)
+    {
+        var player = CreatePlayer("A", 0);
+        var session = CreateSession(player);
+        session.Rounds.Add(new RoundEntry
+        {
+            RoundNumber = 3,
+            BidByPlayer = new Dictionary<Guid, int> { [player.Id] = bid },
+            ActualByPlayer = new Dictionary<Guid, int> { [player.Id] = actual }
+        });
+
+        Assert.That(SessionScoreCalculator.CalculateSessionScores(session)[player.Id], Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void CalculateSessionScores_DoesNotModifyPlayerPoints()
+    {
+        var player = CreatePlayer("A", 0);
+        player.CurrentPoints = 42;
+        var session = CreateSession(player);
+
+        SessionScoreCalculator.CalculateSessionScores(session);
+
+        Assert.That(player.CurrentPoints, Is.EqualTo(42));
+    }
+
+    [Test]
+    public void CalculateSessionScores_WithoutPlayers_ReturnsEmptyResult()
+    {
+        Assert.That(SessionScoreCalculator.CalculateSessionScores(CreateSession()), Is.Empty);
+    }
+
     private static Player CreatePlayer(string name, int order)
     {
         return new Player { Name = name, Order = order };

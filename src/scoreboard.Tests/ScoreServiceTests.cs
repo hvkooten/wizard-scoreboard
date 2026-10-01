@@ -210,7 +210,7 @@ public class ScoreServiceTests
     [Test]
     public void UpdateLastRoundActuals_RejectsNullSession()
     {
-        var service = new ScoreService();
+        var service = new ScoreService(new MemoryPreferences());
 
         Assert.Throws<ArgumentNullException>(() =>
             service.UpdateLastRoundActuals(null!, new Dictionary<Guid, int>()));
@@ -226,7 +226,7 @@ public class ScoreServiceTests
 
     private static (ScoreService Service, ScoreSession Session) CreateCompletedRoundForCorrection(int highestScore = 0)
     {
-        var service = new ScoreService();
+        var service = new ScoreService(new MemoryPreferences());
         var session = service.StartGame(new Group
         {
             Name = "Correction",
@@ -256,7 +256,7 @@ public class ScoreServiceTests
     [Test]
     public void StartGame_CreatesSession_WithCorrectMaxRoundsForFourPlayers()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -277,7 +277,7 @@ public class ScoreServiceTests
     [Test]
     public void StartRound_AndFinish_UpdatesPlayerScores()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -301,7 +301,7 @@ public class ScoreServiceTests
     [Test]
     public void StartGame_UsesGroupBidTotalRuleStartRound_WhenValid()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -326,7 +326,7 @@ public class ScoreServiceTests
     [Test]
     public void StartGame_UsesDisabledBidRule_WhenGroupValueIsZero()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -350,7 +350,7 @@ public class ScoreServiceTests
     [Test]
     public void StartGame_FallsBackToPlayerCount_WhenGroupValueIsInvalid()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -376,7 +376,7 @@ public class ScoreServiceTests
     [Test]
     public void FinishRound_OnFinalRound_EndsGameAndKeepsFinalRoundNumber()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -401,7 +401,7 @@ public class ScoreServiceTests
     [Test]
     public void EndGame_EarlyStop_AssignsWinToHighestScorePlayer()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -430,7 +430,7 @@ public class ScoreServiceTests
     [Test]
     public void EndGame_Tie_AssignsWinToAllTopPlayers()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -460,7 +460,7 @@ public class ScoreServiceTests
     [Test]
     public void EndGame_WithoutRounds_DoesNotAssignWins()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -480,7 +480,7 @@ public class ScoreServiceTests
     [Test]
     public void PauseAndResume_TogglePausedState_ForActiveSession()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -502,7 +502,7 @@ public class ScoreServiceTests
     [Test]
     public void StartRound_WhilePaused_ThrowsInvalidOperationException()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -524,7 +524,7 @@ public class ScoreServiceTests
     [Test]
     public void SelectSavedGame_SetsCurrentSession()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var groupA = new Group
         {
@@ -588,7 +588,7 @@ public class ScoreServiceTests
     [Test]
     public void EndGame_WithRounds_IncrementsGamesPlayedForAllPlayers()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -618,7 +618,7 @@ public class ScoreServiceTests
     [Test]
     public void EndGame_WithoutRounds_DoesNotIncrementGamesPlayed()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -638,7 +638,7 @@ public class ScoreServiceTests
     [Test]
     public void GetSavedGames_ReturnsOnlyPausedActiveSessions()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var groupA = new Group
         {
@@ -675,7 +675,7 @@ public class ScoreServiceTests
     [Test]
     public void SelectSavedGame_IgnoresNonPausedSession()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var group = new Group
         {
@@ -702,7 +702,7 @@ public class ScoreServiceTests
     [Test]
     public void DeleteSavedGame_RemovesPausedSession_FromSavedGames()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var group = new Group
         {
@@ -726,7 +726,7 @@ public class ScoreServiceTests
     [Test]
     public void DeleteSavedGame_ClearsCurrentSession_WhenDeletingSelectedGame()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var group = new Group
         {
@@ -751,7 +751,7 @@ public class ScoreServiceTests
     [Test]
     public void DeleteSavedGame_DoesNotRemoveActiveNonPausedSession()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var group = new Group
         {
@@ -777,7 +777,7 @@ public class ScoreServiceTests
     [Test]
     public void CancelRound_RemovesStartedRound_AndRestoresRoundCounter()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -801,7 +801,7 @@ public class ScoreServiceTests
     [Test]
     public void CancelRound_DoesNotChangePlayerScores()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -824,7 +824,7 @@ public class ScoreServiceTests
     [Test]
     public void CancelRound_RestoresTrumpFromPreviousRound()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -852,7 +852,7 @@ public class ScoreServiceTests
     [Test]
     public void CancelRound_WithoutRounds_ThrowsInvalidOperationException()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {
@@ -870,7 +870,7 @@ public class ScoreServiceTests
     [Test]
     public void CancelRound_AfterRoundFinished_ThrowsInvalidOperationException()
     {
-        var scoreService = new ScoreService();
+        var scoreService = new ScoreService(new MemoryPreferences());
 
         var players = new List<Player>
         {

@@ -9,6 +9,57 @@ namespace WizardScoreboard.Tests;
 public class HighscoreServiceTests
 {
     [Test]
+    public void UpdateHighscores_EmptyInputClearsPreviousResults()
+    {
+        var service = new HighscoreService();
+        service.UpdateHighscores(new[] { TestData.CreateGroup() });
+
+        service.UpdateHighscores(System.Array.Empty<Group>());
+
+        Assert.That(service.GetHighscores(), Is.Empty);
+    }
+
+    [Test]
+    public void UpdateHighscores_RepeatedUpdateDoesNotDoubleStatistics()
+    {
+        var service = new HighscoreService();
+        var group = TestData.CreateGroup();
+        group.Players[0].Wins = 2;
+        group.Players[0].GamesPlayed = 5;
+        group.Players[0].HighestScore = 30;
+        service.UpdateHighscores(new[] { group });
+
+        service.UpdateHighscores(new[] { group });
+
+        var player = service.GetHighscores().Single(p => p.Id == group.Players[0].Id);
+        Assert.That((player.Wins, player.GamesPlayed, player.HighestScore), Is.EqualTo((2, 5, 30)));
+    }
+
+    [Test]
+    public void UpdateHighscores_NewInputReplacesOldPlayers()
+    {
+        var service = new HighscoreService();
+        service.UpdateHighscores(new[] { TestData.CreateGroup() });
+        var group = new Group { Players = new List<Player> { new Player { Name = "Replacement" } } };
+
+        service.UpdateHighscores(new[] { group });
+
+        Assert.That(service.GetHighscores().Select(p => p.Name), Is.EqualTo(new[] { "Replacement" }));
+    }
+
+    [Test]
+    public void UpdateHighscores_DoesNotExposeOriginalPlayerObjects()
+    {
+        var service = new HighscoreService();
+        var group = TestData.CreateGroup();
+        service.UpdateHighscores(new[] { group });
+
+        service.GetHighscores().First().Wins = 99;
+
+        Assert.That(group.Players.Select(p => p.Wins), Is.EqualTo(new[] { 0, 0, 0 }));
+    }
+
+    [Test]
     public void UpdateHighscores_MergesSameNamesAcrossGroups()
     {
         var service = new HighscoreService();

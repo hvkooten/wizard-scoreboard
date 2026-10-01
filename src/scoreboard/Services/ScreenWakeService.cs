@@ -5,7 +5,23 @@ namespace WizardScoreboard.Services;
 // and always releases the wake lock when the app is not in the foreground.
 public class ScreenWakeService : IScreenWakeService
 {
+    private readonly IDeviceDisplay? deviceDisplay;
+    private readonly UserSettings? settings;
     private bool gameInProgress;
+
+    /// <summary>Creates the screen-wake service using the current device and app settings.</summary>
+    public ScreenWakeService()
+    {
+    }
+
+    /// <summary>Creates the screen-wake service using the supplied device and settings.</summary>
+    public ScreenWakeService(IDeviceDisplay deviceDisplay, UserSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(deviceDisplay);
+        ArgumentNullException.ThrowIfNull(settings);
+        this.deviceDisplay = deviceDisplay;
+        this.settings = settings;
+    }
 
     // Requests the screen to stay on while a game is in progress.
     public void RequestKeepAwake()
@@ -28,9 +44,10 @@ public class ScreenWakeService : IScreenWakeService
     // Forces the screen wake lock off, e.g. when the app moves to the background.
     public void Suspend() => SetKeepScreenOn(false);
 
-    private void Apply() => SetKeepScreenOn(gameInProgress && AppSettings.KeepScreenAwakeDuringGame);
+    private void Apply() => SetKeepScreenOn(gameInProgress
+        && (settings?.KeepScreenAwakeDuringGame ?? AppSettings.KeepScreenAwakeDuringGame));
 
-    private static void SetKeepScreenOn(bool keepOn)
+    private void SetKeepScreenOn(bool keepOn)
     {
         // DeviceDisplay needs the current Activity on Android. During early startup the page
         // can be constructed (via DI) before the Activity is ready, in which case accessing
@@ -38,7 +55,7 @@ public class ScreenWakeService : IScreenWakeService
         // is best-effort UX, so any timing issue is swallowed instead of crashing the app.
         try
         {
-            var display = DeviceDisplay.Current;
+            var display = deviceDisplay ?? DeviceDisplay.Current;
             if (display.KeepScreenOn != keepOn)
             {
                 display.KeepScreenOn = keepOn;

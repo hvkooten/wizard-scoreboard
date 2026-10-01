@@ -7,11 +7,20 @@ public class GroupService : IGroupService
 {
     private const string GroupsStorageKey = "groups_storage_v1";
     private const string SelectedGroupStorageKey = "selected_group_id_v1";
+    private readonly IPreferences preferences;
     private readonly List<Group> groups = new();
     private Guid? selectedGroupId;
 
-    public GroupService()
+    /// <summary>Creates the group service using device preferences.</summary>
+    public GroupService() : this(Preferences.Default)
     {
+    }
+
+    /// <summary>Creates the group service using the supplied persistent preferences.</summary>
+    public GroupService(IPreferences preferences)
+    {
+        ArgumentNullException.ThrowIfNull(preferences);
+        this.preferences = preferences;
         Load();
     }
 
@@ -84,7 +93,7 @@ public class GroupService : IGroupService
 
     private void Load()
     {
-        var rawGroups = Preferences.Default.Get(GroupsStorageKey, string.Empty);
+        var rawGroups = preferences.Get(GroupsStorageKey, string.Empty);
         if (!string.IsNullOrWhiteSpace(rawGroups))
         {
             try
@@ -102,7 +111,7 @@ public class GroupService : IGroupService
             }
         }
 
-        var rawSelected = Preferences.Default.Get(SelectedGroupStorageKey, string.Empty);
+        var rawSelected = preferences.Get(SelectedGroupStorageKey, string.Empty);
         if (Guid.TryParse(rawSelected, out var parsedSelected))
         {
             selectedGroupId = parsedSelected;
@@ -117,7 +126,7 @@ public class GroupService : IGroupService
     private void Save()
     {
         var rawGroups = JsonSerializer.Serialize(groups);
-        Preferences.Default.Set(GroupsStorageKey, rawGroups);
-        Preferences.Default.Set(SelectedGroupStorageKey, selectedGroupId?.ToString() ?? string.Empty);
+        preferences.Set(GroupsStorageKey, rawGroups);
+        preferences.Set(SelectedGroupStorageKey, selectedGroupId?.ToString() ?? string.Empty);
     }
 }

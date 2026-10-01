@@ -7,11 +7,20 @@ namespace WizardScoreboard.Services;
 public class ScoreService : IScoreService
 {
     private const string PausedSessionsStorageKey = "paused_sessions_storage_v1";
+    private readonly IPreferences preferences;
     private readonly List<ScoreSession> sessions = new();
     private Guid? selectedSessionId;
 
-    public ScoreService()
+    /// <summary>Creates the score service using device preferences.</summary>
+    public ScoreService() : this(Preferences.Default)
     {
+    }
+
+    /// <summary>Creates the score service using the supplied persistent preferences.</summary>
+    public ScoreService(IPreferences preferences)
+    {
+        ArgumentNullException.ThrowIfNull(preferences);
+        this.preferences = preferences;
         LoadPausedSessions();
     }
 
@@ -312,7 +321,7 @@ public class ScoreService : IScoreService
         string raw;
         try
         {
-            raw = Preferences.Default.Get(PausedSessionsStorageKey, string.Empty);
+            raw = preferences.Get(PausedSessionsStorageKey, string.Empty);
         }
         catch (Exception)
         {
@@ -354,7 +363,7 @@ public class ScoreService : IScoreService
         var raw = JsonSerializer.Serialize(active);
         try
         {
-            Preferences.Default.Set(PausedSessionsStorageKey, raw);
+            preferences.Set(PausedSessionsStorageKey, raw);
         }
         catch (Exception)
         {
