@@ -22,7 +22,13 @@ public class App : Application
         this.services = services;
         this.screenWakeService = screenWakeService;
 
-        UserAppTheme = AppSettings.Theme;
+        // Resize the window when the Android keyboard opens so ScrollViews can still scroll to
+        // entries below the focused one; the default pan mode makes them unreachable.
+        Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific.Application.UseWindowSoftInputModeAdjust(
+            this.On<Microsoft.Maui.Controls.PlatformConfiguration.Android>(),
+            Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific.WindowSoftInputModeAdjust.Resize);
+
+        UserAppTheme
         ApplyThemeResources();
         // Page colors are resolved when pages are built, so rebuild the UI when the system theme
         // changes while the user follows the system setting.

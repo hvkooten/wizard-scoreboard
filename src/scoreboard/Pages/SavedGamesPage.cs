@@ -109,7 +109,8 @@ public class SavedGamesPage : ContentPage
 
             var openButton = new Button
             {
-                Text = Localization.GetString("OpenGame")
+                Text = Localization.GetString("OpenGame"),
+                HeightRequest = 44,
             };
 
             var sessionId = session.Id;

@@ -45,6 +45,10 @@
   <data name="GroupUpdated" xml:space="preserve"><value>Groep bijgewerkt</value></data>
   <data name="Hearts" xml:space="preserve"><value>Harten</value></data>
   <data name="Highscore" xml:space="preserve"><value>Highscore</value></data>
+  <data name="HighscoreColumnName" xml:space="preserve"><value>Naam</value></data>
+  <data name="HighscoreColumnWins" xml:space="preserve"><value>Winst</value></data>
+  <data name="HighscoreColumnPlayed" xml:space="preserve"><value>Gespeeld</value></data>
+  <data name="HighscoreColumnBest" xml:space="preserve"><value>Beste</value></data>
   <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0}: gewonnen={1}, gespeeld={2}, beste={3}</value></data>
   <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
   <data name="No" xml:space="preserve"><value>Nee</value></data>

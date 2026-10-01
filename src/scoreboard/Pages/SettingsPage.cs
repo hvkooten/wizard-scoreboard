@@ -165,7 +165,7 @@ public class SettingsPage : ContentPage
 
         if (DeviceInfo.Platform == DevicePlatform.WinUI)
         {
-            var reportBugButton = new Button { Text = Localization.GetString("ReportBug") };
+            var reportBugButton = new Button { Text = Localization.GetString("ReportBug"), HeightRequest = 44 };
             reportBugButton.Clicked += async (s, e) =>
             {
                 reportBugButton.IsEnabled = false;

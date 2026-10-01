@@ -45,6 +45,10 @@
   <data name="GroupUpdated" xml:space="preserve"><value>Groupe mis à jour</value></data>
   <data name="Hearts" xml:space="preserve"><value>Coeurs</value></data>
   <data name="Highscore" xml:space="preserve"><value>Meilleur score</value></data>
+  <data name="HighscoreColumnName" xml:space="preserve"><value>Nom</value></data>
+  <data name="HighscoreColumnWins" xml:space="preserve"><value>Gagnées</value></data>
+  <data name="HighscoreColumnPlayed" xml:space="preserve"><value>Jouées</value></data>
+  <data name="HighscoreColumnBest" xml:space="preserve"><value>Record</value></data>
   <data name="HighscoreEntryTemplate" xml:space="preserve"><value>{0} : victoires={1}, jouées={2}, meilleur={3}</value></data>
   <data name="InfoTitle" xml:space="preserve"><value>Info</value></data>
   <data name="No" xml:space="preserve"><value>Non</value></data>

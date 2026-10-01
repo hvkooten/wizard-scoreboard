@@ -29,6 +29,41 @@ public class LocalizationTests
         }
     }
 
+    [TestCase("en-US", "HighscoreColumnName", "Name")]
+    [TestCase("en-US", "HighscoreColumnWins", "Wins")]
+    [TestCase("en-US", "HighscoreColumnPlayed", "Played")]
+    [TestCase("en-US", "HighscoreColumnBest", "Best")]
+    [TestCase("nl-NL", "HighscoreColumnName", "Naam")]
+    [TestCase("nl-NL", "HighscoreColumnWins", "Winst")]
+    [TestCase("nl-NL", "HighscoreColumnPlayed", "Gespeeld")]
+    [TestCase("nl-NL", "HighscoreColumnBest", "Beste")]
+    [TestCase("de-DE", "HighscoreColumnName", "Name")]
+    [TestCase("de-DE", "HighscoreColumnWins", "Siege")]
+    [TestCase("de-DE", "HighscoreColumnPlayed", "Spiele")]
+    [TestCase("de-DE", "HighscoreColumnBest", "Beste")]
+    [TestCase("es-ES", "HighscoreColumnName", "Nombre")]
+    [TestCase("es-ES", "HighscoreColumnWins", "Ganadas")]
+    [TestCase("es-ES", "HighscoreColumnPlayed", "Jugadas")]
+    [TestCase("es-ES", "HighscoreColumnBest", "Mejor")]
+    [TestCase("fr-FR", "HighscoreColumnName", "Nom")]
+    [TestCase("fr-FR", "HighscoreColumnWins", "Gagn\u00e9es")]
+    [TestCase("fr-FR", "HighscoreColumnPlayed", "Jou\u00e9es")]
+    [TestCase("fr-FR", "HighscoreColumnBest", "Record")]
+    public void HighscoreColumnHeaders_UseSelectedLanguage(string cultureName, string key, string expected)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+
+            Assert.That(Localization.GetString(key), Is.EqualTo(expected));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
     [TestCase("en-US", "Dealer picks trump")]
     [TestCase("nl-NL", "Deler kiest troef")]
     [TestCase("de-DE", "Geber w\u00e4hlt Trumpf")]

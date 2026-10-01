@@ -108,10 +108,10 @@ public class HighscorePage : ContentPage
         };
 
         headerGrid.Add(CreateHeaderLabel("#", TextAlignment.Center), 0, 0);
-        headerGrid.Add(CreateHeaderLabel("Name", TextAlignment.Start), 1, 0);
-        headerGrid.Add(CreateHeaderLabel("Wins", TextAlignment.Center), 2, 0);
-        headerGrid.Add(CreateHeaderLabel("Played", TextAlignment.Center), 3, 0);
-        headerGrid.Add(CreateHeaderLabel("Best", TextAlignment.Center), 4, 0);
+        headerGrid.Add(CreateHeaderLabel(Localization.GetString("HighscoreColumnName"), TextAlignment.Start), 1, 0);
+        headerGrid.Add(CreateHeaderLabel(Localization.GetString("HighscoreColumnWins"), TextAlignment.Center), 2, 0);
+        headerGrid.Add(CreateHeaderLabel(Localization.GetString("HighscoreColumnPlayed"), TextAlignment.Center), 3, 0);
+        headerGrid.Add(CreateHeaderLabel(Localization.GetString("HighscoreColumnBest"), TextAlignment.Center), 4, 0);
 
         return new Border
         {
