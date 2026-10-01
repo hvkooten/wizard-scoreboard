@@ -9,6 +9,48 @@ namespace WizardScoreboard.Tests;
 [NonParallelizable]
 public class LocalizationTests
 {
+    [TestCase("en-US", "Save group")]
+    [TestCase("nl-NL", "Groep opslaan")]
+    [TestCase("de-DE", "Gruppe speichern")]
+    [TestCase("es-ES", "Guardar grupo")]
+    [TestCase("fr-FR", "Enregistrer le groupe")]
+    public void SaveGroup_UsesSelectedLanguage(string cultureName, string expected)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+
+            Assert.That(Localization.GetString("SaveGroup"), Is.EqualTo(expected));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
+    [TestCase("en-US", "Dealer picks trump")]
+    [TestCase("nl-NL", "Deler kiest troef")]
+    [TestCase("de-DE", "Geber w\u00e4hlt Trumpf")]
+    [TestCase("es-ES", "El repartidor elige el triunfo")]
+    [TestCase("fr-FR", "Le donneur choisit l'atout")]
+    public void AllowNoTrump_ShowsDealerPicksTrumpInSelectedLanguage(string cultureName, string expected)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+
+            var caption = Localization.GetString("AllowNoTrump");
+
+            Assert.That(caption, Is.EqualTo(expected));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
     [TestCase("en-US", "Simplified buttons")]
     [TestCase("nl-NL", "Vereenvoudigde knoppen")]
     [TestCase("de-DE", "Vereinfachte Schaltfl\u00e4chen")]

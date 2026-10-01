@@ -8,8 +8,10 @@ namespace WizardScoreboard.Pages;
 public class GroupsPage : ContentPage
 {
     private readonly IGroupService groupService;
+    private readonly IScoreService scoreService;
+    private readonly Button startGameButton;
     private readonly Picker bidTotalRulePicker;
-    private readonly Switch allowNoTrumpSwitch = new() { VerticalOptions = LayoutOptions.Center };
+    private readonly Switch allowNoTrumpSwitch = new() { IsToggled = true, VerticalOptions = LayoutOptions.Center };
     private readonly Picker groupPicker;
     private int selectedPlayerCount = 6;
     private readonly List<Button> playerCountButtons = new();
@@ -29,11 +31,12 @@ public class GroupsPage : ContentPage
     // Set before navigating here to open the page with the "New group" entry selected.
     public static bool SelectNewGroupOnAppearing { get; set; }
 
-    public GroupsPage(IGroupService groupService)
+    public GroupsPage(IGroupService groupService, IScoreService scoreService)
     {
         PageTitleHelper.Apply(this, Localization.GetString("Groups"));
 
         this.groupService = groupService;
+        this.scoreService = scoreService;
 
         // Bid total rule start round setting (per group).
         bidTotalRulePicker = new Picker { Title = Localization.GetString("BidTotalRuleStartRound") };
@@ -84,8 +87,23 @@ public class GroupsPage : ContentPage
         };
         RebuildPlayerNameInputs();
 
-        createGroupButton = new Button { Text = Localization.GetString("CreatorGroup") };
+        createGroupButton = new Button { Text = Localization.GetString("CreatorGroup"), HeightRequest = 44, HorizontalOptions = LayoutOptions.Fill };
         createGroupButton.Clicked += CreateGroupButton_Clicked;
+
+        startGameButton = new Button { Text = Localization.GetString("StartGame"), HeightRequest = 44, HorizontalOptions = LayoutOptions.Fill };
+        startGameButton.Clicked += StartGameButton_Clicked;
+
+        var actionButtonRow = new Grid
+        {
+            ColumnSpacing = 8,
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = GridLength.Star }
+            }
+        };
+        actionButtonRow.Add(createGroupButton, 0);
+        actionButtonRow.Add(startGameButton, 1);
 
         groupListView = new CollectionView
         {
@@ -147,7 +165,7 @@ public class GroupsPage : ContentPage
                     },
                     playerCountLayout,
                     playerNamesLayout,
-                    createGroupButton,
+                    actionButtonRow,
                     groupListView
                 }
             }
@@ -212,6 +230,27 @@ public class GroupsPage : ContentPage
             SelectNewGroupOnAppearing = false;
             groupPicker.SelectedIndex = 0;
         }
+
+        UpdateStartGameButton();
+    }
+
+    // A new game can only be started for a saved group while no other game is in progress.
+    private void UpdateStartGameButton()
+    {
+        var gameInProgress = scoreService.GetCurrentSession() is { IsActive: true, IsPaused: false };
+        startGameButton.IsEnabled = editingGroupId.HasValue && !gameInProgress;
+    }
+
+    private async void StartGameButton_Clicked(object? sender, EventArgs e)
+    {
+        if (!editingGroupId.HasValue)
+        {
+            return;
+        }
+
+        groupService.SetSelectedGroup(editingGroupId.Value);
+        ScoreBoardPage.StartGameOnAppearing = true;
+        await Shell.Current.GoToAsync($"//{nameof(ScoreBoardPage)}");
     }
 
     private void RefreshGroups()
@@ -600,9 +639,10 @@ public class GroupsPage : ContentPage
             SetPlayerCount(6, updateGroupName: false);
             bidTotalRuleStartRoundValue = AppSettings.DefaultBidTotalRuleStartRound;
             bidTotalRulePicker.SelectedIndex = BidTotalRulePicker.IndexFromValue(bidTotalRuleStartRoundValue);
-            allowNoTrumpSwitch.IsToggled = false;
+            allowNoTrumpSwitch.IsToggled = true;
             for (var k = 0; k < allPlayerNames.Count; k++) allPlayerNames[k] = string.Empty;
             RebuildPlayerNameInputs();
+            UpdateStartGameButton();
             return;
         }
 
@@ -628,5 +668,6 @@ public class GroupsPage : ContentPage
 
         var orderedNames = selected.Players.OrderBy(p => p.Order).Select(p => p.Name).ToList();
         RebuildPlayerNameInputs(orderedNames);
+        UpdateStartGameButton();
     }
 }

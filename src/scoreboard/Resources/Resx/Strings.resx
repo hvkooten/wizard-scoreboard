@@ -31,6 +31,7 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>This game is still in progress. Do you want to stop it?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>End game?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Create Group</value></data>
+  <data name="SaveGroup" xml:space="preserve"><value>Save group</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Dealer) cannot bid: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Dealer) can bid any number</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Dealer</value></data>
@@ -97,7 +98,7 @@
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Select players for this game</value></data>
   <data name="DragToReorderHint" xml:space="preserve"><value>Use the arrows to change the order</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Choose a trump suit to continue</value></data>
-  <data name="AllowNoTrump" xml:space="preserve"><value>"No trump" option</value></data>
+  <data name="AllowNoTrump" xml:space="preserve"><value>Dealer picks trump</value></data>
   <data name="Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Groups" xml:space="preserve"><value>Groups</value></data>
   <data name="NewGroup" xml:space="preserve"><value>New group</value></data>

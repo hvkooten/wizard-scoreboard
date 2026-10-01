@@ -25,5 +25,5 @@ public class Group
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public List<Player> Players { get; set; } = new List<Player>();
     public int BidTotalRuleStartRound { get; set; } = PlayerCountRule; // follow player count until explicitly set
-    public bool AllowNoTrump { get; set; }
+    public bool AllowNoTrump { get; set; } = true;
 }

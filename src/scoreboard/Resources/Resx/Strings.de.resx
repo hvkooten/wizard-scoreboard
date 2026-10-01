@@ -12,13 +12,14 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dieses Spiel lauft noch. Wirklich beenden?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spiel beenden?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Gruppe erstellen</value></data>
+  <data name="SaveGroup" xml:space="preserve"><value>Gruppe speichern</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Kartengeber) darf nicht bieten: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Kartengeber) darf beliebig bieten</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Geber</value></data>
-	<data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (Gebot: {1})</value></data>
+  <data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (Gebot: {1})</value></data>
   <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, Gebot: {2})</value></data>
   <data name="EditLastRound" xml:space="preserve"><value>Letzte Runde bearbeiten</value></data>
-	<data name="RoundMustBeCompleted" xml:space="preserve"><value>Schließe die unvollständige Runde ab oder brich sie ab, bevor du eine neue Runde startest.</value></data>
+  <data name="RoundMustBeCompleted" xml:space="preserve"><value>Schließe die unvollständige Runde ab oder brich sie ab, bevor du eine neue Runde startest.</value></data>
   <data name="RoundCannotBeFinished" xml:space="preserve"><value>Nur die aktuelle unvollständige Runde eines aktiven, nicht pausierten Spiels kann abgeschlossen werden.</value></data>
   <data name="BidsMustIncludeAllPlayers" xml:space="preserve"><value>Gib ein gültiges Gebot für jeden Spieler dieses Spiels ein, und für keine anderen Spieler.</value></data>
   <data name="RoundCannotBeEdited" xml:space="preserve"><value>Nur die letzte abgeschlossene Runde eines aktiven, nicht pausierten Spiels kann bearbeitet werden.</value></data>
@@ -79,7 +80,7 @@
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Spieler für dieses Spiel auswählen</value></data>
   <data name="DragToReorderHint" xml:space="preserve"><value>Mit den Pfeilen die Reihenfolge ändern</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Wählen Sie eine Trumpffarbe, um fortzufahren</value></data>
-  <data name="AllowNoTrump" xml:space="preserve"><value>Option "Kein Trumpf"</value></data>
+  <data name="AllowNoTrump" xml:space="preserve"><value>Geber wählt Trumpf</value></data>
   <data name="Settings" xml:space="preserve"><value>Einstellungen</value></data>
   <data name="Groups" xml:space="preserve"><value>Gruppen</value></data>
   <data name="NewGroup" xml:space="preserve"><value>Neue Gruppe</value></data>

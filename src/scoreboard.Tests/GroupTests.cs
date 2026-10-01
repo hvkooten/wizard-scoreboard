@@ -5,6 +5,12 @@ namespace WizardScoreboard.Tests;
 
 public class GroupTests
 {
+    [Test]
+    public void NewGroup_DealerPicksTrumpIsEnabledByDefault()
+    {
+        Assert.That(new Group().AllowNoTrump, Is.True);
+    }
+
     [TestCase(3, false, 4)]
     [TestCase(4, false, 5)]
     [TestCase(5, false, 6)]

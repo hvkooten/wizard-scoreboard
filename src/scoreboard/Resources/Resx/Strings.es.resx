@@ -12,13 +12,14 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Este juego sigue en curso. ¿Quieres detenerlo?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>¿Finalizar juego?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Crear grupo</value></data>
+  <data name="SaveGroup" xml:space="preserve"><value>Guardar grupo</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Repartidor) no puede apostar: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Repartidor) puede apostar cualquier número</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Repartidor</value></data>
-	<data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (apuesta: {1})</value></data>
+  <data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (apuesta: {1})</value></data>
   <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, apuesta: {2})</value></data>
   <data name="EditLastRound" xml:space="preserve"><value>Editar última ronda</value></data>
-	<data name="RoundMustBeCompleted" xml:space="preserve"><value>Completa o cancela la ronda incompleta antes de empezar otra ronda.</value></data>
+  <data name="RoundMustBeCompleted" xml:space="preserve"><value>Completa o cancela la ronda incompleta antes de empezar otra ronda.</value></data>
   <data name="RoundCannotBeFinished" xml:space="preserve"><value>Solo se puede completar la ronda incompleta actual de una partida activa y no pausada.</value></data>
   <data name="BidsMustIncludeAllPlayers" xml:space="preserve"><value>Introduce una apuesta válida para cada jugador de esta partida, y para ningún otro jugador.</value></data>
   <data name="RoundCannotBeEdited" xml:space="preserve"><value>Solo se puede editar la última ronda completada de una partida activa y no pausada.</value></data>
@@ -79,7 +80,7 @@
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Seleccionar jugadores para este juego</value></data>
   <data name="DragToReorderHint" xml:space="preserve"><value>Usa las flechas para cambiar el orden</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Elige un palo para continuar</value></data>
-  <data name="AllowNoTrump" xml:space="preserve"><value>Opción "sin triunfo"</value></data>
+  <data name="AllowNoTrump" xml:space="preserve"><value>El repartidor elige el triunfo</value></data>
   <data name="Settings" xml:space="preserve"><value>Configuración</value></data>
   <data name="Groups" xml:space="preserve"><value>Grupos</value></data>
   <data name="NewGroup" xml:space="preserve"><value>Nuevo grupo</value></data>

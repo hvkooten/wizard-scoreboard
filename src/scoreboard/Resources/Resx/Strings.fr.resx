@@ -12,13 +12,14 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Cette partie est encore en cours. Voulez-vous l'arrêter ?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Terminer la partie ?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Créer un groupe</value></data>
+  <data name="SaveGroup" xml:space="preserve"><value>Enregistrer le groupe</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Donneur) ne peut pas enchérir: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Donneur) peut enchérir n'importe quel nombre</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Donneur</value></data>
-	<data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (annonce : {1})</value></data>
+  <data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (annonce : {1})</value></data>
   <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, annonce : {2})</value></data>
   <data name="EditLastRound" xml:space="preserve"><value>Modifier la dernière manche</value></data>
-	<data name="RoundMustBeCompleted" xml:space="preserve"><value>Terminez ou annulez la manche incomplète avant d'en commencer une nouvelle.</value></data>
+  <data name="RoundMustBeCompleted" xml:space="preserve"><value>Terminez ou annulez la manche incomplète avant d'en commencer une nouvelle.</value></data>
   <data name="RoundCannotBeFinished" xml:space="preserve"><value>Seule la manche incomplète en cours d'une partie active et non en pause peut être terminée.</value></data>
   <data name="BidsMustIncludeAllPlayers" xml:space="preserve"><value>Saisissez une annonce valide pour chaque joueur de cette partie, et aucun autre joueur.</value></data>
   <data name="RoundCannotBeEdited" xml:space="preserve"><value>Seule la dernière manche terminée d'une partie active et non en pause peut être modifiée.</value></data>
@@ -79,7 +80,7 @@
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Sélectionner les joueurs pour cette partie</value></data>
   <data name="DragToReorderHint" xml:space="preserve"><value>Utilisez les flèches pour changer l'ordre</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Choisissez une couleur pour continuer</value></data>
-  <data name="AllowNoTrump" xml:space="preserve"><value>Option « sans atout »</value></data>
+  <data name="AllowNoTrump" xml:space="preserve"><value>Le donneur choisit l'atout</value></data>
   <data name="Settings" xml:space="preserve"><value>Paramètres</value></data>
   <data name="Groups" xml:space="preserve"><value>Groupes</value></data>
   <data name="NewGroup" xml:space="preserve"><value>Nouveau groupe</value></data>

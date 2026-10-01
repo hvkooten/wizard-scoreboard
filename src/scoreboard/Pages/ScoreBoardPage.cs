@@ -106,11 +106,14 @@ public class ScoreBoardPage : ContentPage
         RefreshUI();
     }
 
-    protected override void OnAppearing()
+    // Set before navigating here to immediately open the start-game dialog.
+    public static bool StartGameOnAppearing { get; set; }
+
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
 
-        // Shell reuses this page, so another saved game may have been selected while it was hidden.
+        // Shell reuses
         var selectedSession = scoreService.GetCurrentSession();
         if (selectedSession != null || currentSession?.IsActive == true)
         {
@@ -131,6 +134,15 @@ public class ScoreBoardPage : ContentPage
         }
 
         RefreshUI();
+
+        if (StartGameOnAppearing)
+        {
+            StartGameOnAppearing = false;
+            if (startButton.IsEnabled)
+            {
+                await StartGameAsync();
+            }
+        }
     }
 
     private (View Layout, Button Start, Button NextRound, Button Edit, Button Pause, Button End) CreateActionBar(bool simplified)
@@ -974,7 +986,8 @@ public class ScoreBoardPage : ContentPage
             }
         });
 
-        var cancelBtn = new Button { Text = Localization.GetString("Cancel"), HorizontalOptions = LayoutOptions.Fill };
+        var cancelBtn = new Button { Text = Localization.GetString("Cancel"), HeightRequest = 44, HorizontalOptions = LayoutOptions.Fill };
+        startBtn.HeightRequest = 44;
         startBtn.HorizontalOptions = LayoutOptions.Fill;
         var buttonRow = new Grid
         {
