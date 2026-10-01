@@ -962,6 +962,18 @@ public class ScoreBoardPage : ContentPage
         };
         layout.Children.Add(bidRuleRow);
 
+        var noTrumpSwitch = new Switch { IsToggled = group.AllowNoTrump, VerticalOptions = LayoutOptions.Center };
+        layout.Children.Add(new HorizontalStackLayout
+        {
+            Spacing = 8,
+            HorizontalOptions = LayoutOptions.Center,
+            Children =
+            {
+                new Label { Text = Localization.GetString("AllowNoTrump"), FontSize = 13, VerticalOptions = LayoutOptions.Center },
+                noTrumpSwitch
+            }
+        });
+
         var cancelBtn = new Button { Text = Localization.GetString("Cancel"), HorizontalOptions = LayoutOptions.Fill };
         startBtn.HorizontalOptions = LayoutOptions.Fill;
         var buttonRow = new Grid
@@ -1002,6 +1014,7 @@ public class ScoreBoardPage : ContentPage
             group.BidTotalRuleStartRound = followsPlayerCount
                 ? (followsDoublePlayerCount ? Group.DoublePlayerCountRule : Group.PlayerCountRule)
                 : bidRuleValue;
+            group.AllowNoTrump = noTrumpSwitch.IsToggled;
             groupService.UpdateGroup(group);
             // Apply the effective value (including any manual override) to the in-memory group so the
             // game about to start uses it, without overwriting the persisted follow-player-count mode.
@@ -1176,7 +1189,7 @@ public class ScoreBoardPage : ContentPage
         Button? doneButton = null;
         Func<int>? getTrumpIndexAccessor = null;
         Label? trumpHintLabelRef = null;
-        var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector(() => UpdateTrumpSelectionState(), initialTrumpIndex);
+        var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector(() => UpdateTrumpSelectionState(), initialTrumpIndex, currentSession.AllowNoTrump);
         population.Children.Add(trumpSelectorView);
         // Friendly hint label
         var trumpHintLabel = new Label
@@ -1741,7 +1754,7 @@ public class ScoreBoardPage : ContentPage
         groupService.UpdateGroup(group);
     }
 
-    private (View view, Func<int> getSelectedIndex) BuildTrumpIconSelector(Action? onSelectionChanged = null, int initialSelectedIndex = -1)
+    private (View view, Func<int> getSelectedIndex) BuildTrumpIconSelector(Action? onSelectionChanged = null, int initialSelectedIndex = -1, bool allowNoTrump = false)
     {
         var mode = trumpPaletteService.GetMode();
 
@@ -1762,6 +1775,13 @@ public class ScoreBoardPage : ContentPage
                 ("♣",  Colors.DarkGreen,               Colors.White),
                 ("♠",  Colors.DarkBlue,                Colors.White),
             };
+
+        if (allowNoTrump)
+        {
+            options = [.. options, mode == TrumpPaletteMode.FourColors
+                ? ("●", Colors.White, Colors.LightGray)
+                : ("—", Colors.Gray, Colors.White)];
+        }
 
         int selectedIndex = initialSelectedIndex;  // -1 = nothing pre-selected; user must pick
         var buttons = new List<Border>();
@@ -1927,6 +1947,7 @@ public class ScoreBoardPage : ContentPage
                 TrumpSuit.Diamonds => ("●", Colors.White, Colors.Yellow),
                 TrumpSuit.Clubs => ("●", Colors.White, Colors.Green),
                 TrumpSuit.Spades => ("●", Colors.White, Colors.Blue),
+                TrumpSuit.NoTrump => ("●", Colors.White, Colors.LightGray),
                 _ => ("?", Colors.Gray, Colors.White)
             };
         }
@@ -1936,6 +1957,7 @@ public class ScoreBoardPage : ContentPage
             TrumpSuit.Diamonds => ("♦", Color.FromArgb("#e05000"), Colors.White),
             TrumpSuit.Clubs => ("♣", Colors.DarkGreen, Colors.White),
             TrumpSuit.Spades => ("♠", Colors.DarkBlue, Colors.White),
+            TrumpSuit.NoTrump => ("—", Colors.Gray, Colors.White),
             _ => ("?", Colors.Gray, Colors.White)
         };
     }
@@ -1961,6 +1983,7 @@ public class ScoreBoardPage : ContentPage
                 TrumpSuit.Diamonds => Colors.Yellow.WithAlpha(0.25f),
                 TrumpSuit.Clubs => Colors.Green.WithAlpha(0.2f),
                 TrumpSuit.Spades => Colors.Blue.WithAlpha(0.2f),
+                TrumpSuit.NoTrump => Colors.Gray.WithAlpha(0.2f),
                 _ => AppColors.Surface
             };
         }
@@ -1970,6 +1993,7 @@ public class ScoreBoardPage : ContentPage
         {
             TrumpSuit.Hearts or TrumpSuit.Diamonds => Colors.Red.WithAlpha(0.2f),
             TrumpSuit.Clubs or TrumpSuit.Spades => Colors.Blue.WithAlpha(0.2f),
+            TrumpSuit.NoTrump => Colors.Gray.WithAlpha(0.2f),
             _ => AppColors.Surface
         };
     }
@@ -1995,7 +2019,7 @@ public class ScoreBoardPage : ContentPage
     // In card-suit mode the watermark shows the round number followed by the trump symbol.
     private void ApplyWatermarkText(Label watermark, int roundNumber, TrumpSuit trump)
     {
-        var showSuit = trumpPaletteService.GetMode() == TrumpPaletteMode.CardSuits && trump != TrumpSuit.None;
+        var showSuit = trumpPaletteService.GetMode() == TrumpPaletteMode.CardSuits && trump is not (TrumpSuit.None or TrumpSuit.NoTrump);
         watermark.Text = showSuit
             ? $"{roundNumber}{GetTrumpDisplayInfo(trump).symbol}"
             : roundNumber.ToString();
@@ -2083,13 +2107,14 @@ public class ScoreBoardPage : ContentPage
 
     private static TrumpSuit MapSelectionToTrump(int selectedIndex)
     {
-        // None removed from selector; 0=Hearts, 1=Diamonds, 2=Clubs, 3=Spades.
+        // 0=Hearts, 1=Diamonds, 2=Clubs, 3=Spades, 4=No trump (only offered when the game allows it).
         return selectedIndex switch
         {
             0 => TrumpSuit.Hearts,
             1 => TrumpSuit.Diamonds,
             2 => TrumpSuit.Clubs,
             3 => TrumpSuit.Spades,
+            4 => TrumpSuit.NoTrump,
             _ => TrumpSuit.None
         };
     }

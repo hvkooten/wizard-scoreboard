@@ -72,7 +72,8 @@ public class ScoreService : IScoreService
             Players = sessionPlayers,
             MaxRounds = GetMaxRounds(sessionPlayers.Count),
             IsActive = true,
-            BidTotalRuleStartRound = bidTotalRuleStartRound
+            BidTotalRuleStartRound = bidTotalRuleStartRound,
+            AllowNoTrump = group.AllowNoTrump
         };
 
         sessions.Add(session);
@@ -151,7 +152,7 @@ public class ScoreService : IScoreService
         if (!IncludesAllPlayers(session, bids))
             throw new ArgumentException(Localization.GetString("BidsMustIncludeAllPlayers"), nameof(bids));
 
-        if (!Enum.IsDefined(trump))
+        if (!Enum.IsDefined(trump) || (trump == TrumpSuit.NoTrump && !session.AllowNoTrump))
             throw new ArgumentOutOfRangeException(nameof(trump), Localization.GetString("TrumpRequiredError"));
 
         if (bids.Any(b => b.Value < 0 || b.Value > session.CurrentRound + 1))
@@ -410,6 +411,7 @@ public class ScoreService : IScoreService
             IsActive = session.IsActive,
             IsPaused = session.IsPaused,
             BidTotalRuleStartRound = session.BidTotalRuleStartRound,
+            AllowNoTrump = session.AllowNoTrump,
             Players = session.Players.Select(p => new Player
             {
                 Id = p.Id,

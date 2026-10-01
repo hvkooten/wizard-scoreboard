@@ -102,6 +102,7 @@ If PDF cannot render, use the link.</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Select players for this game</value></data>
   <data name="DragToReorderHint" xml:space="preserve"><value>Use the arrows to change the order</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Choose a trump suit to continue</value></data>
+  <data name="AllowNoTrump" xml:space="preserve"><value>"No trump" option</value></data>
   <data name="Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Groups" xml:space="preserve"><value>Groups</value></data>
   <data name="NewGroup" xml:space="preserve"><value>New group</value></data>

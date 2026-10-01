@@ -9,6 +9,7 @@ public class GroupsPage : ContentPage
 {
     private readonly IGroupService groupService;
     private readonly Picker bidTotalRulePicker;
+    private readonly Switch allowNoTrumpSwitch = new() { VerticalOptions = LayoutOptions.Center };
     private readonly Picker groupPicker;
     private int selectedPlayerCount = 6;
     private readonly List<Button> playerCountButtons = new();
@@ -135,6 +136,15 @@ public class GroupsPage : ContentPage
                 {
                     CreateGroupNameRow(),
                     bidTotalRulePicker,
+                    new HorizontalStackLayout
+                    {
+                        Spacing = 8,
+                        Children =
+                        {
+                            new Label { Text = Localization.GetString("AllowNoTrump"), VerticalOptions = LayoutOptions.Center },
+                            allowNoTrumpSwitch
+                        }
+                    },
                     playerCountLayout,
                     playerNamesLayout,
                     createGroupButton,
@@ -301,6 +311,7 @@ public class GroupsPage : ContentPage
                     existing.Name = groupName;
                     existing.Players = players;
                     existing.BidTotalRuleStartRound = bidTotalRuleStartRoundValue;
+                    existing.AllowNoTrump = allowNoTrumpSwitch.IsToggled;
                     groupService.UpdateGroup(existing);
                     groupService.SetSelectedGroup(existing.Id);
                 }
@@ -309,6 +320,7 @@ public class GroupsPage : ContentPage
             {
                 var created = groupService.CreateGroup(groupName, players);
                 created.BidTotalRuleStartRound = bidTotalRuleStartRoundValue;
+                created.AllowNoTrump = allowNoTrumpSwitch.IsToggled;
                 groupService.UpdateGroup(created);
                 groupService.SetSelectedGroup(created.Id);
             }
@@ -588,6 +600,7 @@ public class GroupsPage : ContentPage
             SetPlayerCount(6, updateGroupName: false);
             bidTotalRuleStartRoundValue = AppSettings.DefaultBidTotalRuleStartRound;
             bidTotalRulePicker.SelectedIndex = BidTotalRulePicker.IndexFromValue(bidTotalRuleStartRoundValue);
+            allowNoTrumpSwitch.IsToggled = false;
             for (var k = 0; k < allPlayerNames.Count; k++) allPlayerNames[k] = string.Empty;
             RebuildPlayerNameInputs();
             return;
@@ -611,6 +624,7 @@ public class GroupsPage : ContentPage
             ? Math.Min(selected.BidTotalRuleStartRound, Group.MaxRounds(selected.Players.Count))
             : Group.PlayerCountRule;
         bidTotalRulePicker.SelectedIndex = BidTotalRulePicker.IndexFromValue(bidTotalRuleStartRoundValue);
+        allowNoTrumpSwitch.IsToggled = selected.AllowNoTrump;
 
         var orderedNames = selected.Players.OrderBy(p => p.Order).Select(p => p.Name).ToList();
         RebuildPlayerNameInputs(orderedNames);

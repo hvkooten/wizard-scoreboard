@@ -84,6 +84,7 @@ Si el PDF no se carga, usa el enlace.</value></data>
   <data name="SelectPlayersTitle" xml:space="preserve"><value>Seleccionar jugadores para este juego</value></data>
   <data name="DragToReorderHint" xml:space="preserve"><value>Usa las flechas para cambiar el orden</value></data>
   <data name="SelectTrumpHint" xml:space="preserve"><value>Elige un palo para continuar</value></data>
+  <data name="AllowNoTrump" xml:space="preserve"><value>Opción "sin triunfo"</value></data>
   <data name="Settings" xml:space="preserve"><value>Configuración</value></data>
   <data name="Groups" xml:space="preserve"><value>Grupos</value></data>
   <data name="NewGroup" xml:space="preserve"><value>Nuevo grupo</value></data>

@@ -6,7 +6,9 @@ public enum TrumpSuit
     Hearts,
     Diamonds,
     Clubs,
-    Spades
+    Spades,
+    // Explicit "no trump" choice; appended so persisted values of the other suits stay valid.
+    NoTrump
 }
 
 public class RoundEntry
@@ -33,4 +35,5 @@ public class ScoreSession
     public Guid CurrentDealer => Players.Count == 0 ? Guid.Empty : Players[CurrentRound % Players.Count].Id;
     public List<Player> Players { get; set; } = new();
     public int BidTotalRuleStartRound { get; set; } = 1;  // Starting round for total bids rule
+    public bool AllowNoTrump { get; set; }  // Fixed at game start; cannot change during a game
 }

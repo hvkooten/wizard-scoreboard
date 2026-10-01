@@ -54,6 +54,29 @@ public class ScoreServiceValidationTests
     }
 
     [Test]
+    public void StartRound_RejectsNoTrumpWhenGroupDisallowsIt()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            service.StartRound(session, TrumpSuit.NoTrump, TestData.Actuals(session, 1, 0, 0)));
+    }
+
+    [Test]
+    public void StartRound_AcceptsNoTrumpWhenGroupAllowsIt()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var group = TestData.CreateGroup();
+        group.AllowNoTrump = true;
+        var session = service.StartGame(group);
+
+        var round = service.StartRound(session, TrumpSuit.NoTrump, TestData.Actuals(session, 1, 0, 0));
+
+        Assert.That(round.Trump, Is.EqualTo(TrumpSuit.NoTrump));
+    }
+
+    [Test]
     public void FinishRound_RejectsMissingPlayerActual()
     {
         var service = new ScoreService(new MemoryPreferences());
