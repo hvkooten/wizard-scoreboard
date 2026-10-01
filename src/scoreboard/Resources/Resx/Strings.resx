@@ -37,6 +37,9 @@
   <data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (bid: {1})</value></data>
   <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, bid: {2})</value></data>
   <data name="EditLastRound" xml:space="preserve"><value>Edit last round</value></data>
+  <data name="RoundMustBeCompleted" xml:space="preserve"><value>Complete or cancel the unfinished round before starting another round.</value></data>
+  <data name="RoundCannotBeFinished" xml:space="preserve"><value>Only the current unfinished round of an active, unpaused game can be completed.</value></data>
+  <data name="BidsMustIncludeAllPlayers" xml:space="preserve"><value>Enter a valid bid for every player in this game, and no other players.</value></data>
   <data name="RoundCannotBeEdited" xml:space="preserve"><value>Only the latest completed round of an active, unpaused game can be edited.</value></data>
   <data name="ActualsMustIncludeAllPlayers" xml:space="preserve"><value>Enter tricks won for every player in this game, and no other players.</value></data>
   <data name="ActualsRangeError" xml:space="preserve"><value>Tricks won must be between 0 and {0}.</value></data>

@@ -292,7 +292,7 @@ public class ScoreServiceTests
         var bids = session.Players.ToDictionary(p => p.Id, p => 1);
 
         var round = scoreService.StartRound(session, TrumpSuit.Hearts, bids);
-        scoreService.FinishRound(session, bids);
+        scoreService.FinishRound(session, CreateActuals(session, 1, 0, 0));
 
         Assert.AreEqual(1, session.CurrentRound);
         Assert.IsTrue(session.Players.All(p => p.CurrentPoints != 0));
@@ -392,7 +392,7 @@ public class ScoreServiceTests
         var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
 
         scoreService.StartRound(session, TrumpSuit.Hearts, bids);
-        scoreService.FinishRound(session, bids);
+        scoreService.FinishRound(session, CreateActuals(session, 1, 0, 0));
 
         Assert.AreEqual(1, session.CurrentRound);
         Assert.IsFalse(session.IsActive);
@@ -415,6 +415,7 @@ public class ScoreServiceTests
 
         var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
         scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+        scoreService.FinishRound(session, CreateActuals(session, 1, 0, 0));
 
         session.Players[0].CurrentPoints = 12;
         session.Players[1].CurrentPoints = 8;
@@ -444,6 +445,7 @@ public class ScoreServiceTests
 
         var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
         scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+        scoreService.FinishRound(session, CreateActuals(session, 1, 0, 0));
 
         // Force a tie at top between A and B.
         session.Players[0].CurrentPoints = 10;
@@ -602,6 +604,7 @@ public class ScoreServiceTests
 
         var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
         scoreService.StartRound(session, TrumpSuit.Hearts, bids);
+        scoreService.FinishRound(session, CreateActuals(session, 1, 0, 0));
 
         session.Players[0].CurrentPoints = 8;
         session.Players[1].CurrentPoints = 3;
@@ -838,7 +841,7 @@ public class ScoreServiceTests
 
         var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
         scoreService.StartRound(session, TrumpSuit.Hearts, bids);
-        scoreService.FinishRound(session, bids);
+        scoreService.FinishRound(session, CreateActuals(session, 1, 0, 0));
 
         var secondBids = session.Players.ToDictionary(p => p.Id, _ => 1);
         scoreService.StartRound(session, TrumpSuit.Spades, secondBids);
@@ -884,7 +887,7 @@ public class ScoreServiceTests
 
         var bids = session.Players.ToDictionary(p => p.Id, _ => 0);
         scoreService.StartRound(session, TrumpSuit.Hearts, bids);
-        scoreService.FinishRound(session, bids);
+        scoreService.FinishRound(session, CreateActuals(session, 1, 0, 0));
 
         Assert.Throws<InvalidOperationException>(() => scoreService.CancelRound(session));
     }

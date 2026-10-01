@@ -18,6 +18,9 @@
   <data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (bod: {1})</value></data>
   <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, bod: {2})</value></data>
   <data name="EditLastRound" xml:space="preserve"><value>Laatste ronde aanpassen</value></data>
+  <data name="RoundMustBeCompleted" xml:space="preserve"><value>Rond de onvolledige ronde af of annuleer deze voordat je een nieuwe ronde start.</value></data>
+  <data name="RoundCannotBeFinished" xml:space="preserve"><value>Alleen de huidige onvolledige ronde van een actief, niet-gepauzeerd spel kan worden afgerond.</value></data>
+  <data name="BidsMustIncludeAllPlayers" xml:space="preserve"><value>Vul een geldig bod in voor elke speler in dit spel, en geen andere spelers.</value></data>
   <data name="RoundCannotBeEdited" xml:space="preserve"><value>Alleen de laatste afgeronde ronde van een actief, niet-gepauzeerd spel kan worden aangepast.</value></data>
   <data name="ActualsMustIncludeAllPlayers" xml:space="preserve"><value>Vul de gewonnen slagen in voor elke speler in dit spel, en geen andere spelers.</value></data>
   <data name="ActualsRangeError" xml:space="preserve"><value>Gewonnen slagen moeten tussen 0 en {0} liggen.</value></data>

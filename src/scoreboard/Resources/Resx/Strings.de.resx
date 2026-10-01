@@ -18,6 +18,9 @@
 	<data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (Gebot: {1})</value></data>
   <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, Gebot: {2})</value></data>
   <data name="EditLastRound" xml:space="preserve"><value>Letzte Runde bearbeiten</value></data>
+	<data name="RoundMustBeCompleted" xml:space="preserve"><value>Schließe die unvollständige Runde ab oder brich sie ab, bevor du eine neue Runde startest.</value></data>
+  <data name="RoundCannotBeFinished" xml:space="preserve"><value>Nur die aktuelle unvollständige Runde eines aktiven, nicht pausierten Spiels kann abgeschlossen werden.</value></data>
+  <data name="BidsMustIncludeAllPlayers" xml:space="preserve"><value>Gib ein gültiges Gebot für jeden Spieler dieses Spiels ein, und für keine anderen Spieler.</value></data>
   <data name="RoundCannotBeEdited" xml:space="preserve"><value>Nur die letzte abgeschlossene Runde eines aktiven, nicht pausierten Spiels kann bearbeitet werden.</value></data>
   <data name="ActualsMustIncludeAllPlayers" xml:space="preserve"><value>Gib die gewonnenen Stiche für jeden Spieler dieses Spiels ein, und für keine anderen Spieler.</value></data>
   <data name="ActualsRangeError" xml:space="preserve"><value>Gewonnene Stiche müssen zwischen 0 und {0} liegen.</value></data>

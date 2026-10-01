@@ -969,6 +969,7 @@ public class ScoreBoardPage : ContentPage
             return;
         }
 
+        var session = currentSession;
         await DisableGameButtonsAsync();
 
         try
@@ -977,6 +978,10 @@ public class ScoreBoardPage : ContentPage
         }
         finally
         {
+            if (session.Rounds.LastOrDefault() is { ActualByPlayer.Count: 0 })
+            {
+                scoreService.CancelRound(session);
+            }
             RefreshUI();
         }
     }

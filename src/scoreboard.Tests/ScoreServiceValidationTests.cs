@@ -10,6 +10,146 @@ namespace WizardScoreboard.Tests;
 public class ScoreServiceValidationTests
 {
     [Test]
+    public void StartRound_RejectsMissingPlayerBid()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        var bids = TestData.Actuals(session, 1, 0, 0);
+        bids.Remove(session.Players[2].Id);
+
+        Assert.Throws<ArgumentException>(() => service.StartRound(session, TrumpSuit.Hearts, bids));
+    }
+
+    [Test]
+    public void StartRound_RejectsUnknownPlayerBid()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        var bids = TestData.Actuals(session, 1, 0, 0);
+        bids.Remove(session.Players[2].Id);
+        bids[Guid.NewGuid()] = 0;
+
+        Assert.Throws<ArgumentException>(() => service.StartRound(session, TrumpSuit.Hearts, bids));
+    }
+
+    [Test]
+    public void StartRound_RejectsUnfinishedPreviousRound()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        service.StartRound(session, TrumpSuit.Hearts, TestData.Actuals(session, 1, 0, 0));
+
+        Assert.Throws<InvalidOperationException>(() =>
+            service.StartRound(session, TrumpSuit.Clubs, TestData.Actuals(session, 2, 0, 0)));
+    }
+
+    [Test]
+    public void StartRound_RejectsUndefinedTrump()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            service.StartRound(session, (TrumpSuit)99, TestData.Actuals(session, 1, 0, 0)));
+    }
+
+    [Test]
+    public void FinishRound_RejectsMissingPlayerActual()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        service.StartRound(session, TrumpSuit.Hearts, TestData.Actuals(session, 1, 0, 0));
+        var actuals = TestData.Actuals(session, 1, 0, 0);
+        actuals.Remove(session.Players[2].Id);
+
+        Assert.Throws<ArgumentException>(() => service.FinishRound(session, actuals));
+    }
+
+    [Test]
+    public void FinishRound_RejectsUnknownPlayerActual()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        service.StartRound(session, TrumpSuit.Hearts, TestData.Actuals(session, 1, 0, 0));
+        var actuals = TestData.Actuals(session, 1, 0, 0);
+        actuals.Remove(session.Players[2].Id);
+        actuals[Guid.NewGuid()] = 0;
+
+        Assert.Throws<ArgumentException>(() => service.FinishRound(session, actuals));
+    }
+
+    [TestCase(0, 0, 0)]
+    [TestCase(1, 1, 0)]
+    public void FinishRound_RejectsIncorrectTotal(int first, int second, int third)
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        service.StartRound(session, TrumpSuit.Hearts, TestData.Actuals(session, 1, 0, 0));
+
+        Assert.Throws<ArgumentException>(() => service.FinishRound(session, TestData.Actuals(session, first, second, third)));
+    }
+
+    [Test]
+    public void FinishRound_RejectsRepeatedCompletion()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        service.StartRound(session, TrumpSuit.Hearts, TestData.Actuals(session, 1, 0, 0));
+        service.FinishRound(session, TestData.Actuals(session, 1, 0, 0));
+
+        Assert.Throws<InvalidOperationException>(() => service.FinishRound(session, TestData.Actuals(session, 1, 0, 0)));
+    }
+
+    [Test]
+    public void FinishRound_RejectsIncompleteBids()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        var round = service.StartRound(session, TrumpSuit.Hearts, TestData.Actuals(session, 1, 0, 0));
+        round.BidByPlayer.Remove(session.Players[2].Id);
+
+        Assert.Throws<InvalidOperationException>(() => service.FinishRound(session, TestData.Actuals(session, 1, 0, 0)));
+    }
+
+    [Test]
+    public void PauseGame_DiscardsUnfinishedRound()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        service.StartRound(session, TrumpSuit.Hearts, TestData.Actuals(session, 1, 0, 0));
+
+        service.PauseGame(session);
+
+        Assert.That((session.Rounds.Count, session.CurrentRound, session.Trump), Is.EqualTo((0, 0, TrumpSuit.None)));
+    }
+
+    [Test]
+    public void ResumeGame_AfterIncompleteRoundReplaysSameRound()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        service.StartRound(session, TrumpSuit.Hearts, TestData.Actuals(session, 1, 0, 0));
+        service.PauseGame(session);
+        service.ResumeGame(session);
+
+        var round = service.StartRound(session, TrumpSuit.Spades, TestData.Actuals(session, 0, 1, 0));
+
+        Assert.That((round.RoundNumber, round.DealerPlayerId), Is.EqualTo((1, session.Players[0].Id)));
+    }
+
+    [Test]
+    public void EndGame_WithOnlyUnfinishedRoundDoesNotAwardStatistics()
+    {
+        var service = new ScoreService(new MemoryPreferences());
+        var session = service.StartGame(TestData.CreateGroup());
+        service.StartRound(session, TrumpSuit.Hearts, TestData.Actuals(session, 1, 0, 0));
+
+        service.EndGame(session);
+
+        Assert.That(session.Players.Select(p => (p.Wins, p.GamesPlayed)), Is.EqualTo(new[] { (0, 0), (0, 0), (0, 0) }));
+    }
+
+    [Test]
     public void Constructor_NullPreferencesThrows()
     {
         Assert.Throws<ArgumentNullException>(() => new ScoreService(null!));

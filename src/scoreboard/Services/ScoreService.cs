@@ -86,6 +86,7 @@ public class ScoreService : IScoreService
         if (!session.IsActive)
             throw new InvalidOperationException("Spelsessie is niet actief.");
 
+        RemoveIncompleteRounds(session);
         session.IsPaused = true;
         SavePausedSessions();
     }
@@ -95,6 +96,7 @@ public class ScoreService : IScoreService
         if (!session.IsActive)
             throw new InvalidOperationException("Spelsessie is niet actief.");
 
+        RemoveIncompleteRounds(session);
         session.IsPaused = false;
         SavePausedSessions();
     }
@@ -104,6 +106,7 @@ public class ScoreService : IScoreService
         if (!session.IsActive)
             return;
 
+        RemoveIncompleteRounds(session);
         if (session.Rounds.Count > 0 && session.Players.Count > 0)
         {
             foreach (var player in session.Players)
@@ -130,6 +133,9 @@ public class ScoreService : IScoreService
 
     public RoundEntry StartRound(ScoreSession session, TrumpSuit trump, Dictionary<Guid, int> bids)
     {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(bids);
+
         if (!session.IsActive)
             throw new InvalidOperationException("Spelsessie is niet actief.");
 
@@ -138,6 +144,15 @@ public class ScoreService : IScoreService
 
         if (session.CurrentRound >= session.MaxRounds)
             throw new InvalidOperationException("Geen rondes meer beschikbaar.");
+
+        if (GetCompletedRoundCount(session) != session.Rounds.Count)
+            throw new InvalidOperationException(Localization.GetString("RoundMustBeCompleted"));
+
+        if (!IncludesAllPlayers(session, bids))
+            throw new ArgumentException(Localization.GetString("BidsMustIncludeAllPlayers"), nameof(bids));
+
+        if (!Enum.IsDefined(trump))
+            throw new ArgumentOutOfRangeException(nameof(trump), Localization.GetString("TrumpRequiredError"));
 
         if (bids.Any(b => b.Value < 0 || b.Value > session.CurrentRound + 1))
             throw new ArgumentOutOfRangeException(nameof(bids), "Voorspelde slagen moeten tussen 0 en ronde nummer liggen.");
@@ -181,12 +196,21 @@ public class ScoreService : IScoreService
 
     public void FinishRound(ScoreSession session, Dictionary<Guid, int> actuals)
     {
-        var round = session.Rounds.LastOrDefault();
-        if (round == null)
-            throw new InvalidOperationException("Geen actieve ronde om af te sluiten.");
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(actuals);
 
-        if (actuals.Any(a => a.Value < 0 || a.Value > round.RoundNumber))
-            throw new ArgumentOutOfRangeException(nameof(actuals), "Werkelijke slagen moeten tussen 0 en ronde nummer liggen.");
+        var round = session.Rounds.LastOrDefault();
+        if (!session.IsActive || session.IsPaused || round == null
+            || round.RoundNumber != session.CurrentRound || round.ActualByPlayer.Count > 0
+            || GetCompletedRoundCount(session) != session.Rounds.Count - 1)
+        {
+            throw new InvalidOperationException(Localization.GetString("RoundCannotBeFinished"));
+        }
+
+        if (!HasValidPlayerValues(session, round.BidByPlayer, round.RoundNumber))
+            throw new InvalidOperationException(Localization.GetString("BidsMustIncludeAllPlayers"));
+
+        ValidateActuals(session, round, actuals);
 
         round.ActualByPlayer = new Dictionary<Guid, int>(actuals);
 
@@ -221,27 +245,13 @@ public class ScoreService : IScoreService
 
         var round = session.Rounds.LastOrDefault();
         if (!session.IsActive || session.IsPaused || round == null
-            || round.RoundNumber != session.CurrentRound || round.ActualByPlayer.Count == 0)
+            || round.RoundNumber != session.CurrentRound
+            || GetCompletedRoundCount(session) != session.Rounds.Count)
         {
             throw new InvalidOperationException(Localization.GetString("RoundCannotBeEdited"));
         }
 
-        if (actuals.Count != session.Players.Count || session.Players.Any(p => !actuals.ContainsKey(p.Id)))
-        {
-            throw new ArgumentException(Localization.GetString("ActualsMustIncludeAllPlayers"), nameof(actuals));
-        }
-
-        if (actuals.Any(a => a.Value < 0 || a.Value > round.RoundNumber))
-        {
-            throw new ArgumentOutOfRangeException(nameof(actuals),
-                string.Format(Localization.GetString("ActualsRangeError"), round.RoundNumber));
-        }
-
-        if (actuals.Values.Sum() != round.RoundNumber)
-        {
-            throw new ArgumentException(
-                string.Format(Localization.GetString("TotalActualsError"), round.RoundNumber), nameof(actuals));
-        }
+        ValidateActuals(session, round, actuals);
 
         round.ActualByPlayer = new Dictionary<Guid, int>(actuals);
         var totals = SessionScoreCalculator.CalculateSessionScores(session);
@@ -316,6 +326,105 @@ public class ScoreService : IScoreService
         }
     }
 
+    private static bool IncludesAllPlayers(ScoreSession session, Dictionary<Guid, int>? values) =>
+        values != null && values.Count == session.Players.Count
+        && session.Players.All(p => values.ContainsKey(p.Id));
+
+    private static bool HasValidPlayerValues(ScoreSession session, Dictionary<Guid, int>? values, int roundNumber) =>
+        values != null && IncludesAllPlayers(session, values)
+        && values.Values.All(value => value >= 0 && value <= roundNumber);
+
+    private static void ValidateActuals(ScoreSession session, RoundEntry round, Dictionary<Guid, int> actuals)
+    {
+        if (!IncludesAllPlayers(session, actuals))
+            throw new ArgumentException(Localization.GetString("ActualsMustIncludeAllPlayers"), nameof(actuals));
+
+        if (actuals.Any(a => a.Value < 0 || a.Value > round.RoundNumber))
+        {
+            throw new ArgumentOutOfRangeException(nameof(actuals),
+                string.Format(Localization.GetString("ActualsRangeError"), round.RoundNumber));
+        }
+
+        if (actuals.Values.Sum() != round.RoundNumber)
+        {
+            throw new ArgumentException(
+                string.Format(Localization.GetString("TotalActualsError"), round.RoundNumber), nameof(actuals));
+        }
+    }
+
+    private static int GetCompletedRoundCount(ScoreSession session)
+    {
+        var count = 0;
+        foreach (var round in session.Rounds)
+        {
+            if (round.RoundNumber != count + 1 || round.RoundNumber > session.MaxRounds
+                || !session.Players.Any(p => p.Id == round.DealerPlayerId)
+                || !Enum.IsDefined(round.Trump)
+                || !HasValidPlayerValues(session, round.BidByPlayer, round.RoundNumber)
+                || !HasValidPlayerValues(session, round.ActualByPlayer, round.RoundNumber)
+                || round.ActualByPlayer.Values.Sum() != round.RoundNumber)
+            {
+                break;
+            }
+
+            count++;
+        }
+
+        return count;
+    }
+
+    private static void RemoveIncompleteRounds(ScoreSession session)
+    {
+        var count = GetCompletedRoundCount(session);
+        if (count == session.Rounds.Count && session.CurrentRound == count)
+            return;
+
+        var previousHighestScores = session.Rounds.ElementAtOrDefault(count)?.HighestScoreBeforeRoundByPlayer;
+        session.Rounds.RemoveRange(count, session.Rounds.Count - count);
+        session.CurrentRound = count;
+        session.Trump = session.Rounds.LastOrDefault()?.Trump ?? TrumpSuit.None;
+
+        var totals = SessionScoreCalculator.CalculateSessionScores(session);
+        foreach (var player in session.Players)
+        {
+            player.CurrentPoints = totals[player.Id];
+            // Preserve lifetime records when older saves have no pre-round snapshot.
+            var previousHighestScore = previousHighestScores?.GetValueOrDefault(player.Id, player.HighestScore)
+                ?? player.HighestScore;
+            player.HighestScore = Math.Max(previousHighestScore, player.CurrentPoints);
+        }
+    }
+
+    private static ScoreSession CreateCompletedSnapshot(ScoreSession session)
+    {
+        // Keep the live round intact while its dialog is still collecting results.
+        var snapshot = new ScoreSession
+        {
+            Id = session.Id,
+            GroupId = session.GroupId,
+            StartDate = session.StartDate,
+            CurrentRound = session.CurrentRound,
+            MaxRounds = session.MaxRounds,
+            Trump = session.Trump,
+            Rounds = session.Rounds.ToList(),
+            IsActive = session.IsActive,
+            IsPaused = session.IsPaused,
+            BidTotalRuleStartRound = session.BidTotalRuleStartRound,
+            Players = session.Players.Select(p => new Player
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Wins = p.Wins,
+                GamesPlayed = p.GamesPlayed,
+                HighestScore = p.HighestScore,
+                Order = p.Order,
+                CurrentPoints = p.CurrentPoints
+            }).ToList()
+        };
+        RemoveIncompleteRounds(snapshot);
+        return snapshot;
+    }
+
     private void LoadPausedSessions()
     {
         string raw;
@@ -342,6 +451,7 @@ public class ScoreService : IScoreService
             // Games that were still in progress when the app closed are restored as saved games.
             foreach (var session in saved.Where(s => s.IsActive))
             {
+                RemoveIncompleteRounds(session);
                 session.IsPaused = true;
                 sessions.Add(session);
             }
@@ -349,6 +459,7 @@ public class ScoreService : IScoreService
                 .OrderByDescending(s => s.StartDate)
                 .Select(s => (Guid?)s.Id)
                 .FirstOrDefault();
+            SavePausedSessions();
         }
         catch (JsonException)
         {
@@ -359,7 +470,7 @@ public class ScoreService : IScoreService
 
     private void SavePausedSessions()
     {
-        var active = sessions.Where(s => s.IsActive).ToList();
+        var active = sessions.Where(s => s.IsActive).Select(CreateCompletedSnapshot).ToList();
         var raw = JsonSerializer.Serialize(active);
         try
         {
