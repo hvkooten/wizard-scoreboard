@@ -133,8 +133,7 @@ public class GroupsPage : ContentPage
                 Spacing = 15,
                 Children =
                 {
-                    groupPicker,
-                    groupNameEntry,
+                    CreateGroupNameRow(),
                     bidTotalRulePicker,
                     playerCountLayout,
                     playerNamesLayout,
@@ -148,6 +147,49 @@ public class GroupsPage : ContentPage
 
         // Rebuild when the global bold-text setting changes so the page updates immediately.
         App.GlobalTextStyleChanged += RefreshGroups;
+    }
+
+    // Combines the group selection and the group name into one field: the entry edits the name
+    // and the dropdown button selects another group. The picker stays hidden and holds the selection.
+    private Grid CreateGroupNameRow()
+    {
+        groupPicker.IsVisible = false;
+
+        var dropDownButton = new Button
+        {
+            Text = "▾",
+            WidthRequest = 44,
+            FontSize = 18,
+            Padding = 0
+        };
+        dropDownButton.Clicked += async (s, e) =>
+        {
+            var options = groupPicker.Items.ToArray();
+            var choice = await DisplayActionSheetAsync(
+                Localization.GetString("SelectGroup"),
+                Localization.GetString("Cancel"),
+                null,
+                options);
+            var index = Array.IndexOf(options, choice);
+            if (index >= 0)
+            {
+                groupPicker.SelectedIndex = index;
+            }
+        };
+
+        var row = new Grid
+        {
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = GridLength.Auto }
+            },
+            ColumnSpacing = 8
+        };
+        row.Add(groupNameEntry, 0, 0);
+        row.Add(dropDownButton, 1, 0);
+        row.Add(groupPicker, 0, 0);
+        return row;
     }
 
     protected override void OnAppearing()
@@ -216,6 +258,16 @@ public class GroupsPage : ContentPage
         if (string.IsNullOrWhiteSpace(groupName))
         {
             await this.ShowMessageAsync("ErrorTitle", Localization.GetString("GroupNameRequired"));
+            return;
+        }
+
+        var nameTaken = groupService.GetGroups().Any(g =>
+            g.Id != editingGroupId &&
+            string.Equals(g.Name.Trim(), groupName, StringComparison.CurrentCultureIgnoreCase));
+        if (nameTaken)
+        {
+            await this.ShowMessageAsync("ErrorTitle", string.Format(Localization.GetString("GroupNameExistsTemplate"), groupName));
+            groupNameEntry.Focus();
             return;
         }
 
