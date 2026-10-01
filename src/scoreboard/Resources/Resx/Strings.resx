@@ -136,7 +136,15 @@ If PDF cannot render, use the link.</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="Yellow" xml:space="preserve"><value>Yellow</value></data>
   <data name="ReportBug" xml:space="preserve"><value>Report a bug</value></data>
-  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard</value></data>
+  <data name="BugReportOpenEmail" xml:space="preserve"><value>Open email app</value></data>
+  <data name="BugReportCopy" xml:space="preserve"><value>Copy report</value></data>
+  <data name="BugReportCopied" xml:space="preserve"><value>The report has been copied. Paste it into webmail or another email app, complete the details, and attach a screenshot if possible. Use the recipient and subject shown at the top of the copied text.</value></data>
+  <data name="BugReportCopyFailed" xml:space="preserve"><value>The report could not be copied to the clipboard. Please try again.</value></data>
+  <data name="BugReportClipboardTemplate" xml:space="preserve"><value>To: {0}
+Subject: {1}
+
+{2}</value></data>
+  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard {0}</value></data>
   <data name="BugReportEmailUnavailable" xml:space="preserve"><value>The email app could not be opened. Configure a default email app and try again, or send your report to nodorumsolutio@gmail.com.</value></data>
   <data name="BugReportBodyTemplate" xml:space="preserve"><value>Please complete the following information:
 
@@ -150,7 +158,7 @@ If PDF cannot render, use the link.</value></data>
 
 5. How often does it happen? When did it start?
 
-6. Screenshot: please attach a screenshot if possible (hide personal information).
+6. Screenshot: please attach a screenshot.
 
 Additional observations:
 

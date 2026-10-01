@@ -118,7 +118,15 @@ Si le PDF ne se charge pas, utilisez le lien.</value></data>
   <data name="Yes" xml:space="preserve"><value>Oui</value></data>
   <data name="Yellow" xml:space="preserve"><value>Jaune</value></data>
   <data name="ReportBug" xml:space="preserve"><value>Signaler un bug</value></data>
-  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard</value></data>
+  <data name="BugReportOpenEmail" xml:space="preserve"><value>Ouvrir la messagerie</value></data>
+  <data name="BugReportCopy" xml:space="preserve"><value>Copier le rapport</value></data>
+  <data name="BugReportCopied" xml:space="preserve"><value>Le rapport a été copié. Collez-le dans votre messagerie web ou une autre application de messagerie, complétez les informations et joignez une capture d'écran si possible. Utilisez le destinataire et l'objet indiqués au début du texte copié.</value></data>
+  <data name="BugReportCopyFailed" xml:space="preserve"><value>Impossible de copier le rapport dans le presse-papiers. Veuillez réessayer.</value></data>
+  <data name="BugReportClipboardTemplate" xml:space="preserve"><value>Destinataire : {0}
+Objet : {1}
+
+{2}</value></data>
+  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard {0}</value></data>
   <data name="BugReportEmailUnavailable" xml:space="preserve"><value>Impossible d'ouvrir l'application de messagerie. Configurez une application de messagerie par défaut et réessayez, ou envoyez votre rapport à nodorumsolutio@gmail.com.</value></data>
   <data name="BugReportBodyTemplate" xml:space="preserve"><value>Veuillez compléter les informations suivantes :
 
@@ -132,22 +140,22 @@ Si le PDF ne se charge pas, utilisez le lien.</value></data>
 
 5. À quelle fréquence cela se produit-il ? Depuis quand ?
 
-6. Capture d'écran : joignez une capture si possible (masquez les informations personnelles).
+6. Capture d'écran : joignez une capture d'écran.
 
 Remarques supplémentaires :
 
 Informations techniques (ajoutées automatiquement ; à vérifier avant l'envoi) :
-Version de l'application : {0} (build {1})
-Système d'exploitation : {2}
-Version du système : {3}
-Fabricant : {4}
-Modèle : {5}
-Catégorie d'appareil : {6}
-Type d'appareil (physique/virtuel) : {7}
-Taille de l'écran (pixels) : {8}
-Taille de l'écran (unités logiques) : {9}
-Densité de pixels : {10}
-Orientation : {11}
-Fréquence de rafraîchissement (Hz) : {12}
-Langue de l'application : {13}</value></data>
+App version: {0} (build {1})
+OS: {2}
+OS version: {3}
+Manufacturer: {4}
+Model: {5}
+Device category: {6}
+Device type (physical/virtual): {7}
+Screen size (pixels): {8}
+Screen size (logical units): {9}
+Pixel density: {10}
+Orientation: {11}
+Refresh rate (Hz): {12}
+App language: {13}</value></data>
 </root>

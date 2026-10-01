@@ -118,7 +118,15 @@ Si el PDF no se carga, usa el enlace.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sí</value></data>
   <data name="Yellow" xml:space="preserve"><value>Amarillo</value></data>
   <data name="ReportBug" xml:space="preserve"><value>Informar de un error</value></data>
-  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard</value></data>
+  <data name="BugReportOpenEmail" xml:space="preserve"><value>Abrir aplicación de correo</value></data>
+  <data name="BugReportCopy" xml:space="preserve"><value>Copiar informe</value></data>
+  <data name="BugReportCopied" xml:space="preserve"><value>El informe se ha copiado. Pégalo en el correo web u otra aplicación de correo, completa los datos y adjunta una captura de pantalla si es posible. Usa el destinatario y el asunto que aparecen al principio del texto copiado.</value></data>
+  <data name="BugReportCopyFailed" xml:space="preserve"><value>No se pudo copiar el informe al portapapeles. Inténtalo de nuevo.</value></data>
+  <data name="BugReportClipboardTemplate" xml:space="preserve"><value>Para: {0}
+Asunto: {1}
+
+{2}</value></data>
+  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard {0}</value></data>
   <data name="BugReportEmailUnavailable" xml:space="preserve"><value>No se pudo abrir la aplicación de correo. Configura una aplicación de correo predeterminada e inténtalo de nuevo, o envía tu informe a nodorumsolutio@gmail.com.</value></data>
   <data name="BugReportBodyTemplate" xml:space="preserve"><value>Completa la siguiente información:
 
@@ -132,22 +140,22 @@ Si el PDF no se carga, usa el enlace.</value></data>
 
 5. ¿Con qué frecuencia ocurre? ¿Desde cuándo?
 
-6. Captura de pantalla: adjunta una captura si es posible (oculta la información personal).
+6. Captura de pantalla: adjunta una captura de pantalla.
 
 Comentarios adicionales:
 
 Información técnica (añadida automáticamente; revísala antes de enviarla):
-Versión de la aplicación: {0} (compilación {1})
-Sistema operativo: {2}
-Versión del sistema operativo: {3}
-Fabricante: {4}
-Modelo: {5}
-Categoría del dispositivo: {6}
-Tipo de dispositivo (físico/virtual): {7}
-Tamaño de pantalla (píxeles): {8}
-Tamaño de pantalla (unidades lógicas): {9}
-Densidad de píxeles: {10}
-Orientación: {11}
-Frecuencia de actualización (Hz): {12}
-Idioma de la aplicación: {13}</value></data>
+App version: {0} (build {1})
+OS: {2}
+OS version: {3}
+Manufacturer: {4}
+Model: {5}
+Device category: {6}
+Device type (physical/virtual): {7}
+Screen size (pixels): {8}
+Screen size (logical units): {9}
+Pixel density: {10}
+Orientation: {11}
+Refresh rate (Hz): {12}
+App language: {13}</value></data>
 </root>

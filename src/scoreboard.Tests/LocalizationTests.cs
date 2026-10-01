@@ -9,6 +9,103 @@ namespace WizardScoreboard.Tests;
 [NonParallelizable]
 public class LocalizationTests
 {
+    [TestCase("en-US", "Technical information (automatically added; review before sending):")]
+    [TestCase("nl-NL", "Technische informatie (automatisch toegevoegd; controleer voor verzending):")]
+    [TestCase("de-DE", "Technische Informationen (automatisch hinzugef\u00fcgt; vor dem Senden pr\u00fcfen):")]
+    [TestCase("es-ES", "Informaci\u00f3n t\u00e9cnica (a\u00f1adida autom\u00e1ticamente; rev\u00edsala antes de enviarla):")]
+    [TestCase("fr-FR", "Informations techniques (ajout\u00e9es automatiquement ; \u00e0 v\u00e9rifier avant l'envoi) :")]
+    public void BugReportBodyTemplate_UsesEnglishDetailsBelowLocalizedHeading(string cultureName, string heading)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+            var expectedDetails = $"""
+                App version: 2.1.0 (build 12345)
+                OS: Windows
+                OS version: 10.0
+                Manufacturer: Contoso
+                Model: ModelX
+                Device category: Desktop
+                Device type (physical/virtual): Physical
+                Screen size (pixels): 1920 x 1080
+                Screen size (logical units): 1536 x 864
+                Pixel density: 1.25
+                Orientation: Landscape
+                Refresh rate (Hz): 59.94
+                App language: {cultureName}
+                """;
+
+            var body = string.Format(CultureInfo.InvariantCulture,
+                Localization.GetString("BugReportBodyTemplate"),
+                "2.1.0", "12345", "Windows", "10.0", "Contoso", "ModelX", "Desktop", "Physical",
+                "1920 x 1080", "1536 x 864", 1.25, "Landscape", 59.94, cultureName);
+
+            Assert.That(body.ReplaceLineEndings("\n"),
+                Does.EndWith($"{heading}\n{expectedDetails.ReplaceLineEndings("\n")}"));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
+    [TestCase("en-US", "BugReportCopy", "Copy report")]
+    [TestCase("nl-NL", "BugReportCopy", "Rapport kopi\u00ebren")]
+    [TestCase("de-DE", "BugReportCopy", "Bericht kopieren")]
+    [TestCase("es-ES", "BugReportCopy", "Copiar informe")]
+    [TestCase("fr-FR", "BugReportCopy", "Copier le rapport")]
+    [TestCase("en-US", "BugReportOpenEmail", "Open email app")]
+    [TestCase("nl-NL", "BugReportOpenEmail", "E-mailapp openen")]
+    [TestCase("de-DE", "BugReportOpenEmail", "E-Mail-App \u00f6ffnen")]
+    [TestCase("es-ES", "BugReportOpenEmail", "Abrir aplicaci\u00f3n de correo")]
+    [TestCase("fr-FR", "BugReportOpenEmail", "Ouvrir la messagerie")]
+    public void BugReportAction_UsesSelectedLanguage(string cultureName, string key, string expected)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+
+            var label = Localization.GetString(key);
+
+            Assert.That(label, Is.EqualTo(expected));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
+    [TestCase("en-US", "To", "Subject")]
+    [TestCase("nl-NL", "Aan", "Onderwerp")]
+    [TestCase("de-DE", "An", "Betreff")]
+    [TestCase("es-ES", "Para", "Asunto")]
+    [TestCase("fr-FR", "Destinataire ", "Objet ")]
+    public void BugReportClipboardTemplate_PreservesRecipientSubjectAndPlainTextBody(
+        string cultureName, string recipientLabel, string subjectLabel)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+            const string recipient = "nodorumsolutio@gmail.com";
+            const string subject = "Bug report Wizard Scoreboard 2.1.0";
+            const string body = "Problem: A&B + C? #1\r\nDevice: Example {model}";
+
+            var text = string.Format(CultureInfo.CurrentCulture,
+                Localization.GetString("BugReportClipboardTemplate"), recipient, subject, body)
+                .ReplaceLineEndings("\r\n");
+
+            Assert.That(text, Is.EqualTo(
+                $"{recipientLabel}: {recipient}\r\n{subjectLabel}: {subject}\r\n\r\n{body}"));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
     [TestCase("en-US")]
     [TestCase("nl-NL")]
     [TestCase("de-DE")]
@@ -39,16 +136,17 @@ public class LocalizationTests
     [TestCase("de-DE")]
     [TestCase("es-ES")]
     [TestCase("fr-FR")]
-    public void BugReportSubject_IsFixedInEveryLanguage(string cultureName)
+    public void BugReportSubject_IncludesAppVersionInEveryLanguage(string cultureName)
     {
         var previousCulture = CultureInfo.CurrentCulture;
         try
         {
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
 
-            var subject = Localization.GetString("BugReportSubject");
+            var subject = string.Format(CultureInfo.InvariantCulture,
+                Localization.GetString("BugReportSubject"), "3.4.5");
 
-            Assert.That(subject, Is.EqualTo("Bug report Wizard Scoreboard"));
+            Assert.That(subject, Is.EqualTo("Bug report Wizard Scoreboard 3.4.5"));
         }
         finally
         {

@@ -118,7 +118,15 @@ Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="Yellow" xml:space="preserve"><value>Gelb</value></data>
   <data name="ReportBug" xml:space="preserve"><value>Fehler melden</value></data>
-  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard</value></data>
+  <data name="BugReportOpenEmail" xml:space="preserve"><value>E-Mail-App öffnen</value></data>
+  <data name="BugReportCopy" xml:space="preserve"><value>Bericht kopieren</value></data>
+  <data name="BugReportCopied" xml:space="preserve"><value>Der Bericht wurde kopiert. Fügen Sie ihn in Webmail oder eine andere E-Mail-App ein, ergänzen Sie die Angaben und hängen Sie nach Möglichkeit einen Screenshot an. Verwenden Sie den Empfänger und den Betreff am Anfang des kopierten Textes.</value></data>
+  <data name="BugReportCopyFailed" xml:space="preserve"><value>Der Bericht konnte nicht in die Zwischenablage kopiert werden. Bitte versuchen Sie es erneut.</value></data>
+  <data name="BugReportClipboardTemplate" xml:space="preserve"><value>An: {0}
+Betreff: {1}
+
+{2}</value></data>
+  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard {0}</value></data>
   <data name="BugReportEmailUnavailable" xml:space="preserve"><value>Die E-Mail-App konnte nicht geöffnet werden. Richten Sie eine Standard-E-Mail-App ein und versuchen Sie es erneut, oder senden Sie Ihren Bericht an nodorumsolutio@gmail.com.</value></data>
   <data name="BugReportBodyTemplate" xml:space="preserve"><value>Bitte ergänzen Sie folgende Informationen:
 
@@ -132,22 +140,22 @@ Wenn das PDF nicht geladen wird, nutze den Link.</value></data>
 
 5. Wie oft tritt es auf? Seit wann?
 
-6. Screenshot: Bitte fügen Sie nach Möglichkeit einen Screenshot hinzu (persönliche Informationen ausblenden).
+6. Screenshot: Bitte fügen Sie einen Screenshot hinzu.
 
 Weitere Anmerkungen:
 
 Technische Informationen (automatisch hinzugefügt; vor dem Senden prüfen):
-App-Version: {0} (Build {1})
-Betriebssystem: {2}
-Betriebssystemversion: {3}
-Hersteller: {4}
-Modell: {5}
-Gerätekategorie: {6}
-Gerätetyp (physisch/virtuell): {7}
-Bildschirmgröße (Pixel): {8}
-Bildschirmgröße (logische Einheiten): {9}
-Pixeldichte: {10}
-Ausrichtung: {11}
-Bildwiederholrate (Hz): {12}
-App-Sprache: {13}</value></data>
+App version: {0} (build {1})
+OS: {2}
+OS version: {3}
+Manufacturer: {4}
+Model: {5}
+Device category: {6}
+Device type (physical/virtual): {7}
+Screen size (pixels): {8}
+Screen size (logical units): {9}
+Pixel density: {10}
+Orientation: {11}
+Refresh rate (Hz): {12}
+App language: {13}</value></data>
 </root>
