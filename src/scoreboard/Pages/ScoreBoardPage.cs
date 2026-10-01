@@ -23,6 +23,7 @@ public class ScoreBoardPage : ContentPage
     private Button endButton;
     private Button nextRoundButton;
     private ScrollView scoreboardScrollView;
+    private readonly Dictionary<(Grid Grid, int Row, int Column), Border> scoreboardCells = new();
 
     // Palette for header colours
     private static Color HeaderBg => AppColors.Primary;
@@ -139,15 +140,23 @@ public class ScoreBoardPage : ContentPage
 
     private void RefreshUI()
     {
-        headerGrid.Children.Clear();
-        headerGrid.RowDefinitions.Clear();
-        headerGrid.ColumnDefinitions.Clear();
-        scoreGrid.Children.Clear();
-        scoreGrid.RowDefinitions.Clear();
-        scoreGrid.ColumnDefinitions.Clear();
-        footerGrid.Children.Clear();
-        footerGrid.RowDefinitions.Clear();
-        footerGrid.ColumnDefinitions.Clear();
+        var rebuildGrid = currentSession == null
+            || headerGrid.RowDefinitions.Count != 1
+            || scoreGrid.ColumnDefinitions.Count != currentSession.Players.Count + 2
+            || scoreGrid.RowDefinitions.Count != currentSession.MaxRounds * 2;
+        if (rebuildGrid)
+        {
+            scoreboardCells.Clear();
+            headerGrid.Children.Clear();
+            headerGrid.RowDefinitions.Clear();
+            headerGrid.ColumnDefinitions.Clear();
+            scoreGrid.Children.Clear();
+            scoreGrid.RowDefinitions.Clear();
+            scoreGrid.ColumnDefinitions.Clear();
+            footerGrid.Children.Clear();
+            footerGrid.RowDefinitions.Clear();
+            footerGrid.ColumnDefinitions.Clear();
+        }
 
         var hasAvailableGroup = groupService.GetSelectedGroup() != null || groupService.GetGroups().Any();
         var hasSession = currentSession != null;
@@ -274,16 +283,20 @@ public class ScoreBoardPage : ContentPage
 
         // ── Column definitions ────────────────────────────────────────────
         // Col 0 = Rnd, Col 1 = Dealer, Col 2..N = players
-        foreach (var grid in new[] { headerGrid, scoreGrid, footerGrid })
+        if (rebuildGrid)
         {
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 36 });  // Rnd
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 36 });  // Dealer / trump
-            foreach (var _ in players)
-                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+            foreach (var grid in new[] { headerGrid, scoreGrid, footerGrid })
+            {
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 36 });  // Rnd
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 36 });  // Dealer / trump
+                foreach (var _ in players)
+                    grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+            }
+            headerGrid.RowDefinitions.Add(new RowDefinition { Height = 36 });
+            footerGrid.RowDefinitions.Add(new RowDefinition { Height = 32 });
         }
 
         // ── Header row ────────────────────────────────────────────────────
-        headerGrid.RowDefinitions.Add(new RowDefinition { Height = 36 });
         AddHeaderCell(headerGrid, Localization.GetString("RoundHeader"), 0, 0);
         AddHeaderCell(headerGrid, TrumpHeaderSymbol(), 0, 1);  // column label
         for (var c = 0; c < players.Count; c++)
@@ -303,21 +316,23 @@ public class ScoreBoardPage : ContentPage
             var rowBg = isCurrentRound
                 ? Color.FromArgb(AppColors.IsDark ? "#3a3320" : "#fff8e1")
                 : (isEven ? RowEven : RowOdd);
-            var gridRow = scoreGrid.RowDefinitions.Count;
-            scoreGrid.RowDefinitions.Add(new RowDefinition { Height = 22 });  // bid row
-            scoreGrid.RowDefinitions.Add(new RowDefinition { Height = 28 });  // total row
+            var gridRow = (roundNum - 1) * 2;
+            if (rebuildGrid)
+            {
+                scoreGrid.RowDefinitions.Add(new RowDefinition { Height = 22 });  // bid row
+                scoreGrid.RowDefinitions.Add(new RowDefinition { Height = 28 });  // total row
+            }
 
             // Round number (spans 2 rows)
-            var rndLabel = MakeLabel(roundNum.ToString(),
+            var rndLabel = UpdateCell(scoreGrid, roundNum.ToString(), gridRow, 0,
                 bold: isCurrentRound, fontSize: 13, center: true, bg: rowBg);
-            scoreGrid.Add(rndLabel, 0, gridRow);
             Grid.SetRowSpan(rndLabel, 2);
 
             // Trump symbol (spans 2 rows) — shows dot for future rounds
             string trumpText = round != null ? TrumpSymbol(round.Trump) : FutureRoundTrumpSymbol();
             Color trumpFg = round != null ? TrumpColor(round.Trump) : Colors.LightGray;
-            var trumpLbl = MakeLabel(trumpText, bold: true, fontSize: 16, center: true, bg: rowBg, fg: trumpFg);
-            scoreGrid.Add(trumpLbl, 1, gridRow);
+            var trumpLbl = UpdateCell(scoreGrid, trumpText, gridRow, 1,
+                bold: true, fontSize: 16, center: true, bg: rowBg, fg: trumpFg);
             Grid.SetRowSpan(trumpLbl, 2);
 
             for (var c = 0; c < players.Count; c++)
@@ -327,8 +342,8 @@ public class ScoreBoardPage : ContentPage
                 if (round == null)
                 {
                     // Future round — empty cells
-                    scoreGrid.Add(MakeLabel("", bg: rowBg), 2 + c, gridRow);
-                    scoreGrid.Add(MakeLabel("", bg: rowBg), 2 + c, gridRow + 1);
+                    UpdateCell(scoreGrid, "", gridRow, 2 + c, bg: rowBg);
+                    UpdateCell(scoreGrid, "", gridRow + 1, 2 + c, bg: rowBg);
                     continue;
                 }
 
@@ -354,25 +369,20 @@ public class ScoreBoardPage : ContentPage
                 var bidText = bid >= 0
                     ? (actual >= 0 ? $"{bid}/{actual}" : $"{bid}/?")
                     : "-";
-                var bidLabel = MakeLabel(bidText, fontSize: 11, fg: bidFg, bg: cellBg,
+                UpdateCell(scoreGrid, bidText, gridRow, 2 + c, fontSize: 11, fg: bidFg, bg: cellBg,
                     padding: new Thickness(3, 1, 0, 0));
-                scoreGrid.Add(bidLabel, 2 + c, gridRow);
 
                 // Total row: large, centred
                 var totalText = actual >= 0 ? runningTotals[pid].ToString() : "";
                 var totalFg = runningTotals[pid] >= 0 ? WinFg : LoseFg;
-                var totalLabel = MakeLabel(totalText, bold: true, fontSize: 15,
+                UpdateCell(scoreGrid, totalText, gridRow + 1, 2 + c, bold: true, fontSize: 15,
                     fg: actual >= 0 ? totalFg : AppColors.TextPrimary);
-                scoreGrid.Add(totalLabel, 2 + c, gridRow + 1);
             }
         }
 
         // ── Total row (always visible) ────────────────────────────────────
-        footerGrid.RowDefinitions.Add(new RowDefinition { Height = 32 });
-
-        var totHdr = MakeLabel(Localization.GetString("TotalHeader"),
+        var totHdr = UpdateCell(footerGrid, Localization.GetString("TotalHeader"), 0, 0,
             bold: true, fontSize: 13, center: true, bg: TotalBg);
-        footerGrid.Add(totHdr, 0, 0);
         Grid.SetColumnSpan(totHdr, 2);
 
         for (var c = 0; c < players.Count; c++)
@@ -420,83 +430,69 @@ public class ScoreBoardPage : ContentPage
 
     // ── Cell helpers ──────────────────────────────────────────────────────
 
-    private static Border MakeLabel(string text, bool bold = false, double fontSize = 13,
+    private Border UpdateCell(Grid grid, string text, int row, int col,
+        bool bold = false, double fontSize = 13,
         bool center = false, Color? bg = null, Color? fg = null,
-        Thickness? padding = null)
+        Thickness? padding = null, Color? stroke = null, double strokeThickness = 0.75)
     {
-        var lbl = new Label
+        var key = (grid, row, col);
+        var isNew = !scoreboardCells.TryGetValue(key, out var border);
+        if (isNew)
         {
-            Text = text,
-            FontAttributes = bold ? FontAttributes.Bold : FontAttributes.None,
-            FontSize = fontSize,
-            HorizontalTextAlignment = center ? TextAlignment.Center : TextAlignment.Start,
-            VerticalTextAlignment = TextAlignment.Center,
-            Padding = padding ?? new Thickness(2)
-        };
-        if (fg is Color f) lbl.TextColor = f;
+            border = new Border
+            {
+                StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 0 },
+                Padding = 0,
+                Content = new Label { VerticalTextAlignment = TextAlignment.Center }
+            };
+        }
 
-        return new Border
+        var lbl = (Label)border!.Content!;
+        if (lbl.Text != text) lbl.Text = text;
+        var attributes = bold ? FontAttributes.Bold : FontAttributes.None;
+        if (lbl.FontAttributes != attributes) lbl.FontAttributes = attributes;
+        if (lbl.FontSize != fontSize) lbl.FontSize = fontSize;
+        var alignment = center ? TextAlignment.Center : TextAlignment.Start;
+        if (lbl.HorizontalTextAlignment != alignment) lbl.HorizontalTextAlignment = alignment;
+        var cellPadding = padding ?? new Thickness(2);
+        if (lbl.Padding != cellPadding) lbl.Padding = cellPadding;
+        if (fg != null)
         {
-            BackgroundColor = bg ?? Colors.Transparent,
-            Stroke = AppColors.Border,
-            StrokeThickness = 0.75,
-            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 0 },
-            Padding = 0,
-            Content = lbl
-        };
+            if (lbl.TextColor != fg) lbl.TextColor = fg;
+        }
+        else if (lbl.IsSet(Label.TextColorProperty))
+        {
+            lbl.ClearValue(Label.TextColorProperty);
+        }
+
+        var background = bg ?? Colors.Transparent;
+        if (border.BackgroundColor != background) border.BackgroundColor = background;
+        var strokeColor = stroke ?? AppColors.Border;
+        if (border.Stroke is not SolidColorBrush brush || brush.Color != strokeColor)
+            border.Stroke = new SolidColorBrush(strokeColor);
+        if (border.StrokeThickness != strokeThickness) border.StrokeThickness = strokeThickness;
+
+        if (isNew)
+        {
+            scoreboardCells.Add(key, border);
+            grid.Add(border, col, row);
+        }
+        return border;
     }
 
-    private static void AddHeaderCell(Grid grid, string text, int row, int col, bool isDealer = false)
+    private void AddHeaderCell(Grid grid, string text, int row, int col, bool isDealer = false)
     {
-        var lbl = new Label
-        {
-            Text = text,
-            FontAttributes = FontAttributes.Bold,
-            FontSize = isDealer ? 14 : 13,
-            TextColor = isDealer ? Colors.Black : HeaderFg,
-            HorizontalTextAlignment = TextAlignment.Center,
-            VerticalTextAlignment = TextAlignment.Center,
-            Padding = new Thickness(4, 2)
-        };
-
-        var border = new Border
-        {
-            BackgroundColor = isDealer ? Color.FromArgb("#ffd54f") : HeaderBg,
-            Stroke = Color.FromArgb("#8aa0b8"),
-            StrokeThickness = 1,
-            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 0 },
-            Padding = 0,
-            Content = lbl
-        };
-
-        grid.Add(border, col, row);
+        UpdateCell(grid, text, row, col, bold: true, fontSize: isDealer ? 14 : 13,
+            center: true, fg: isDealer ? Colors.Black : HeaderFg,
+            bg: isDealer ? Color.FromArgb("#ffd54f") : HeaderBg,
+            padding: new Thickness(4, 2), stroke: Color.FromArgb("#8aa0b8"), strokeThickness: 1);
     }
 
-    private static void AddCell(Grid grid, string text, int row, int col,
+    private void AddCell(Grid grid, string text, int row, int col,
         bool bold = false, bool center = false, Color? color = null, Color? bg = null, bool small = false)
     {
-        var label = new Label
-        {
-            Text = text,
-            FontAttributes = bold ? FontAttributes.Bold : FontAttributes.None,
-            FontSize = small ? 11 : 13,
-            HorizontalTextAlignment = center ? TextAlignment.Center : TextAlignment.Start,
-            VerticalTextAlignment = TextAlignment.Center,
-            Padding = new Thickness(4, 2)
-        };
-        if (color is Color c) label.TextColor = c;
-
-        var border = new Border
-        {
-            BackgroundColor = bg ?? Colors.Transparent,
-            Stroke = AppColors.Border,
-            StrokeThickness = 0.75,
-            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 0 },
-            Padding = 0,
-            Content = label
-        };
-
-        grid.Add(border, col, row);
+        UpdateCell(grid, text, row, col, bold: bold, fontSize: small ? 11 : 13,
+            center: center, fg: color, bg: bg, padding: new Thickness(4, 2));
     }
 
     private string TrumpHeaderSymbol()
