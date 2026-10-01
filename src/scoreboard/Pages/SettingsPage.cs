@@ -136,24 +136,41 @@ public class SettingsPage : ContentPage
             }
         };
 
-        Content = new ScrollView
+        var settingsLayout = new StackLayout
         {
-            Content = new StackLayout
+            Padding = 20,
+            Spacing = 15,
+            Children =
             {
-                Padding = 20,
-                Spacing = 15,
-                Children =
-                {
-                    CreatePickerSection(Localization.GetString("SelectLanguage"), languagePicker),
-                    CreatePickerSection(Localization.GetString("AppThemeTitle"), themePicker),
-                    trumpStyleHeaderRow,
-                    trumpPalettePicker,
-                    CreatePickerSection(Localization.GetString("DefaultBidTotalRuleStartRound"), bidTotalRulePicker),
-                    keepScreenAwakeRow,
-                    boldAllTextRow
-                }
+                CreatePickerSection(Localization.GetString("SelectLanguage"), languagePicker),
+                CreatePickerSection(Localization.GetString("AppThemeTitle"), themePicker),
+                trumpStyleHeaderRow,
+                trumpPalettePicker,
+                CreatePickerSection(Localization.GetString("DefaultBidTotalRuleStartRound"), bidTotalRulePicker),
+                keepScreenAwakeRow,
+                boldAllTextRow
             }
         };
+
+        if (DeviceInfo.Platform == DevicePlatform.WinUI)
+        {
+            var reportBugButton = new Button { Text = Localization.GetString("ReportBug") };
+            reportBugButton.Clicked += async (s, e) =>
+            {
+                reportBugButton.IsEnabled = false;
+                try
+                {
+                    await BugReportService.ComposeAsync(this);
+                }
+                finally
+                {
+                    reportBugButton.IsEnabled = true;
+                }
+            };
+            settingsLayout.Children.Add(reportBugButton);
+        }
+
+        Content = new ScrollView { Content = settingsLayout };
     }
 
     // Builds a vertical section with a caption header above the picker. Using a real Label

@@ -117,4 +117,37 @@ Si el PDF no se carga, usa el enlace.</value></data>
   <data name="Disclaimer" xml:space="preserve"><value>Esta es una aplicación complementaria independiente y no está afiliada ni respaldada por el editor de Wizard. Se necesita el juego de cartas original para jugar.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sí</value></data>
   <data name="Yellow" xml:space="preserve"><value>Amarillo</value></data>
+  <data name="ReportBug" xml:space="preserve"><value>Informar de un error</value></data>
+  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard</value></data>
+  <data name="BugReportEmailUnavailable" xml:space="preserve"><value>No se pudo abrir la aplicación de correo. Configura una aplicación de correo predeterminada e inténtalo de nuevo, o envía tu informe a nodorumsolutio@gmail.com.</value></data>
+  <data name="BugReportBodyTemplate" xml:space="preserve"><value>Completa la siguiente información:
+
+1. Problema: ¿qué ha fallado?
+
+2. Pasos para reproducirlo:
+
+3. Resultado esperado:
+
+4. Resultado real / observaciones:
+
+5. ¿Con qué frecuencia ocurre? ¿Desde cuándo?
+
+6. Captura de pantalla: adjunta una captura si es posible (oculta la información personal).
+
+Comentarios adicionales:
+
+Información técnica (añadida automáticamente; revísala antes de enviarla):
+Versión de la aplicación: {0} (compilación {1})
+Sistema operativo: {2}
+Versión del sistema operativo: {3}
+Fabricante: {4}
+Modelo: {5}
+Categoría del dispositivo: {6}
+Tipo de dispositivo (físico/virtual): {7}
+Tamaño de pantalla (píxeles): {8}
+Tamaño de pantalla (unidades lógicas): {9}
+Densidad de píxeles: {10}
+Orientación: {11}
+Frecuencia de actualización (Hz): {12}
+Idioma de la aplicación: {13}</value></data>
 </root>

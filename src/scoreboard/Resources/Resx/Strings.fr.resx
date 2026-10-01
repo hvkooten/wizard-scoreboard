@@ -117,4 +117,37 @@ Si le PDF ne se charge pas, utilisez le lien.</value></data>
   <data name="Disclaimer" xml:space="preserve"><value>Ceci est une application compagnon indépendante, qui n'est ni affiliée à l'éditeur de Wizard ni approuvée par celui-ci. Le jeu de cartes original est nécessaire pour jouer.</value></data>
   <data name="Yes" xml:space="preserve"><value>Oui</value></data>
   <data name="Yellow" xml:space="preserve"><value>Jaune</value></data>
+  <data name="ReportBug" xml:space="preserve"><value>Signaler un bug</value></data>
+  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard</value></data>
+  <data name="BugReportEmailUnavailable" xml:space="preserve"><value>Impossible d'ouvrir l'application de messagerie. Configurez une application de messagerie par défaut et réessayez, ou envoyez votre rapport à nodorumsolutio@gmail.com.</value></data>
+  <data name="BugReportBodyTemplate" xml:space="preserve"><value>Veuillez compléter les informations suivantes :
+
+1. Problème : qu'est-ce qui ne fonctionne pas ?
+
+2. Étapes pour reproduire le problème :
+
+3. Résultat attendu :
+
+4. Résultat réel / observations :
+
+5. À quelle fréquence cela se produit-il ? Depuis quand ?
+
+6. Capture d'écran : joignez une capture si possible (masquez les informations personnelles).
+
+Remarques supplémentaires :
+
+Informations techniques (ajoutées automatiquement ; à vérifier avant l'envoi) :
+Version de l'application : {0} (build {1})
+Système d'exploitation : {2}
+Version du système : {3}
+Fabricant : {4}
+Modèle : {5}
+Catégorie d'appareil : {6}
+Type d'appareil (physique/virtuel) : {7}
+Taille de l'écran (pixels) : {8}
+Taille de l'écran (unités logiques) : {9}
+Densité de pixels : {10}
+Orientation : {11}
+Fréquence de rafraîchissement (Hz) : {12}
+Langue de l'application : {13}</value></data>
 </root>

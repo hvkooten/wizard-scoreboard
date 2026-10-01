@@ -135,4 +135,37 @@ If PDF cannot render, use the link.</value></data>
   <data name="Disclaimer" xml:space="preserve"><value>This is an independent companion application and is not affiliated with or endorsed by the publisher of Wizard. The original card game is required to play.</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="Yellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="ReportBug" xml:space="preserve"><value>Report a bug</value></data>
+  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard</value></data>
+  <data name="BugReportEmailUnavailable" xml:space="preserve"><value>The email app could not be opened. Configure a default email app and try again, or send your report to nodorumsolutio@gmail.com.</value></data>
+  <data name="BugReportBodyTemplate" xml:space="preserve"><value>Please complete the following information:
+
+1. Problem: what went wrong?
+
+2. Steps to reproduce:
+
+3. Expected result:
+
+4. Actual result / findings:
+
+5. How often does it happen? When did it start?
+
+6. Screenshot: please attach a screenshot if possible (hide personal information).
+
+Additional observations:
+
+Technical information (automatically added; review before sending):
+App version: {0} (build {1})
+OS: {2}
+OS version: {3}
+Manufacturer: {4}
+Model: {5}
+Device category: {6}
+Device type (physical/virtual): {7}
+Screen size (pixels): {8}
+Screen size (logical units): {9}
+Pixel density: {10}
+Orientation: {11}
+Refresh rate (Hz): {12}
+App language: {13}</value></data>
 </root>

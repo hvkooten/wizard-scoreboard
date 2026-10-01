@@ -117,4 +117,37 @@ Als de PDF niet laadt, gebruik de link.</value></data>
   <data name="Disclaimer" xml:space="preserve"><value>Dit is een onafhankelijke hulpapplicatie en is niet verbonden aan of goedgekeurd door de uitgever van Wizard. Het originele kaartspel is nodig om te spelen.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="Yellow" xml:space="preserve"><value>Geel</value></data>
+  <data name="ReportBug" xml:space="preserve"><value>Een bug melden</value></data>
+  <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard</value></data>
+  <data name="BugReportEmailUnavailable" xml:space="preserve"><value>De e-mailapp kon niet worden geopend. Stel een standaard e-mailapp in en probeer het opnieuw, of stuur je melding naar nodorumsolutio@gmail.com.</value></data>
+  <data name="BugReportBodyTemplate" xml:space="preserve"><value>Vul de volgende informatie in:
+
+1. Probleem: wat gaat er mis?
+
+2. Stappen om het probleem te herhalen:
+
+3. Verwacht resultaat:
+
+4. Werkelijk resultaat / bevindingen:
+
+5. Hoe vaak gebeurt het? Sinds wanneer?
+
+6. Screenshot: voeg indien mogelijk een screenshot toe (verberg persoonlijke informatie).
+
+Aanvullende opmerkingen:
+
+Technische informatie (automatisch toegevoegd; controleer voor verzending):
+Appversie: {0} (build {1})
+Besturingssysteem: {2}
+Versie besturingssysteem: {3}
+Fabrikant: {4}
+Model: {5}
+Apparaatcategorie: {6}
+Apparaattype (fysiek/virtueel): {7}
+Schermformaat (pixels): {8}
+Schermformaat (logische eenheden): {9}
+Pixeldichtheid: {10}
+Schermoriëntatie: {11}
+Verversingssnelheid (Hz): {12}
+Apptaal: {13}</value></data>
 </root>

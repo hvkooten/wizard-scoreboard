@@ -22,9 +22,9 @@ public partial class AppShell : Shell
         // The default flyout covers most of a phone screen; the menu items are short, so keep it narrow.
         FlyoutWidth = 220;
 
-        if (DeviceInfo.Platform == DevicePlatform.Android)
+        if (DeviceInfo.Platform == DevicePlatform.Android || DeviceInfo.Platform == DevicePlatform.iOS)
         {
-            // On Android every page lives in the flyout menu (no bottom tab bar).
+            // On mobile every page lives in the flyout menu (no bottom tab bar).
             AddFlyoutItem("Scoreboard", nameof(ScoreBoardPage), scoreBoardPage);
             AddFlyoutItem("Highscore", nameof(HighscorePage), highscorePage);
             AddFlyoutItem("SavedGames", nameof(SavedGamesPage), savedGamesPage);
@@ -32,6 +32,22 @@ public partial class AppShell : Shell
             AddFlyoutItem("Groups", nameof(GroupsPage), groupsPage);
             AddFlyoutItem("Settings", nameof(SettingsPage), settingsPage);
             AddFlyoutItem("About", nameof(AboutPage), aboutPage);
+
+            var reportBugItem = new MenuItem { Text = Localization.GetString("ReportBug") };
+            reportBugItem.Clicked += async (s, e) =>
+            {
+                reportBugItem.IsEnabled = false;
+                FlyoutIsPresented = false;
+                try
+                {
+                    await BugReportService.ComposeAsync(CurrentPage ?? this);
+                }
+                finally
+                {
+                    reportBugItem.IsEnabled = true;
+                }
+            };
+            Items.Add(reportBugItem);
         }
         else
         {
