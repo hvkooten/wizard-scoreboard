@@ -21,8 +21,8 @@ public class TrumpPaletteService : ITrumpPaletteService
 
     public TrumpPaletteMode GetMode()
     {
-        var raw = preferences.Get(PaletteModeKey, nameof(TrumpPaletteMode.CardSuits));
-        return Enum.TryParse<TrumpPaletteMode>(raw, out var mode) ? mode : TrumpPaletteMode.CardSuits;
+        var raw = preferences.Get(PaletteModeKey, nameof(TrumpPaletteMode.FourColors));
+        return Enum.TryParse<TrumpPaletteMode>(raw, out var mode) ? mode : TrumpPaletteMode.FourColors;
     }
 
     public void SetMode(TrumpPaletteMode mode)

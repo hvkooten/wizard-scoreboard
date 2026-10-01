@@ -15,20 +15,20 @@ public class TrumpPaletteServiceTests
     }
 
     [Test]
-    public void GetMode_WithoutPreferenceDefaultsToCardSuits()
+    public void GetMode_WithoutPreferenceDefaultsToFourColors()
     {
-        Assert.That(new TrumpPaletteService(new MemoryPreferences()).GetMode(), Is.EqualTo(TrumpPaletteMode.CardSuits));
+        Assert.That(new TrumpPaletteService(new MemoryPreferences()).GetMode(), Is.EqualTo(TrumpPaletteMode.FourColors));
     }
 
     [TestCase("")]
     [TestCase("UnknownPalette")]
     [TestCase("   ")]
-    public void GetMode_UnrecognizedPreferenceFallsBackToCardSuits(string stored)
+    public void GetMode_UnrecognizedPreferenceFallsBackToFourColors(string stored)
     {
         var preferences = new MemoryPreferences();
         preferences.Set("trump_palette_mode", stored);
 
-        Assert.That(new TrumpPaletteService(preferences).GetMode(), Is.EqualTo(TrumpPaletteMode.CardSuits));
+        Assert.That(new TrumpPaletteService(preferences).GetMode(), Is.EqualTo(TrumpPaletteMode.FourColors));
     }
 
     [TestCase(TrumpPaletteMode.CardSuits)]

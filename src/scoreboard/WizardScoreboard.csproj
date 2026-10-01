@@ -8,8 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     <ApplicationTitle>WizardScoreboard</ApplicationTitle>
-    <ApplicationDisplayVersion>2.1.0</ApplicationDisplayVersion>
-    <ApplicationVersion>10273</ApplicationVersion>
+    <ApplicationDisplayVersion>2.2.0</ApplicationDisplayVersion>
+    <ApplicationVersion>10275</ApplicationVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
