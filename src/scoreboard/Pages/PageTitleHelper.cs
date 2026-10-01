@@ -17,11 +17,10 @@ internal static class PageTitleHelper
             {
                 new RowDefinition { Height = GridLength.Auto }
             },
-            // On Android the toolbar reserves a wide inset after the flyout (hamburger) icon; a negative
-            // left margin pulls the title right next to the icon. A small gap on the right keeps the
+            // On Android the toolbar inset after the flyout (hamburger) icon is removed in
+            // AppShell.Android, so a small left gap is enough. A gap on the right keeps the
             // "Wizard" title from being clipped by the screen edge.
-            Padding = isAndroid ? new Thickness(0, 0, 16, 0) : new Thickness(0),
-            Margin = isAndroid ? new Thickness(-12, 0, 0, 0) : new Thickness(0),
+            Padding = isAndroid ? new Thickness(4, 0, 16, 0) : new Thickness(0),
             HorizontalOptions = LayoutOptions.Fill,
             VerticalOptions = LayoutOptions.Center,
             MinimumWidthRequest = 260
@@ -90,7 +89,7 @@ internal static class PageTitleHelper
             {
                 // Keep title view width in sync with window size so the right label stays anchored
                 // and visible. Android reserves extra space on the left for the flyout icon.
-                grid.WidthRequest = Math.Max(240, page.Width - (isAndroid ? 68 : 48));
+                grid.WidthRequest = Math.Max(240, page.Width - (isAndroid ? 56 : 48));
             }
         }
 

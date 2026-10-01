@@ -19,6 +19,8 @@ public partial class AppShell : Shell
         FlyoutBehavior = FlyoutBehavior.Flyout;
         // Light-grey flyout backdrop so the fiery header/logo stands out.
         FlyoutBackgroundColor = AppColors.Flyout;
+        // The default flyout covers most of a phone screen; the menu items are short, so keep it narrow.
+        FlyoutWidth = 220;
 
         if (DeviceInfo.Platform == DevicePlatform.Android)
         {

@@ -29,7 +29,32 @@ public partial class AppShell
             var typeface = bold ? Typeface.DefaultBold : Typeface.Default;
             ApplyTypefaceToTextViews(root, typeface);
             ConfigureBottomNavigation(root);
+            ConfigureToolbarInsets(root);
         });
+    }
+
+    // The toolbar reserves a wide gap (72dp) after the hamburger icon. Remove it so the
+    // collapsed menu takes up only the icon itself and the title sits right next to it.
+    private static void ConfigureToolbarInsets(Android.Views.View view)
+    {
+        if (view is AndroidX.AppCompat.Widget.Toolbar toolbar)
+        {
+            toolbar.ContentInsetStartWithNavigation = 0;
+            toolbar.SetContentInsetsRelative(0, toolbar.ContentInsetEnd);
+            return;
+        }
+
+        if (view is ViewGroup group)
+        {
+            for (var i = 0; i < group.ChildCount; i++)
+            {
+                var child = group.GetChildAt(i);
+                if (child is not null)
+                {
+                    ConfigureToolbarInsets(child);
+                }
+            }
+        }
     }
 
     // Forces the bottom navigation to always show labels and shrinks their text so the
