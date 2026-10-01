@@ -28,7 +28,7 @@ Confidant shuffles the character cards and deals them out.
 <h2><bold>The Character Cards</bold></h2>
 • There are four different colors: Humans (blue), Elves (green), Dwarves (red), Giants (yellow).
 • The strongest card in each color is the “13”, the weakest card is the “1”.
-• The four Wizard cards (“Z” or "W") are always Trump. They are higher than every“13”.
+• The four Wizard cards (“Z” or "W") are always Trump. They are higher than every “13”.
 • The four Fool cards (“N”) are never Trump. They are lower than every “1”.
 
 <h2><bold>Distributing the Cards</bold></h2>

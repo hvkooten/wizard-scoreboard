@@ -9,7 +9,7 @@
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     <ApplicationTitle>WizardScoreboard</ApplicationTitle>
     <ApplicationDisplayVersion>2.1.0</ApplicationDisplayVersion>
-    <ApplicationVersion>10267</ApplicationVersion>
+    <ApplicationVersion>10268</ApplicationVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
@@ -48,6 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <MauiResource Include="Resources\Raw\**\*" />
+    <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

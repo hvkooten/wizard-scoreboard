@@ -8,44 +8,85 @@ public class RulesPage : ContentPage
     {
         PageTitleHelper.Apply(this, Localization.GetString("Rules"));
 
-        var label = new Label
-        {
-            Text = Localization.GetString("RulesIntro"),
-            Margin = new Thickness(10)
-        };
+        rulesView = new WebView();
+        Content = rulesView;
+    }
 
-        var webView = new WebView
-        {
-            Source = new UrlWebViewSource
-            {
-                Url = "https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf"
-            },
-            HeightRequest = 500
-        };
+    private readonly WebView rulesView;
+    private string? loadedLanguage;
+    private AppTheme? loadedTheme;
 
-        var fallback = new Label
-        {
-            Text = Localization.GetString("RulesFallback"),
-            TextColor = Colors.Gray,
-            Margin = new Thickness(10)
-        };
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
 
-        var openRulesButton = new Button
+        if (Application.Current is { } app)
         {
-            Text = Localization.GetString("OpenRulesInBrowser")
-        };
-        openRulesButton.Clicked += async (s, e) =>
-        {
-            await Launcher.OpenAsync("https://cdn.1j1ju.com/medias/f1/8e/ad-wizard-rulebook.pdf");
-        };
+            app.RequestedThemeChanged -= OnRequestedThemeChanged;
+            app.RequestedThemeChanged += OnRequestedThemeChanged;
+        }
 
-        Content = new ScrollView
+        await LoadAsync();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        if (Application.Current is { } app)
         {
-            Content = new StackLayout
-            {
-                Padding = 10,
-                Children = { label, webView, fallback, openRulesButton }
-            }
-        };
+            app.RequestedThemeChanged -= OnRequestedThemeChanged;
+        }
+    }
+
+    private async void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        var language = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        var theme = Application.Current?.RequestedTheme ?? AppTheme.Light;
+        if (language == loadedLanguage && theme == loadedTheme)
+        {
+            return;
+        }
+
+        var dark = theme == AppTheme.Dark;
+        rulesView.BackgroundColor = dark ? Color.FromArgb("#10161d") : Colors.White;
+
+        var html = await LoadRulesHtmlAsync(language);
+        rulesView.Source = new HtmlWebViewSource { Html = ApplyTheme(html, dark) };
+        loadedLanguage = language;
+        loadedTheme = theme;
+    }
+
+    private static string ApplyTheme(string html, bool dark)
+    {
+        var css = dark
+            ? "<style>:root{color-scheme:dark;}html,body{background:#10161d !important;color:#e6e6e6 !important;}a{color:#7fb3ff;}</style>"
+            : "<style>:root{color-scheme:light;}html,body{background:#ffffff !important;color:#111111 !important;}a{color:#0055cc;}</style>";
+
+        var index = html.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
+        return index >= 0 ? html.Insert(index, css) : css + html;
+    }
+
+    private static async Task<string> LoadRulesHtmlAsync(string language)
+    {
+        try
+        {
+            return await ReadAssetAsync($"rules/rules.{language}.html");
+        }
+        catch (IOException)
+        {
+            return await ReadAssetAsync("rules/rules.en.html");
+        }
+    }
+
+    private static async Task<string> ReadAssetAsync(string path)
+    {
+        await using var stream = await FileSystem.OpenAppPackageFileAsync(path);
+        using var reader = new StreamReader(stream);
+        return await reader.ReadToEndAsync();
     }
 }
