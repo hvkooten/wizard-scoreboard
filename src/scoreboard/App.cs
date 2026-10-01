@@ -28,7 +28,7 @@ public class App : Application
             this.On<Microsoft.Maui.Controls.PlatformConfiguration.Android>(),
             Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific.WindowSoftInputModeAdjust.Resize);
 
-        UserAppTheme
+        UserAppTheme = AppSettings.Theme;
         ApplyThemeResources();
         // Page colors are resolved when pages are built, so rebuild the UI when the system theme
         // changes while the user follows the system setting.
