@@ -15,6 +15,7 @@ public class RoundEntry
     public Guid DealerPlayerId { get; set; }
     public Dictionary<Guid, int> BidByPlayer { get; set; } = new();
     public Dictionary<Guid, int> ActualByPlayer { get; set; } = new();
+    public Dictionary<Guid, int> HighestScoreBeforeRoundByPlayer { get; set; } = new();
     public TrumpSuit Trump { get; set; }
 }
 

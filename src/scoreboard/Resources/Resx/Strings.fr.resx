@@ -15,6 +15,12 @@
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Donneur) ne peut pas enchérir: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Donneur) peut enchérir n'importe quel nombre</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Donneur</value></data>
+	<data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (annonce : {1})</value></data>
+  <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, annonce : {2})</value></data>
+  <data name="EditLastRound" xml:space="preserve"><value>Modifier la dernière manche</value></data>
+  <data name="RoundCannotBeEdited" xml:space="preserve"><value>Seule la dernière manche terminée d'une partie active et non en pause peut être modifiée.</value></data>
+  <data name="ActualsMustIncludeAllPlayers" xml:space="preserve"><value>Saisissez les plis remportés pour chaque joueur de cette partie, et aucun autre joueur.</value></data>
+  <data name="ActualsRangeError" xml:space="preserve"><value>Le nombre de plis remportés doit être compris entre 0 et {0}.</value></data>
   <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>Voulez-vous vraiment supprimer la partie sauvegardée du {0} ?</value></data>
   <data name="DeleteSavedGameConfirmTitle" xml:space="preserve"><value>Supprimer la partie sauvegardée ?</value></data>
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Voulez-vous supprimer le groupe '{0}' ?</value></data>

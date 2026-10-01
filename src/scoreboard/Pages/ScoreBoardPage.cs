@@ -1,3 +1,4 @@
+using Microsoft.Maui.Layouts;
 using WizardScoreboard.Models;
 using WizardScoreboard.Resources;
 using WizardScoreboard.Services;
@@ -22,6 +23,7 @@ public class ScoreBoardPage : ContentPage
     private Button pauseButton;
     private Button endButton;
     private Button nextRoundButton;
+    private Button editLastRoundButton;
     private ScrollView scoreboardScrollView;
     private readonly Dictionary<(Grid Grid, int Row, int Column), Border> scoreboardCells = new();
 
@@ -61,17 +63,24 @@ public class ScoreBoardPage : ContentPage
         pauseButton = new Button { Text = Localization.GetString("PauseGame") };
         endButton = new Button { Text = Localization.GetString("EndGame") };
         nextRoundButton = new Button { Text = Localization.GetString("NextRound") };
+        editLastRoundButton = new Button { Text = Localization.GetString("EditLastRound") };
 
         startButton.Clicked += async (s, e) => await StartGameAsync();
         pauseButton.Clicked += async (s, e) => await TogglePauseAsync();
         endButton.Clicked += async (s, e) => await EndGameAsync();
         nextRoundButton.Clicked += async (s, e) => await StartNextRoundAsync();
+        editLastRoundButton.Clicked += async (s, e) => await EditLastRoundAsync();
 
-        var buttonRow = new HorizontalStackLayout
+        var buttonRow = new FlexLayout
         {
-            Spacing = 8,
-            Children = { startButton, nextRoundButton, pauseButton, endButton }
+            Direction = FlexDirection.Row,
+            Wrap = FlexWrap.Wrap,
+            Children = { startButton, nextRoundButton, editLastRoundButton, pauseButton, endButton }
         };
+        foreach (var button in buttonRow.Children.OfType<Button>())
+        {
+            button.Margin = new Thickness(0, 0, 8, 8);
+        }
 
         scoreboardScrollView = new ScrollView
         {
@@ -118,16 +127,19 @@ public class ScoreBoardPage : ContentPage
     {
         base.OnAppearing();
 
-        // Ensure the last used group is automatically loaded
-        if (currentSession == null)
+        // Shell reuses this page, so another saved game may have been selected while it was hidden.
+        var selectedSession = scoreService.GetCurrentSession();
+        if (selectedSession != null || currentSession?.IsActive == true)
         {
-            currentSession = scoreService.GetCurrentSession();
+            currentSession = selectedSession;
+        }
 
-            if (currentSession != null)
-            {
-                groupService.SetSelectedGroup(currentSession.GroupId);
-            }
-
+        if (currentSession != null)
+        {
+            groupService.SetSelectedGroup(currentSession.GroupId);
+        }
+        else
+        {
             var selectedGroup = groupService.GetSelectedGroup();
             if (selectedGroup != null)
             {
@@ -172,6 +184,8 @@ public class ScoreBoardPage : ContentPage
             ? Localization.GetString("ResumeGame")
             : Localization.GetString("PauseGame");
         nextRoundButton.IsEnabled = hasRoundsRemaining;
+        editLastRoundButton.IsEnabled = isActiveSession && !isPausedSession
+            && currentSession?.Rounds.LastOrDefault()?.ActualByPlayer.Count > 0;
         endButton.IsEnabled = hasSession;
 
         // Keep the screen on only while a game is actually in progress.
@@ -188,6 +202,7 @@ public class ScoreBoardPage : ContentPage
         startButton.IsVisible = startButton.IsEnabled;
         pauseButton.IsVisible = pauseButton.IsEnabled;
         nextRoundButton.IsVisible = nextRoundButton.IsEnabled;
+        editLastRoundButton.IsVisible = editLastRoundButton.IsEnabled;
         endButton.IsVisible = endButton.IsEnabled;
 
         if (currentSession == null)
@@ -974,6 +989,7 @@ public class ScoreBoardPage : ContentPage
         pauseButton.IsEnabled = false;
         endButton.IsEnabled = false;
         nextRoundButton.IsEnabled = false;
+        editLastRoundButton.IsEnabled = false;
         await Task.Delay(16);
     }
 
@@ -1001,6 +1017,31 @@ public class ScoreBoardPage : ContentPage
         {
             RefreshUI();
             await this.ShowMessageAsync("ErrorTitle", ex.Message);
+        }
+    }
+
+    private async Task EditLastRoundAsync()
+    {
+        var session = currentSession;
+        var round = session?.Rounds.LastOrDefault();
+        if (session is not { IsActive: true, IsPaused: false }
+            || round is not { ActualByPlayer.Count: > 0 })
+        {
+            return;
+        }
+
+        await DisableGameButtonsAsync();
+        try
+        {
+            var actuals = await DisplayActualsPopupAsync(session, round);
+            if (actuals != null)
+            {
+                scoreService.UpdateLastRoundActuals(session, actuals);
+            }
+        }
+        finally
+        {
+            RefreshUI();
         }
     }
 
@@ -1364,7 +1405,46 @@ public class ScoreBoardPage : ContentPage
             return;
         }
 
-        // --- Actuals popup ---
+        var actuals = await DisplayActualsPopupAsync(currentSession, currentSession.Rounds.Last(), modal);
+        if (actuals == null)
+        {
+            scoreService.CancelRound(currentSession);
+            if (Navigation.ModalStack.Contains(modal))
+            {
+                await DisplayRoundPopupAsync(new Dictionary<Guid, int>(bids), trumpSelectionIndex, modal);
+            }
+            return;
+        }
+
+        try
+        {
+            scoreService.FinishRound(currentSession, actuals);
+            if (!currentSession.IsActive)
+            {
+                SyncSessionStatsToGroup(currentSession);
+                highscoreService.UpdateHighscores(groupService.GetGroups());
+            }
+            RefreshUI();
+
+            if (!currentSession.IsActive && currentSession.CurrentRound >= currentSession.MaxRounds)
+            {
+                await ShowGameFinishedCelebrationAsync(currentSession);
+            }
+        }
+        catch (Exception ex)
+        {
+            await this.ShowMessageAsync("ErrorTitle", ex.Message);
+        }
+    }
+
+    private async Task<Dictionary<Guid, int>?> DisplayActualsPopupAsync(ScoreSession session, RoundEntry round, ContentPage? existingModal = null)
+    {
+        var isEditing = round.ActualByPlayer.Count > 0;
+        var modal = existingModal ?? new ContentPage();
+        var trump = round.Trump;
+        var orderedPlayers = session.Players.OrderBy(p => p.Order).ToList();
+        var dealerIndex = orderedPlayers.FindIndex(p => p.Id == round.DealerPlayerId);
+        var entryOrder = orderedPlayers.Skip(dealerIndex + 1).Concat(orderedPlayers.Take(dealerIndex + 1)).ToList();
         var (trumpSymbol, trumpFgColor, trumpBgColor) = GetTrumpDisplayInfo(trump);
         // The trump color is semi-transparent for use over the scoreboard; flatten it over white
         // so the actuals modal page is fully opaque and doesn't reveal the scoreboard behind it.
@@ -1377,7 +1457,7 @@ public class ScoreBoardPage : ContentPage
 
         // Large watermark of the current round number shown behind the actuals form,
         // colored with a dark version of the chosen trump (matching the bidding popup).
-        var actualsWatermark = CreateRoundWatermark(currentSession.CurrentRound, trump);
+        var actualsWatermark = CreateRoundWatermark(round.RoundNumber, trump);
         var actualsBackdrop = CreateWatermarkBackdrop(lightBg, actualsWatermark, scrollActuals);
         var totalActualsLabel = new Label
         {
@@ -1392,22 +1472,22 @@ public class ScoreBoardPage : ContentPage
         {
             var sum = actualEntries.Values.Sum(entry =>
                 int.TryParse(entry.Text, out var value) ? value : 0);
-            totalActualsLabel.Text = string.Format(Localization.GetString("TotalActualsLabel"), sum, currentSession.CurrentRound);
-            totalActualsLabel.TextColor = sum == currentSession.CurrentRound ? AppColors.SuccessText : AppColors.WarningText;
+            totalActualsLabel.Text = string.Format(Localization.GetString("TotalActualsLabel"), sum, round.RoundNumber);
+            totalActualsLabel.TextColor = sum == round.RoundNumber ? AppColors.SuccessText : AppColors.WarningText;
             if (doneActuals != null)
             {
-                doneActuals.IsEnabled = sum == currentSession.CurrentRound;
+                doneActuals.IsEnabled = sum == round.RoundNumber;
             }
             if (backActuals != null)
             {
-                backActuals.IsEnabled = sum == 0;
+                backActuals.IsEnabled = isEditing || sum == 0;
             }
         }
 
         // Round title
         popActuals.Children.Add(new Label
         {
-            Text = string.Format(Localization.GetString("RoundPopupTitle"), currentSession.CurrentRound, currentSession.MaxRounds),
+            Text = string.Format(Localization.GetString("RoundPopupTitle"), round.RoundNumber, session.MaxRounds),
             FontSize = 18,
             FontAttributes = FontAttributes.Bold,
             HorizontalTextAlignment = TextAlignment.Center
@@ -1444,14 +1524,14 @@ public class ScoreBoardPage : ContentPage
         var actualsRefreshes = new List<Action>();
         foreach (var player in entryOrder)
         {
-            var bid = bids.GetValueOrDefault(player.Id);
-            var isDealer = player.Id == dealerForEntry.Id;
+            var bid = round.BidByPlayer.GetValueOrDefault(player.Id);
+            var isDealer = player.Id == round.DealerPlayerId;
             var actualEntry = new Entry
             {
                 Keyboard = Keyboard.Numeric,
-                Text = "0",
+                Text = round.ActualByPlayer.GetValueOrDefault(player.Id).ToString(),
                 WidthRequest = 52,
-                Placeholder = $"0\u2013{currentSession.CurrentRound}",
+                Placeholder = $"0\u2013{round.RoundNumber}",
                 HorizontalTextAlignment = TextAlignment.Center,
                 BackgroundColor = AppColors.Surface
             };
@@ -1461,28 +1541,29 @@ public class ScoreBoardPage : ContentPage
             var playerLabel = new Label
             {
                 Text = isDealer
-                    ? $"{player.Name} ({Localization.GetString("DealerLabel")}, bod: {bid})"
-                    : $"{player.Name} (bod: {bid})",
+                    ? string.Format(Localization.GetString("DealerBidLabelTemplate"), player.Name, Localization.GetString("DealerLabel"), bid)
+                    : string.Format(Localization.GetString("PlayerBidLabelTemplate"), player.Name, bid),
                 FontAttributes = isDealer ? FontAttributes.Bold : FontAttributes.None,
                 TextColor = isDealer ? AppColors.DealerText : AppColors.TextPrimary,
                 VerticalTextAlignment = TextAlignment.Center,
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            popActuals.Children.Add(CreateStepperRow(playerLabel, actualEntry, 0, currentSession.CurrentRound,
-                () => actualEntries.Values.Sum(e => int.TryParse(e.Text, out var n) ? n : 0) >= currentSession.CurrentRound,
+            popActuals.Children.Add(CreateStepperRow(playerLabel, actualEntry, 0, round.RoundNumber,
+                () => actualEntries.Values.Sum(e => int.TryParse(e.Text, out var n) ? n : 0) >= round.RoundNumber,
                 actualsRefreshes));
         }
 
+        actualsRefreshes.ForEach(refresh => refresh());
         popActuals.Children.Add(totalActualsLabel);
 
         doneActuals = CreateDialogButton("Ok");
-        backActuals = CreateDialogButton("Back");
+        backActuals = CreateDialogButton(isEditing ? "Cancel" : "Back");
         var actualsButtonsRow = CreateTwoButtonRow(backActuals, doneActuals);
         popActuals.Children.Add(actualsButtonsRow);
         UpdateActualsTotal();
 
-        // true = confirm results, false = go back to bidding to correct the bids.
+        // In edit mode, cancellation never returns to bidding or mutates the saved round.
         var tcsActuals = new TaskCompletionSource<bool>();
         backActuals.Clicked += (s, e) => tcsActuals.TrySetResult(false);
         doneActuals.Clicked += async (s, e) =>
@@ -1491,22 +1572,22 @@ public class ScoreBoardPage : ContentPage
             foreach (var player in entryOrder)
             {
                 var text = actualEntries[player.Id].Text;
-                if (!int.TryParse(text, out var act) || act < 0 || act > currentSession.CurrentRound)
+                if (!int.TryParse(text, out var act) || act < 0 || act > round.RoundNumber)
                 {
                     await DisplayAlertAsync(
                         Localization.GetString("ErrorTitle"),
-                        string.Format(Localization.GetString("BidRangeErrorTemplate"), player.Name, currentSession.CurrentRound),
+                        string.Format(Localization.GetString("ActualsRangeError"), round.RoundNumber),
                         Localization.GetString("Ok"));
                     return;
                 }
                 totalActuals += act;
             }
             // Total tricks won must equal round number.
-            if (totalActuals != currentSession.CurrentRound)
+            if (totalActuals != round.RoundNumber)
             {
                 await DisplayAlertAsync(
                     Localization.GetString("ErrorTitle"),
-                    string.Format(Localization.GetString("TotalActualsError"), currentSession.CurrentRound),
+                    string.Format(Localization.GetString("TotalActualsError"), round.RoundNumber),
                     Localization.GetString("Ok"));
                 return;
             }
@@ -1517,29 +1598,28 @@ public class ScoreBoardPage : ContentPage
         modal.Content = actualsBackdrop;
         // Swapping content does not trigger Shell navigation, so apply the bold-text setting here.
         App.ApplyBoldToVisualTree(modal, AppSettings.BoldAllText);
-        var confirmActuals = await tcsActuals.Task;
-
-        // User clicked "Back": undo the started round and show the bidding step again
-        // in the same popup with the previously entered bids and trump so they can be corrected.
-        if (!confirmActuals)
+        void OnModalDisappearing(object? sender, EventArgs e) => tcsActuals.TrySetResult(false);
+        modal.Disappearing += OnModalDisappearing;
+        bool confirmActuals;
+        try
         {
-            try
+            if (existingModal == null)
             {
-                scoreService.CancelRound(currentSession);
+                await Navigation.PushModalAsync(modal, animated: false);
             }
-            catch (Exception ex)
-            {
-                await Navigation.PopModalAsync(animated: false);
-                await this.ShowMessageAsync("ErrorTitle", ex.Message);
-                RefreshUI();
-                return;
-            }
-
-            await DisplayRoundPopupAsync(new Dictionary<Guid, int>(bids), trumpSelectionIndex, modal);
-            return;
+            confirmActuals = await tcsActuals.Task;
+        }
+        finally
+        {
+            modal.Disappearing -= OnModalDisappearing;
         }
 
-        await Navigation.PopModalAsync(animated: false);
+        if ((confirmActuals || isEditing) && Navigation.ModalStack.Contains(modal))
+        {
+            await Navigation.PopModalAsync(animated: false);
+        }
+        if (!confirmActuals)
+            return null;
 
         var actuals = new Dictionary<Guid, int>();
         foreach (var player in orderedPlayers)
@@ -1548,25 +1628,7 @@ public class ScoreBoardPage : ContentPage
             actuals[player.Id] = act;
         }
 
-        try
-        {
-            scoreService.FinishRound(currentSession, actuals);
-            if (!currentSession.IsActive)
-            {
-                SyncSessionStatsToGroup(currentSession);
-                highscoreService.UpdateHighscores(groupService.GetGroups());
-            }
-            RefreshUI();
-
-            if (!currentSession.IsActive && currentSession.CurrentRound >= currentSession.MaxRounds)
-            {
-                await ShowGameFinishedCelebrationAsync(currentSession);
-            }
-        }
-        catch (Exception ex)
-        {
-            await this.ShowMessageAsync("ErrorTitle", ex.Message);
-        }
+        return actuals;
     }
 
     private void SyncSessionStatsToGroup(ScoreSession session)

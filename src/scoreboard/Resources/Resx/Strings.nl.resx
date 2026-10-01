@@ -15,6 +15,12 @@
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Deler) mag niet bieden: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Deler) mag een willekeurig aantal bieden</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Deler</value></data>
+  <data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (bod: {1})</value></data>
+  <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, bod: {2})</value></data>
+  <data name="EditLastRound" xml:space="preserve"><value>Laatste ronde aanpassen</value></data>
+  <data name="RoundCannotBeEdited" xml:space="preserve"><value>Alleen de laatste afgeronde ronde van een actief, niet-gepauzeerd spel kan worden aangepast.</value></data>
+  <data name="ActualsMustIncludeAllPlayers" xml:space="preserve"><value>Vul de gewonnen slagen in voor elke speler in dit spel, en geen andere spelers.</value></data>
+  <data name="ActualsRangeError" xml:space="preserve"><value>Gewonnen slagen moeten tussen 0 en {0} liggen.</value></data>
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Wil je groep '{0}' verwijderen?</value></data>
   <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>Groep verwijderen?</value></data>
   <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>Weet je zeker dat je het opgeslagen spel van {0} wilt verwijderen?</value></data>

@@ -15,6 +15,12 @@
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Repartidor) no puede apostar: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Repartidor) puede apostar cualquier número</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Repartidor</value></data>
+	<data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (apuesta: {1})</value></data>
+  <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, apuesta: {2})</value></data>
+  <data name="EditLastRound" xml:space="preserve"><value>Editar última ronda</value></data>
+  <data name="RoundCannotBeEdited" xml:space="preserve"><value>Solo se puede editar la última ronda completada de una partida activa y no pausada.</value></data>
+  <data name="ActualsMustIncludeAllPlayers" xml:space="preserve"><value>Introduce las bazas ganadas de cada jugador de esta partida, y de ningún otro jugador.</value></data>
+  <data name="ActualsRangeError" xml:space="preserve"><value>Las bazas ganadas deben estar entre 0 y {0}.</value></data>
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>¿Quieres eliminar el grupo '{0}'?</value></data>
   <data name="DeleteGroupConfirmTitle" xml:space="preserve"><value>¿Eliminar grupo?</value></data>
   <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>¿Seguro que quieres eliminar la partida guardada del {0}?</value></data>

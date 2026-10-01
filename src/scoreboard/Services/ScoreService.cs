@@ -1,5 +1,6 @@
 using System.Text.Json;
 using WizardScoreboard.Models;
+using WizardScoreboard.Resources;
 
 namespace WizardScoreboard.Services;
 
@@ -143,6 +144,7 @@ public class ScoreService : IScoreService
             RoundNumber = session.CurrentRound,
             DealerPlayerId = dealer.Id,
             BidByPlayer = new Dictionary<Guid, int>(bids),
+            HighestScoreBeforeRoundByPlayer = session.Players.ToDictionary(p => p.Id, p => p.HighestScore),
             Trump = trump,
         };
 
@@ -197,6 +199,49 @@ public class ScoreService : IScoreService
         if (session.CurrentRound >= session.MaxRounds)
         {
             EndGame(session);
+        }
+
+        SavePausedSessions();
+    }
+
+    /// <inheritdoc />
+    public void UpdateLastRoundActuals(ScoreSession session, Dictionary<Guid, int> actuals)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(actuals);
+
+        var round = session.Rounds.LastOrDefault();
+        if (!session.IsActive || session.IsPaused || round == null
+            || round.RoundNumber != session.CurrentRound || round.ActualByPlayer.Count == 0)
+        {
+            throw new InvalidOperationException(Localization.GetString("RoundCannotBeEdited"));
+        }
+
+        if (actuals.Count != session.Players.Count || session.Players.Any(p => !actuals.ContainsKey(p.Id)))
+        {
+            throw new ArgumentException(Localization.GetString("ActualsMustIncludeAllPlayers"), nameof(actuals));
+        }
+
+        if (actuals.Any(a => a.Value < 0 || a.Value > round.RoundNumber))
+        {
+            throw new ArgumentOutOfRangeException(nameof(actuals),
+                string.Format(Localization.GetString("ActualsRangeError"), round.RoundNumber));
+        }
+
+        if (actuals.Values.Sum() != round.RoundNumber)
+        {
+            throw new ArgumentException(
+                string.Format(Localization.GetString("TotalActualsError"), round.RoundNumber), nameof(actuals));
+        }
+
+        round.ActualByPlayer = new Dictionary<Guid, int>(actuals);
+        var totals = SessionScoreCalculator.CalculateSessionScores(session);
+        foreach (var player in session.Players)
+        {
+            player.CurrentPoints = totals[player.Id];
+            // Older saved rounds lack a snapshot, so preserve their historical record.
+            var previousHighestScore = round.HighestScoreBeforeRoundByPlayer.GetValueOrDefault(player.Id, player.HighestScore);
+            player.HighestScore = Math.Max(previousHighestScore, player.CurrentPoints);
         }
 
         SavePausedSessions();

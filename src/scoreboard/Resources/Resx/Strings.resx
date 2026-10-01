@@ -34,6 +34,12 @@
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Dealer) cannot bid: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Dealer) can bid any number</value></data>
   <data name="DealerLabel" xml:space="preserve"><value>Dealer</value></data>
+  <data name="PlayerBidLabelTemplate" xml:space="preserve"><value>{0} (bid: {1})</value></data>
+  <data name="DealerBidLabelTemplate" xml:space="preserve"><value>{0} ({1}, bid: {2})</value></data>
+  <data name="EditLastRound" xml:space="preserve"><value>Edit last round</value></data>
+  <data name="RoundCannotBeEdited" xml:space="preserve"><value>Only the latest completed round of an active, unpaused game can be edited.</value></data>
+  <data name="ActualsMustIncludeAllPlayers" xml:space="preserve"><value>Enter tricks won for every player in this game, and no other players.</value></data>
+  <data name="ActualsRangeError" xml:space="preserve"><value>Tricks won must be between 0 and {0}.</value></data>
   <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>Are you sure you want to delete the saved game from {0}?</value></data>
   <data name="DeleteSavedGameConfirmTitle" xml:space="preserve"><value>Delete saved game?</value></data>
   <data name="DeleteGroupConfirmMessage" xml:space="preserve"><value>Do you want to delete group '{0}'?</value></data>

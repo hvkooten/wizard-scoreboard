@@ -12,6 +12,10 @@ public interface IScoreService
     RoundEntry StartRound(ScoreSession session, TrumpSuit trump, Dictionary<Guid, int> bids);
     void CancelRound(ScoreSession session);
     void FinishRound(ScoreSession session, Dictionary<Guid, int> actuals);
+    /// <summary>
+    /// Corrects tricks won in the latest completed round of an active, unpaused game without changing bids.
+    /// </summary>
+    void UpdateLastRoundActuals(ScoreSession session, Dictionary<Guid, int> actuals);
     IEnumerable<ScoreSession> GetActiveSessions();
     IEnumerable<ScoreSession> GetSavedGames();
     void DeleteSavedGame(Guid sessionId);

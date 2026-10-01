@@ -10,6 +10,250 @@ namespace WizardScoreboard.Tests;
 public class ScoreServiceTests
 {
     [Test]
+    public void UpdateLastRoundActuals_ReplacesScoresWithoutAddingTheRoundTwice()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        var actuals = CreateActuals(session, 0, 1, 0);
+
+        service.UpdateLastRoundActuals(session, actuals);
+
+        Assert.That(session.Players.Select(p => p.CurrentPoints), Is.EqualTo(new[] { -1, -1, 2 }));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_LeavesBidsUnchanged()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        var bids = new Dictionary<Guid, int>(session.Rounds[0].BidByPlayer);
+
+        service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 1, 0));
+
+        Assert.That(session.Rounds[0].BidByPlayer, Is.EquivalentTo(bids));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_LeavesTrumpUnchanged()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+
+        service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 1, 0));
+
+        Assert.That(session.Rounds[0].Trump, Is.EqualTo(TrumpSuit.Hearts));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RepeatedCorrectionsDoNotAccumulatePoints()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 1, 0));
+        service.UpdateLastRoundActuals(session, CreateActuals(session, 1, 0, 0));
+
+        service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 1, 0));
+
+        Assert.That(session.Players.Select(p => p.CurrentPoints), Is.EqualTo(new[] { -1, -1, 2 }));
+    }
+
+    [TestCase(0, 0)]
+    [TestCase(10, 10)]
+    public void UpdateLastRoundActuals_RestoresHighScoreBeforeCorrectedRound(int previousRecord, int expectedRecord)
+    {
+        var (service, session) = CreateCompletedRoundForCorrection(previousRecord);
+
+        service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 1, 0));
+
+        Assert.That(session.Players[0].HighestScore, Is.EqualTo(expectedRecord));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_WithoutSnapshotPreservesHistoricalRecord()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        session.Rounds[0].HighestScoreBeforeRoundByPlayer.Clear();
+
+        service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 1, 0));
+
+        Assert.That(session.Players[0].HighestScore, Is.EqualTo(3));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_AfterSerializationRestoresPreRoundRecord()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        var saved = System.Text.Json.JsonSerializer.Serialize(session);
+        var restored = System.Text.Json.JsonSerializer.Deserialize<ScoreSession>(saved)
+            ?? throw new InvalidOperationException("Session was not deserialized.");
+
+        service.UpdateLastRoundActuals(restored, CreateActuals(restored, 0, 1, 0));
+
+        Assert.That(restored.Players[0].HighestScore, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RecalculatesTotalsIncludingPreviousRounds()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        service.StartRound(session, TrumpSuit.Spades, CreateActuals(session, 0, 0, 0));
+        service.FinishRound(session, CreateActuals(session, 2, 0, 0));
+
+        service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 2, 0));
+
+        Assert.That(session.Players.Select(p => p.CurrentPoints), Is.EqualTo(new[] { 5, 0, 4 }));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_LeavesPreviousRoundUnchanged()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        var previousActuals = new Dictionary<Guid, int>(session.Rounds[0].ActualByPlayer);
+        service.StartRound(session, TrumpSuit.Spades, CreateActuals(session, 0, 0, 0));
+        service.FinishRound(session, CreateActuals(session, 2, 0, 0));
+
+        service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 2, 0));
+
+        Assert.That(session.Rounds[0].ActualByPlayer, Is.EquivalentTo(previousActuals));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_CopiesSubmittedActuals()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        var actuals = CreateActuals(session, 0, 1, 0);
+
+        service.UpdateLastRoundActuals(session, actuals);
+        actuals[session.Players[0].Id] = 1;
+
+        Assert.That(session.Rounds[0].ActualByPlayer[session.Players[0].Id], Is.EqualTo(0));
+    }
+
+    [TestCase(-1)]
+    [TestCase(2)]
+    public void UpdateLastRoundActuals_RejectsOutOfRangeTricks(int tricks)
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            service.UpdateLastRoundActuals(session, CreateActuals(session, tricks, 0, 0)));
+    }
+
+    [TestCase(0, 0, 0)]
+    [TestCase(1, 1, 0)]
+    public void UpdateLastRoundActuals_RejectsIncorrectTotal(int first, int second, int third)
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+
+        Assert.Throws<ArgumentException>(() =>
+            service.UpdateLastRoundActuals(session, CreateActuals(session, first, second, third)));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RejectsMissingPlayer()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        var actuals = CreateActuals(session, 0, 1, 0);
+        actuals.Remove(session.Players[2].Id);
+
+        Assert.Throws<ArgumentException>(() => service.UpdateLastRoundActuals(session, actuals));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RejectsUnknownPlayer()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        var actuals = CreateActuals(session, 0, 1, 0);
+        actuals.Remove(session.Players[2].Id);
+        actuals[Guid.NewGuid()] = 0;
+
+        Assert.Throws<ArgumentException>(() => service.UpdateLastRoundActuals(session, actuals));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RejectsPausedGame()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        service.PauseGame(session);
+
+        Assert.Throws<InvalidOperationException>(() =>
+            service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 1, 0)));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RejectsEndedGame()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        service.EndGame(session);
+
+        Assert.Throws<InvalidOperationException>(() =>
+            service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 1, 0)));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RejectsUnfinishedLatestRound()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        service.StartRound(session, TrumpSuit.Spades, CreateActuals(session, 0, 0, 0));
+
+        Assert.Throws<InvalidOperationException>(() =>
+            service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 2, 0)));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RejectsGameWithoutRounds()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+        session.Rounds.Clear();
+        session.CurrentRound = 0;
+
+        Assert.Throws<InvalidOperationException>(() =>
+            service.UpdateLastRoundActuals(session, CreateActuals(session, 0, 0, 0)));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RejectsNullSession()
+    {
+        var service = new ScoreService();
+
+        Assert.Throws<ArgumentNullException>(() =>
+            service.UpdateLastRoundActuals(null!, new Dictionary<Guid, int>()));
+    }
+
+    [Test]
+    public void UpdateLastRoundActuals_RejectsNullActuals()
+    {
+        var (service, session) = CreateCompletedRoundForCorrection();
+
+        Assert.Throws<ArgumentNullException>(() => service.UpdateLastRoundActuals(session, null!));
+    }
+
+    private static (ScoreService Service, ScoreSession Session) CreateCompletedRoundForCorrection(int highestScore = 0)
+    {
+        var service = new ScoreService();
+        var session = service.StartGame(new Group
+        {
+            Name = "Correction",
+            Players = new List<Player>
+            {
+                new Player { Name = "A", Order = 0, HighestScore = highestScore },
+                new Player { Name = "B", Order = 1, HighestScore = highestScore },
+                new Player { Name = "C", Order = 2, HighestScore = highestScore }
+            }
+        });
+        var bids = CreateActuals(session, 1, 0, 0);
+        service.StartRound(session, TrumpSuit.Hearts, bids);
+        service.FinishRound(session, bids);
+        return (service, session);
+    }
+
+    private static Dictionary<Guid, int> CreateActuals(ScoreSession session, int first, int second, int third)
+    {
+        return new Dictionary<Guid, int>
+        {
+            [session.Players[0].Id] = first,
+            [session.Players[1].Id] = second,
+            [session.Players[2].Id] = third
+        };
+    }
+
+    [Test]
     public void StartGame_CreatesSession_WithCorrectMaxRoundsForFourPlayers()
     {
         var scoreService = new ScoreService();
@@ -126,7 +370,7 @@ public class ScoreServiceTests
 
         var session = scoreService.StartGame(group);
 
-        Assert.AreEqual(players.Count, session.BidTotalRuleStartRound);
+        Assert.AreEqual(players.Count + 1, session.BidTotalRuleStartRound);
     }
 
     [Test]
@@ -313,6 +557,32 @@ public class ScoreServiceTests
 
         Assert.NotNull(current);
         Assert.AreEqual(sessionA.Id, current!.Id);
+    }
+
+    [TestCase(3, 0)]
+    [TestCase(3, 1)]
+    [TestCase(4, 0)]
+    [TestCase(4, 1)]
+    public void SelectSavedGame_AfterAnotherGameWasRead_ReturnsSelectedSession(int secondPlayerCount, int selectedIndex)
+    {
+        var (service, firstSession) = CreateCompletedRoundForCorrection();
+        service.PauseGame(firstSession);
+        var secondSession = service.StartGame(new Group
+        {
+            Name = "Second saved game",
+            Players = Enumerable.Range(0, secondPlayerCount)
+                .Select(index => new Player { Name = $"Second {index + 1}", Order = index })
+                .ToList()
+        });
+        service.PauseGame(secondSession);
+        var sessions = new[] { firstSession, secondSession };
+        service.SelectSavedGame(sessions[1 - selectedIndex].Id);
+        _ = service.GetCurrentSession();
+
+        service.SelectSavedGame(sessions[selectedIndex].Id);
+        var selected = service.GetCurrentSession();
+
+        Assert.That(selected, Is.SameAs(sessions[selectedIndex]));
     }
 
     [Test]
