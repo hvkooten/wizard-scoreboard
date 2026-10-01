@@ -64,6 +64,46 @@ public class LocalizationTests
         }
     }
 
+    [TestCase("en-US", "Bid-not-total rule from round:")]
+    [TestCase("nl-NL", "Bied-niet-totaal-regel vanaf ronde:")]
+    [TestCase("de-DE", "Gebot-nicht-Summe-Regel ab Runde:")]
+    [TestCase("es-ES", "Regla de apuesta distinta del total desde la ronda:")]
+    [TestCase("fr-FR", "R\u00e8gle de mise diff\u00e9rente du total \u00e0 partir de la manche :")]
+    public void BidTotalRuleStartRound_UsesBidNotTotalNameInSelectedLanguage(string cultureName, string expected)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+
+            Assert.That(Localization.GetString("BidTotalRuleStartRound"), Is.EqualTo(expected));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
+    [TestCase("en-US", "Group name")]
+    [TestCase("nl-NL", "Groepsnaam")]
+    [TestCase("de-DE", "Gruppenname")]
+    [TestCase("es-ES", "Nombre del grupo")]
+    [TestCase("fr-FR", "Nom du groupe")]
+    public void GroupName_UsesSelectedLanguage(string cultureName, string expected)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+
+            Assert.That(Localization.GetString("GroupName"), Is.EqualTo(expected));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
     [TestCase("en-US", "Dealer picks trump")]
     [TestCase("nl-NL", "Deler kiest troef")]
     [TestCase("de-DE", "Geber w\u00e4hlt Trumpf")]

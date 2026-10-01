@@ -3,8 +3,8 @@
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>¿Cuántas bazas ganó cada jugador?</value></data>
   <data name="BidsPerPlayerLabel" xml:space="preserve"><value>¿Cuántas bazas apuesta cada jugador?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>La apuesta de {0} debe estar entre 0 y {1}.</value></data>
-  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Regla del total de apuestas desde la ronda:</value></data>
-  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Regla del total de apuestas predeterminada desde la ronda:</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Regla de apuesta distinta del total desde la ronda:</value></data>
+  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Regla de apuesta distinta del total predeterminada desde la ronda:</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancelar</value></data>
   <data name="Back" xml:space="preserve"><value>Atrás</value></data>
   <data name="Blue" xml:space="preserve"><value>Azul</value></data>
@@ -12,6 +12,7 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Este juego sigue en curso. ¿Quieres detenerlo?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>¿Finalizar juego?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Crear grupo</value></data>
+  <data name="GroupName" xml:space="preserve"><value>Nombre del grupo</value></data>
   <data name="SaveGroup" xml:space="preserve"><value>Guardar grupo</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Repartidor) no puede apostar: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Repartidor) puede apostar cualquier número</value></data>

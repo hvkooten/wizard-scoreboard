@@ -2,8 +2,8 @@
 <root>
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>Wie viele Stiche hat jeder Spieler gewonnen?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Gebot von {0} muss zwischen 0 und {1} liegen.</value></data>
-  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Gebotssummenregel ab Runde:</value></data>
-  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Standard-Gebotssummenregel ab Runde:</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Gebot-nicht-Summe-Regel ab Runde:</value></data>
+  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Standard-Gebot-nicht-Summe-Regel ab Runde:</value></data>
   <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Wie viele Stiche bietet jeder Spieler?</value></data>
   <data name="Cancel" xml:space="preserve"><value>Abbrechen</value></data>
   <data name="Back" xml:space="preserve"><value>Zurück</value></data>
@@ -12,6 +12,7 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Dieses Spiel lauft noch. Wirklich beenden?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Spiel beenden?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Gruppe erstellen</value></data>
+  <data name="GroupName" xml:space="preserve"><value>Gruppenname</value></data>
   <data name="SaveGroup" xml:space="preserve"><value>Gruppe speichern</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Kartengeber) darf nicht bieten: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Kartengeber) darf beliebig bieten</value></data>

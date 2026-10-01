@@ -3,8 +3,8 @@
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>Combien de plis chaque joueur a-t-il remportés ?</value></data>
   <data name="BidsPerPlayerLabel" xml:space="preserve"><value>Combien de plis chaque joueur annonce-t-il ?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>L'enchère de {0} doit être comprise entre 0 et {1}.</value></data>
-  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Règle du total des mises à partir de la manche :</value></data>
-  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Règle du total des mises par défaut à partir de la manche :</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Règle de mise différente du total à partir de la manche :</value></data>
+  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Règle de mise différente du total par défaut à partir de la manche :</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuler</value></data>
   <data name="Back" xml:space="preserve"><value>Retour</value></data>
   <data name="Blue" xml:space="preserve"><value>Bleu</value></data>
@@ -12,6 +12,7 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>Cette partie est encore en cours. Voulez-vous l'arrêter ?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>Terminer la partie ?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Créer un groupe</value></data>
+  <data name="GroupName" xml:space="preserve"><value>Nom du groupe</value></data>
   <data name="SaveGroup" xml:space="preserve"><value>Enregistrer le groupe</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Donneur) ne peut pas enchérir: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Donneur) peut enchérir n'importe quel nombre</value></data>

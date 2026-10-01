@@ -156,7 +156,14 @@ public class GroupsPage : ContentPage
                 Spacing = 15,
                 Children =
                 {
+                    new Label { Text = Localization.GetString("GroupName") },
                     CreateGroupNameRow(),
+                    // Windows shows the picker title as a header; other platforms only show it in the popup.
+                    new Label
+                    {
+                        Text = Localization.GetString("BidTotalRuleStartRound"),
+                        IsVisible = DeviceInfo.Platform != DevicePlatform.WinUI
+                    },
                     bidTotalRulePicker,
                     new HorizontalStackLayout
                     {
@@ -525,7 +532,7 @@ public class GroupsPage : ContentPage
             return;
         }
 
-        keyboardSpacer.HeightRequest = Math.Max(Height, 400);
+        keyboardSpacer.HeightRequest = Math.Max(Height/2, 400);
         keyboardSpacer.IsVisible = true;
 
         // Wait for the layout to include the spacer before scrolling the entry to the top.

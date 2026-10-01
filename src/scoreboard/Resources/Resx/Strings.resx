@@ -22,8 +22,8 @@
   <data name="ActualsPerPlayerLabel" xml:space="preserve"><value>How many tricks did each player win?</value></data>
   <data name="BidsPerPlayerLabel" xml:space="preserve"><value>How many tricks does each player bid?</value></data>
   <data name="BidRangeErrorTemplate" xml:space="preserve"><value>Bid for {0} must be between 0 and {1}.</value></data>
-  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Bid total rule from round:</value></data>
-  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Default bid total rule from round:</value></data>
+  <data name="BidTotalRuleStartRound" xml:space="preserve"><value>Bid-not-total rule from round:</value></data>
+  <data name="DefaultBidTotalRuleStartRound" xml:space="preserve"><value>Default bid-not-total rule from round:</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Back" xml:space="preserve"><value>Back</value></data>
   <data name="Blue" xml:space="preserve"><value>Blue</value></data>
@@ -31,6 +31,7 @@
   <data name="ConfirmEndGameMessage" xml:space="preserve"><value>This game is still in progress. Do you want to stop it?</value></data>
   <data name="ConfirmEndGameTitle" xml:space="preserve"><value>End game?</value></data>
   <data name="CreatorGroup" xml:space="preserve"><value>Create Group</value></data>
+  <data name="GroupName" xml:space="preserve"><value>Group name</value></data>
   <data name="SaveGroup" xml:space="preserve"><value>Save group</value></data>
   <data name="DealerCannotBidTemplate" xml:space="preserve"><value>⚠ {0} (Dealer) cannot bid: {1}</value></data>
   <data name="DealerCanBidAnyTemplate" xml:space="preserve"><value>{0} (Dealer) can bid any number</value></data>

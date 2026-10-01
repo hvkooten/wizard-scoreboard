@@ -19,3 +19,7 @@ These instructions apply only to the WizardScoreboard solution in this repositor
 
 ## Beta Welcome Message
 - In WizardScoreboard's beta welcome message, remind users to take and attach screenshots of bugs/issues.
+
+## Editing Resource Files (.resx)
+- When changing a translation, always replace the complete line including the `<data name="..." xml:space="preserve">` wrapper and closing `</data>`, never only the `<value>...</value>` part. Replacing only the value has repeatedly removed the key, so the string could no longer be found.
+- After editing `.resx` files, verify that no lines consist of only a bare `<value>` element and that every changed key still exists in every language file.

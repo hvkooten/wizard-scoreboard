@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Copilot/">
+    <File Path=".github/copilot-instructions.md" />
     <File Path="Copilot.discussion.txt" />
     <File Path="images/WhatsApp Image 2026-09-28 at 23.00.18.jpeg" />
     <File Path="images/WhatsApp Image 2026-09-28 at 23.00.19.jpeg" />
