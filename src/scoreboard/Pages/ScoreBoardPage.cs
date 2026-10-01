@@ -1159,7 +1159,8 @@ public class ScoreBoardPage : ContentPage
         // Its color follows a dark version of the chosen trump, or gray when none is selected yet.
         var roundWatermark = CreateRoundWatermark(currentRoundNumber, TrumpSuit.None);
         var noTrumpBg = AppColors.IsDark ? Colors.Black : AppColors.Surface;
-        var bidBackdrop = CreateWatermarkBackdrop(noTrumpBg, roundWatermark, scroll);
+        var bidFooter = CreateFormFooter();
+        var bidBackdrop = CreateWatermarkBackdrop(noTrumpBg, roundWatermark, CreateFormWithFooter(scroll, bidFooter));
 
         // Header: round number
         population.Children.Add(new Label
@@ -1323,11 +1324,13 @@ public class ScoreBoardPage : ContentPage
         {
             var sum = bidEntries.Values.Sum(entry =>
                 int.TryParse(entry.Text, out var v) ? v : 0);
-            // Only warn (red) once every player has entered a bid and the total equals the round.
+            // Only warn (red) once every player has entered a bid and the total equals the round,
+            // and only when the bid total rule forbids that total for this round.
             // While bids are still being entered the total can still be changed, so keep it green.
             var allEntered = touchedBids.Count == bidEntries.Count;
+            var isRuleActive = isBidTotalRuleEnabled && currentRoundNumber >= currentSession.BidTotalRuleStartRound;
             totalBidsLabel.Text = string.Format(Localization.GetString("TotalBidsLabel"), sum, currentRoundNumber);
-            totalBidsLabel.TextColor = allEntered && sum == currentRoundNumber ? AppColors.WarningText : AppColors.SuccessText;
+            totalBidsLabel.TextColor = isRuleActive && allEntered && sum == currentRoundNumber ? AppColors.WarningText : AppColors.SuccessText;
             UpdateDealerWarning();
         }
 
@@ -1392,8 +1395,8 @@ public class ScoreBoardPage : ContentPage
         doneButton = CreateDialogButton("Ok", isEnabled: false);
         var cancelButton = CreateDialogButton("Cancel");
         var buttonsRow = CreateTwoButtonRow(doneButton, cancelButton);
-        population.Children.Add(buttonsRow);
-        population.Children.Add(trumpHintLabel);
+        bidFooter.Children.Add(trumpHintLabel);
+        bidFooter.Children.Add(buttonsRow);
         UpdateTrumpSelectionState();
 
         // Bids and actuals share one modal page; only its content is swapped between the steps.
@@ -1539,7 +1542,8 @@ public class ScoreBoardPage : ContentPage
         // Large watermark of the current round number shown behind the actuals form,
         // colored with a dark version of the chosen trump (matching the bidding popup).
         var actualsWatermark = CreateRoundWatermark(round.RoundNumber, trump);
-        var actualsBackdrop = CreateWatermarkBackdrop(lightBg, actualsWatermark, scrollActuals);
+        var actualsFooter = CreateFormFooter();
+        var actualsBackdrop = CreateWatermarkBackdrop(lightBg, actualsWatermark, CreateFormWithFooter(scrollActuals, actualsFooter));
         var totalActualsLabel = new Label
         {
             FontSize = 16,
@@ -1641,7 +1645,7 @@ public class ScoreBoardPage : ContentPage
         doneActuals = CreateDialogButton("Ok");
         backActuals = CreateDialogButton(isEditing ? "Cancel" : "Back");
         var actualsButtonsRow = CreateTwoButtonRow(backActuals, doneActuals);
-        popActuals.Children.Add(actualsButtonsRow);
+        actualsFooter.Children.Add(actualsButtonsRow);
         UpdateActualsTotal();
 
         // In edit mode, cancellation never returns to bidding or mutates the saved round.
@@ -2028,6 +2032,25 @@ public class ScoreBoardPage : ContentPage
         backdrop.Add(watermark);
         backdrop.Add(content);
         return backdrop;
+    }
+
+    // Footer pinned below the scrollable form so the dialog buttons stay at the bottom of the screen.
+    private static VerticalStackLayout CreateFormFooter() => new()
+    {
+        Spacing = 8,
+        Padding = new Thickness(16, 8, 16, 12),
+        BackgroundColor = Colors.Transparent
+    };
+
+    private static Grid CreateFormWithFooter(ScrollView scroll, View footer)
+    {
+        var layout = new Grid
+        {
+            RowDefinitions = { new RowDefinition(GridLength.Star), new RowDefinition(GridLength.Auto) }
+        };
+        layout.Add(scroll, 0, 0);
+        layout.Add(footer, 0, 1);
+        return layout;
     }
 
     // Standard full-width dialog button; only the text differs between usages.
