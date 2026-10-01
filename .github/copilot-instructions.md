@@ -14,3 +14,6 @@ These instructions apply only to the WizardScoreboard solution in this repositor
 
 ## User Interface Guidelines
 - In WizardScoreboard's tricks-entry and latest-round editing dialogs, keep player names and their original bids visible, including the dealer designation; bids remain read-only when correcting results.
+
+## Beta Welcome Message
+- In WizardScoreboard's beta welcome message, remind users to take and attach screenshots of bugs/issues.

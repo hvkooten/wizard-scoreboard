@@ -10,6 +10,7 @@ public sealed class UserSettings
     private const string DefaultBidTotalRuleKey = "default_bid_total_rule";
     private const string KeepScreenAwakeKey = "keep_screen_awake";
     private const string BoldAllTextKey = "bold_all_text";
+    private const string SimplifiedButtonsKey = "simplified_buttons";
     private const string AppThemeKey = "app_theme";
     private const string FirstLaunchKey = "first_launch_done";
     private const string LanguageKey = "language";
@@ -72,6 +73,13 @@ public sealed class UserSettings
     {
         get => preferences.Get(BoldAllTextKey, false);
         set => preferences.Set(BoldAllTextKey, value);
+    }
+
+    /// <summary>Gets or sets whether secondary scoreboard actions use compact icons.</summary>
+    public bool SimplifiedButtons
+    {
+        get => preferences.Get(SimplifiedButtonsKey, false);
+        set => preferences.Set(SimplifiedButtonsKey, value);
     }
 
     /// <summary>Gets or sets the default bid-total rule for new groups.</summary>

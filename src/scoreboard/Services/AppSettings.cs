@@ -50,6 +50,13 @@ public static class AppSettings
         set => settings.BoldAllText = value;
     }
 
+    // When true, secondary scoreboard actions use right-aligned compact icons.
+    public static bool SimplifiedButtons
+    {
+        get => settings.SimplifiedButtons;
+        set => settings.SimplifiedButtons = value;
+    }
+
     // Default bid-total-rule start round applied when creating a new group.
     // Group.PlayerCountRule means "follow the number of players".
     public static int DefaultBidTotalRuleStartRound

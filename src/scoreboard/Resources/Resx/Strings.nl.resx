@@ -98,6 +98,7 @@ Als de PDF niet laadt, gebruik de link.</value></data>
   <data name="TotalBidsLabel" xml:space="preserve"><value>Totaal biedingen: {0} / {1}</value></data>
   <data name="KeepScreenAwake" xml:space="preserve"><value>Scherm aan houden tijdens een spel</value></data>
   <data name="BoldAllText" xml:space="preserve"><value>Alle tekst vet</value></data>
+	<data name="SimplifiedButtons" xml:space="preserve"><value>Vereenvoudigde knoppen</value></data>
   <data name="AppThemeTitle" xml:space="preserve"><value>Thema</value></data>
   <data name="AppThemeSystem" xml:space="preserve"><value>Systeem</value></data>
   <data name="AppThemeLight" xml:space="preserve"><value>Licht</value></data>

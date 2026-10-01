@@ -8,6 +8,44 @@ namespace WizardScoreboard.Tests;
 
 public class UserSettingsTests
 {
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SimplifiedButtons_DefaultsToFalseRegardlessOfFirstLaunch(bool firstLaunch)
+    {
+        var settings = new UserSettings(new MemoryPreferences()) { IsFirstLaunch = firstLaunch };
+
+        Assert.That(settings.SimplifiedButtons, Is.False);
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SimplifiedButtons_PersistsChangedChoiceAcrossSettingsInstances(bool enabled)
+    {
+        var preferences = new MemoryPreferences();
+        var settings = new UserSettings(preferences) { SimplifiedButtons = !enabled };
+
+        settings.SimplifiedButtons = enabled;
+
+        Assert.That(new UserSettings(preferences).SimplifiedButtons, Is.EqualTo(enabled));
+    }
+
+    [TestCase(true, true)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(false, false)]
+    public void ApplyFirstLaunchDefaults_PreservesSimplifiedButtonsChoice(bool firstLaunch, bool enabled)
+    {
+        var settings = new UserSettings(new MemoryPreferences())
+        {
+            IsFirstLaunch = firstLaunch,
+            SimplifiedButtons = enabled
+        };
+
+        settings.ApplyFirstLaunchDefaults();
+
+        Assert.That(settings.SimplifiedButtons, Is.EqualTo(enabled));
+    }
+
     [TestCase(true, true)]
     [TestCase(true, false)]
     [TestCase(false, true)]

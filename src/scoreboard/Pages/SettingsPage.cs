@@ -123,6 +123,15 @@ public class SettingsPage : ContentPage
 
         var boldAllTextRow = CreateSettingRow(Localization.GetString("BoldAllText"), boldAllTextSwitch);
 
+        var simplifiedButtonsSwitch = new Switch
+        {
+            IsToggled = AppSettings.SimplifiedButtons,
+            VerticalOptions = LayoutOptions.Center
+        };
+        SemanticProperties.SetDescription(simplifiedButtonsSwitch, Localization.GetString("SimplifiedButtons"));
+        simplifiedButtonsSwitch.Toggled += (s, e) => AppSettings.SimplifiedButtons = e.Value;
+        var simplifiedButtonsRow = CreateSettingRow(Localization.GetString("SimplifiedButtons"), simplifiedButtonsSwitch);
+
         var themePicker = new Picker();
         themePicker.Items.Add(Localization.GetString("AppThemeSystem"));
         themePicker.Items.Add(Localization.GetString("AppThemeLight"));
@@ -149,6 +158,7 @@ public class SettingsPage : ContentPage
                 CreatePickerSection(Localization.GetString("DefaultBidTotalRuleStartRound"), bidTotalRulePicker),
                 keepScreenAwakeRow,
                 boldAllTextRow,
+                simplifiedButtonsRow,
                 UiFactory.CreateBetaWelcomeOptOut()
             }
         };

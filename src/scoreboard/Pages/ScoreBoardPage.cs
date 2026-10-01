@@ -24,6 +24,9 @@ public class ScoreBoardPage : ContentPage
     private Button endButton;
     private Button nextRoundButton;
     private Button editLastRoundButton;
+    private readonly FlexLayout buttonRow;
+    private readonly FlexLayout secondaryButtonRow;
+    private bool? simplifiedButtons;
     private ScrollView scoreboardScrollView;
     private readonly Dictionary<(Grid Grid, int Row, int Column), Border> scoreboardCells = new();
 
@@ -71,12 +74,20 @@ public class ScoreBoardPage : ContentPage
         nextRoundButton.Clicked += async (s, e) => await StartNextRoundAsync();
         editLastRoundButton.Clicked += async (s, e) => await EditLastRoundAsync();
 
-        var buttonRow = new FlexLayout
+        buttonRow = new FlexLayout
         {
             Direction = FlexDirection.Row,
             Wrap = FlexWrap.Wrap,
             Children = { startButton, nextRoundButton, editLastRoundButton, pauseButton, endButton }
         };
+        secondaryButtonRow = new FlexLayout
+        {
+            Direction = FlexDirection.Row,
+            JustifyContent = FlexJustify.End,
+            AlignItems = FlexAlignItems.Start
+        };
+        FlexLayout.SetGrow(secondaryButtonRow, 1);
+        FlexLayout.SetShrink(secondaryButtonRow, 0);
         foreach (var button in buttonRow.Children.OfType<Button>())
         {
             button.Margin = new Thickness(0, 0, 8, 8);
@@ -150,6 +161,57 @@ public class ScoreBoardPage : ContentPage
         RefreshUI();
     }
 
+    private void UpdateActionButtons(bool isPaused)
+    {
+        var simplified = AppSettings.SimplifiedButtons;
+        if (simplifiedButtons != simplified)
+        {
+            buttonRow.Children.Clear();
+            secondaryButtonRow.Children.Clear();
+            buttonRow.Children.Add(startButton);
+            buttonRow.Children.Add(nextRoundButton);
+
+            var secondaryButtons = simplified ? secondaryButtonRow : buttonRow;
+            secondaryButtons.Children.Add(editLastRoundButton);
+            secondaryButtons.Children.Add(pauseButton);
+            secondaryButtons.Children.Add(endButton);
+            if (simplified)
+                buttonRow.Children.Add(secondaryButtonRow);
+
+            foreach (var button in new[] { editLastRoundButton, pauseButton, endButton })
+            {
+                if (simplified)
+                {
+                    button.WidthRequest = 48;
+                    button.HeightRequest = 48;
+                    button.Padding = new Thickness(0);
+                    button.FontSize = 22;
+                }
+                else
+                {
+                    button.ClearValue(WidthRequestProperty);
+                    button.ClearValue(HeightRequestProperty);
+                    button.ClearValue(Button.PaddingProperty);
+                    button.ClearValue(Button.FontSizeProperty);
+                }
+            }
+            endButton.Margin = new Thickness(0, 0, simplified ? 0 : 8, 8);
+            simplifiedButtons = simplified;
+        }
+
+        SetActionCaption(editLastRoundButton, "EditLastRound", "\u270E", simplified);
+        SetActionCaption(pauseButton, isPaused ? "ResumeGame" : "PauseGame", isPaused ? "\u25B6" : "\u23F8", simplified);
+        SetActionCaption(endButton, "EndGame", "\u23F9", simplified);
+    }
+
+    private static void SetActionCaption(Button button, string resourceKey, string icon, bool simplified)
+    {
+        var caption = Localization.GetString(resourceKey);
+        button.Text = simplified ? icon : caption;
+        SemanticProperties.SetDescription(button, caption);
+        ToolTipProperties.SetText(button, caption);
+    }
+
     private void RefreshUI()
     {
         var rebuildGrid = currentSession == null
@@ -180,9 +242,7 @@ public class ScoreBoardPage : ContentPage
 
         startButton.IsEnabled = hasAvailableGroup && (!hasSession || isPausedSession);
         pauseButton.IsEnabled = isActiveSession;
-        pauseButton.Text = isPausedSession
-            ? Localization.GetString("ResumeGame")
-            : Localization.GetString("PauseGame");
+        UpdateActionButtons(isPausedSession);
         nextRoundButton.IsEnabled = hasRoundsRemaining;
         editLastRoundButton.IsEnabled = isActiveSession && !isPausedSession
             && currentSession?.Rounds.LastOrDefault()?.ActualByPlayer.Count > 0;

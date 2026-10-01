@@ -9,6 +9,28 @@ namespace WizardScoreboard.Tests;
 [NonParallelizable]
 public class LocalizationTests
 {
+    [TestCase("en-US", "Simplified buttons")]
+    [TestCase("nl-NL", "Vereenvoudigde knoppen")]
+    [TestCase("de-DE", "Vereinfachte Schaltfl\u00e4chen")]
+    [TestCase("es-ES", "Botones simplificados")]
+    [TestCase("fr-FR", "Boutons simplifi\u00e9s")]
+    public void SimplifiedButtons_UsesSelectedLanguage(string cultureName, string expected)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+
+            var caption = Localization.GetString("SimplifiedButtons");
+
+            Assert.That(caption, Is.EqualTo(expected));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
     [TestCase("en-US", "Don't forget to take screenshots of bugs and issues and attach them to your report!")]
     [TestCase("nl-NL", "Vergeet vooral niet screenshots van bugs en problemen te maken en bij je melding te voegen!")]
     [TestCase("de-DE", "Vergesst nicht, Screenshots von Fehlern und Problemen zu machen und eurem Bericht beizuf\u00fcgen!")]
