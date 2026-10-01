@@ -158,4 +158,18 @@ Pixel density: {10}
 Orientation: {11}
 Refresh rate (Hz): {12}
 App language: {13}</value></data>
+  <data name="BetaWelcomeTitle" xml:space="preserve"><value>Bienvenue aux bêta-testeurs !</value></data>
+  <data name="BetaWelcomeBody" xml:space="preserve"><value>Merci de contribuer aux tests de Wizard Scoreboard ! Il s'agit d'une version bêta : vous pouvez donc rencontrer des bugs ou des fonctionnalités inachevées.
+
+Testez tout : créer et modifier des groupes, saisir les annonces et les plis remportés, vérifier les scores et les records, enregistrer et reprendre des parties et essayer tous les paramètres. Faites attention à la navigation, à la lisibilité, aux différentes langues, aux tailles d'écran et à tout comportement inattendu.
+
+Une fonctionnalité manque ou vous avez une idée ? Signalez vos suggestions, fonctionnalités supplémentaires, bugs et problèmes via « {0} » {1}. Vous pouvez ouvrir votre messagerie ou copier le rapport dans votre messagerie web. Décrivez les étapes, le résultat attendu et ce qui s'est réellement passé.
+
+N'oubliez surtout pas de faire des captures d'écran des bugs et problèmes et de les joindre au rapport !
+
+Avant tout, amusez-vous bien en jouant et en utilisant l'application ! Vos retours nous aident à améliorer Wizard Scoreboard.</value></data>
+  <data name="BetaReportLocationWindows" xml:space="preserve"><value>sur la page des paramètres</value></data>
+  <data name="BetaReportLocationMobile" xml:space="preserve"><value>dans le menu latéral</value></data>
+  <data name="BetaWelcomeDoNotShowAgain" xml:space="preserve"><value>Ne plus afficher ces informations sur la bêta</value></data>
+  <data name="BetaWelcomeClose" xml:space="preserve"><value>Fermer et continuer</value></data>
 </root>

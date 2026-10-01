@@ -158,4 +158,18 @@ Pixel density: {10}
 Orientation: {11}
 Refresh rate (Hz): {12}
 App language: {13}</value></data>
+  <data name="BetaWelcomeTitle" xml:space="preserve"><value>Welkom, bètatesters!</value></data>
+  <data name="BetaWelcomeBody" xml:space="preserve"><value>Bedankt dat je helpt met het testen van Wizard Scoreboard! Dit is een bètaversie, dus je kunt fouten of nog onvoltooide functies tegenkomen.
+
+Test alsjeblieft alles: groepen aanmaken en wijzigen, voorspellingen en behaalde slagen invoeren, scores en highscores controleren, spellen opslaan en hervatten en alle instellingen uitproberen. Let op de navigatie, leesbaarheid, verschillende talen, schermformaten en alles wat onverwacht werkt.
+
+Mis je een functie of heb je een idee? Meld suggesties, aanvullende functionaliteit, bugs en problemen via “{0}” {1}. Je kunt je e-mailapp openen of het rapport naar webmail kopiëren. Beschrijf de stappen, wat je verwachtte en wat er daadwerkelijk gebeurde.
+
+Vergeet vooral niet screenshots van bugs en problemen te maken en bij je melding te voegen!
+
+Heb bovenal heel veel plezier bij het spelen en gebruiken van de app. Jouw feedback helpt Wizard Scoreboard beter te maken!</value></data>
+  <data name="BetaReportLocationWindows" xml:space="preserve"><value>op de instellingenpagina</value></data>
+  <data name="BetaReportLocationMobile" xml:space="preserve"><value>in het uitklapmenu</value></data>
+  <data name="BetaWelcomeDoNotShowAgain" xml:space="preserve"><value>Deze bèta-informatie niet opnieuw tonen</value></data>
+  <data name="BetaWelcomeClose" xml:space="preserve"><value>Sluiten en doorgaan</value></data>
 </root>

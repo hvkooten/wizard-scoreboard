@@ -148,7 +148,8 @@ public class SettingsPage : ContentPage
                 trumpPalettePicker,
                 CreatePickerSection(Localization.GetString("DefaultBidTotalRuleStartRound"), bidTotalRulePicker),
                 keepScreenAwakeRow,
-                boldAllTextRow
+                boldAllTextRow,
+                UiFactory.CreateBetaWelcomeOptOut()
             }
         };
 

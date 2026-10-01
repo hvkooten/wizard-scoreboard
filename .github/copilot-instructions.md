@@ -2,6 +2,9 @@
 
 These instructions apply only to the WizardScoreboard solution in this repository.
 
+## Testing
+- Wait with running unit test, till all unit tests are created and the solution builds successfully, to avoid unnecessary test failures.
+
 ## Versioning
 - Increment `<ApplicationVersion>` in `src/scoreboard/WizardScoreboard.csproj` by 1 on every user request that changes code, so the user can see there is a new build.
 

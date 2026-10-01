@@ -22,6 +22,13 @@ public static class AppSettings
         set => settings.IsFirstLaunch = value;
     }
 
+    // When true, beta information is shown after the splash screen on each app launch.
+    public static bool ShowBetaWelcome
+    {
+        get => settings.ShowBetaWelcome;
+        set => settings.ShowBetaWelcome = value;
+    }
+
     // User-selected theme. AppTheme.Unspecified means "follow the system setting".
     public static AppTheme Theme
     {

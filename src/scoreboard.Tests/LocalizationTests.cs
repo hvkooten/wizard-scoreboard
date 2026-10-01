@@ -9,6 +9,84 @@ namespace WizardScoreboard.Tests;
 [NonParallelizable]
 public class LocalizationTests
 {
+    [TestCase("en-US", "Don't forget to take screenshots of bugs and issues and attach them to your report!")]
+    [TestCase("nl-NL", "Vergeet vooral niet screenshots van bugs en problemen te maken en bij je melding te voegen!")]
+    [TestCase("de-DE", "Vergesst nicht, Screenshots von Fehlern und Problemen zu machen und eurem Bericht beizuf\u00fcgen!")]
+    [TestCase("es-ES", "\u00a1No olvides hacer capturas de pantalla de los errores y problemas y adjuntarlas al informe!")]
+    [TestCase("fr-FR", "N'oubliez surtout pas de faire des captures d'\u00e9cran des bugs et probl\u00e8mes et de les joindre au rapport !")]
+    public void BetaWelcomeBody_RemindsTestersToTakeScreenshots(string cultureName, string reminder)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+
+            var body = Localization.GetString("BetaWelcomeBody");
+
+            Assert.That(body.ReplaceLineEndings("\n").Split("\n\n"), Does.Contain(reminder));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
+    [TestCase("en-US")]
+    [TestCase("nl-NL")]
+    [TestCase("de-DE")]
+    [TestCase("es-ES")]
+    [TestCase("fr-FR")]
+    public void BetaWelcomeBody_IncludesReportActionAndLocation(string cultureName)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+            var values = new[] { "[report-action]", "[report-location]" };
+
+            var body = string.Format(Localization.GetString("BetaWelcomeBody"), values);
+
+            Assert.That(Regex.Matches(body, @"\[report-[a-z]+\]").Select(match => match.Value),
+                Is.EqualTo(values));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
+    [TestCase("en-US", "BetaWelcomeTitle", "Welcome, beta testers!")]
+    [TestCase("nl-NL", "BetaWelcomeTitle", "Welkom, b\u00e8tatesters!")]
+    [TestCase("de-DE", "BetaWelcomeTitle", "Willkommen, Betatester!")]
+    [TestCase("es-ES", "BetaWelcomeTitle", "\u00a1Bienvenidos, probadores de la beta!")]
+    [TestCase("fr-FR", "BetaWelcomeTitle", "Bienvenue aux b\u00eata-testeurs !")]
+    [TestCase("en-US", "BetaWelcomeDoNotShowAgain", "Don't show this beta information again")]
+    [TestCase("nl-NL", "BetaWelcomeDoNotShowAgain", "Deze b\u00e8ta-informatie niet opnieuw tonen")]
+    [TestCase("de-DE", "BetaWelcomeDoNotShowAgain", "Diese Beta-Informationen nicht erneut anzeigen")]
+    [TestCase("es-ES", "BetaWelcomeDoNotShowAgain", "No volver a mostrar esta informaci\u00f3n de la beta")]
+    [TestCase("fr-FR", "BetaWelcomeDoNotShowAgain", "Ne plus afficher ces informations sur la b\u00eata")]
+    [TestCase("en-US", "BetaWelcomeClose", "Close and continue")]
+    [TestCase("nl-NL", "BetaWelcomeClose", "Sluiten en doorgaan")]
+    [TestCase("de-DE", "BetaWelcomeClose", "Schlie\u00dfen und fortfahren")]
+    [TestCase("es-ES", "BetaWelcomeClose", "Cerrar y continuar")]
+    [TestCase("fr-FR", "BetaWelcomeClose", "Fermer et continuer")]
+    public void BetaWelcomeLabel_UsesSelectedLanguage(string cultureName, string key, string expected)
+    {
+        var previousCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+
+            var label = Localization.GetString(key);
+
+            Assert.That(label, Is.EqualTo(expected));
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+    }
+
     [TestCase("en-US", "Technical information (automatically added; review before sending):")]
     [TestCase("nl-NL", "Technische informatie (automatisch toegevoegd; controleer voor verzending):")]
     [TestCase("de-DE", "Technische Informationen (automatisch hinzugef\u00fcgt; vor dem Senden pr\u00fcfen):")]

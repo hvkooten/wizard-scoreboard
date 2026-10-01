@@ -13,6 +13,7 @@ public sealed class UserSettings
     private const string AppThemeKey = "app_theme";
     private const string FirstLaunchKey = "first_launch_done";
     private const string LanguageKey = "language";
+    private const string ShowBetaWelcomeKey = "show_beta_welcome";
     private readonly IPreferences preferences;
 
     /// <summary>
@@ -43,6 +44,13 @@ public sealed class UserSettings
     {
         get => !preferences.Get(FirstLaunchKey, false);
         set => preferences.Set(FirstLaunchKey, !value);
+    }
+
+    /// <summary>Gets or sets whether beta information is shown after the splash screen.</summary>
+    public bool ShowBetaWelcome
+    {
+        get => preferences.Get(ShowBetaWelcomeKey, true);
+        set => preferences.Set(ShowBetaWelcomeKey, value);
     }
 
     /// <summary>Gets or sets the preferred theme.</summary>

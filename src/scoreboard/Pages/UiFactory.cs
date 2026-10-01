@@ -1,4 +1,5 @@
 using WizardScoreboard.Resources;
+using WizardScoreboard.Services;
 
 namespace WizardScoreboard.Pages;
 
@@ -66,6 +67,37 @@ internal static class UiFactory
             BackgroundColor = isPrimary ? AppColors.Primary : AppColors.ToggleInactiveBg,
             TextColor = isPrimary ? Colors.White : AppColors.ToggleInactiveText
         };
+    }
+
+    // Keep the opt-out meaning and persistence identical on the welcome and settings pages.
+    internal static Grid CreateBetaWelcomeOptOut()
+    {
+        var caption = Localization.GetString("BetaWelcomeDoNotShowAgain");
+        var checkBox = new CheckBox
+        {
+            IsChecked = !AppSettings.ShowBetaWelcome,
+            VerticalOptions = LayoutOptions.Center
+        };
+        SemanticProperties.SetDescription(checkBox, caption);
+        checkBox.CheckedChanged += (s, e) => AppSettings.ShowBetaWelcome = !e.Value;
+
+        var label = new Label
+        {
+            Text = caption,
+            VerticalTextAlignment = TextAlignment.Center
+        };
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += (s, e) => checkBox.IsChecked = !checkBox.IsChecked;
+        label.GestureRecognizers.Add(tap);
+
+        var row = new Grid
+        {
+            ColumnDefinitions = { new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Star) },
+            ColumnSpacing = 8
+        };
+        row.Add(checkBox);
+        row.Add(label, 1);
+        return row;
     }
 
     // Shows a localized alert; centralizes the repeated title/message/Ok pattern.

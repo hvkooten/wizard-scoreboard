@@ -8,6 +8,44 @@ namespace WizardScoreboard.Tests;
 
 public class UserSettingsTests
 {
+    [TestCase(true, true)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(false, false)]
+    public void ApplyFirstLaunchDefaults_PreservesBetaWelcomeChoice(bool firstLaunch, bool show)
+    {
+        var settings = new UserSettings(new MemoryPreferences())
+        {
+            IsFirstLaunch = firstLaunch,
+            ShowBetaWelcome = show
+        };
+
+        settings.ApplyFirstLaunchDefaults();
+
+        Assert.That(settings.ShowBetaWelcome, Is.EqualTo(show));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ShowBetaWelcome_PersistsChangedChoiceAcrossSettingsInstances(bool show)
+    {
+        var preferences = new MemoryPreferences();
+        var settings = new UserSettings(preferences) { ShowBetaWelcome = !show };
+
+        settings.ShowBetaWelcome = show;
+
+        Assert.That(new UserSettings(preferences).ShowBetaWelcome, Is.EqualTo(show));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ShowBetaWelcome_DefaultsToTrueRegardlessOfFirstLaunch(bool firstLaunch)
+    {
+        var settings = new UserSettings(new MemoryPreferences()) { IsFirstLaunch = firstLaunch };
+
+        Assert.That(settings.ShowBetaWelcome, Is.True);
+    }
+
     [Test]
     public void Constructor_NullPreferencesThrows()
     {

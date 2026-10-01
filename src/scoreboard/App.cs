@@ -140,9 +140,15 @@ public class App : Application
     // Replaces the window's root page with a fresh AppShell so every page is rebuilt.
     private static void RebuildShell()
     {
-        var shell = Current?.Handler?.MauiContext?.Services.GetService<AppShell>();
         var window = Current?.Windows.FirstOrDefault();
-        if (shell != null && window != null)
+        // A theme change must not skip the splash or dismiss the beta information.
+        if (window?.Page is not AppShell)
+        {
+            return;
+        }
+
+        var shell = Current?.Handler?.MauiContext?.Services.GetService<AppShell>();
+        if (shell != null)
         {
             window.Page = shell;
         }
@@ -228,14 +234,14 @@ public class App : Application
         window.Created += async (s, e) =>
         {
             await Task.Delay(1500);
-            var shell = services.GetRequiredService<AppShell>();
-            if (AppSettings.IsFirstLaunch)
+            if (AppSettings.ShowBetaWelcome)
             {
-                shell.SelectPage(nameof(SettingsPage));
-                AppSettings.IsFirstLaunch = false;
+                window.Page = new BetaWelcomePage(() => ShowMainPage(window));
             }
-
-            window.Page = shell;
+            else
+            {
+                ShowMainPage(window);
+            }
         };
 
         var savedWidth = Preferences.Default.Get(PrefWidth, 0.0);
@@ -257,6 +263,18 @@ public class App : Application
         };
 
         return window;
+    }
+
+    private void ShowMainPage(Window window)
+    {
+        var shell = services.GetRequiredService<AppShell>();
+        if (AppSettings.IsFirstLaunch)
+        {
+            shell.SelectPage(nameof(SettingsPage));
+            AppSettings.IsFirstLaunch = false;
+        }
+
+        window.Page = shell;
     }
 
 private static ContentPage CreateSplashPage() => new()
