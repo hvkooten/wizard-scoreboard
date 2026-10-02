@@ -9,7 +9,7 @@ internal static class BugReportService
 {
     private const string Recipient = "nodorumsolutio@gmail.com";
 
-    internal static async Task ComposeAsync(Page page)
+    internal static async Task ComposeAsync(Page page, string? crashLog = null)
     {
         ArgumentNullException.ThrowIfNull(page);
 
@@ -35,7 +35,13 @@ internal static class BugReportService
             device.Manufacturer, device.Model, device.Idiom, device.DeviceType,
             string.Create(CultureInfo.InvariantCulture, $"{display.Width:0} x {display.Height:0}"), logicalSize,
             display.Density, display.Orientation, display.RefreshRate,
-            CultureInfo.CurrentCulture.Name).ReplaceLineEndings("\r\n");
+            CultureInfo.CurrentCulture.Name);
+        if (!string.IsNullOrWhiteSpace(crashLog))
+        {
+            body += $"\n\n{Localization.GetString("BugReportCrashLogHeading")}\n{crashLog}";
+        }
+
+        body = body.ReplaceLineEndings("\r\n");
         var subject = string.Format(CultureInfo.InvariantCulture,
             Localization.GetString("BugReportSubject"), app.VersionString);
 

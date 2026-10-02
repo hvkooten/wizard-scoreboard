@@ -130,6 +130,9 @@ Asunto: {1}
 
 {2}</value></data>
   <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard {0}</value></data>
+  <data name="BugReportCrashLogHeading" xml:space="preserve"><value>Registro de fallo (añadido automáticamente):</value></data>
+  <data name="CrashReportTitle" xml:space="preserve"><value>La aplicación se ha cerrado inesperadamente</value></data>
+  <data name="CrashReportMessage" xml:space="preserve"><value>La aplicación se cerró inesperadamente la última vez. ¿Quieres enviar un informe de error con los detalles del fallo?</value></data>
   <data name="BugReportEmailUnavailable" xml:space="preserve"><value>No se pudo abrir la aplicación de correo. Configura una aplicación de correo predeterminada e inténtalo de nuevo, o envía tu informe a nodorumsolutio@gmail.com.</value></data>
   <data name="BugReportBodyTemplate" xml:space="preserve"><value>Completa la siguiente información:
 

@@ -149,6 +149,9 @@ Subject: {1}
 
 {2}</value></data>
   <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard {0}</value></data>
+  <data name="BugReportCrashLogHeading" xml:space="preserve"><value>Crash log (automatically added):</value></data>
+  <data name="CrashReportTitle" xml:space="preserve"><value>The app has crashed</value></data>
+  <data name="CrashReportMessage" xml:space="preserve"><value>The app closed unexpectedly last time. Would you like to send a bug report with the crash details?</value></data>
   <data name="BugReportEmailUnavailable" xml:space="preserve"><value>The email app could not be opened. Configure a default email app and try again, or send your report to nodorumsolutio@gmail.com.</value></data>
   <data name="BugReportBodyTemplate" xml:space="preserve"><value>Please complete the following information:
 

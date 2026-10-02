@@ -130,6 +130,9 @@ Onderwerp: {1}
 
 {2}</value></data>
   <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard {0}</value></data>
+  <data name="BugReportCrashLogHeading" xml:space="preserve"><value>Crashlog (automatisch toegevoegd):</value></data>
+  <data name="CrashReportTitle" xml:space="preserve"><value>De app is gecrasht</value></data>
+  <data name="CrashReportMessage" xml:space="preserve"><value>De app is de vorige keer onverwacht afgesloten. Wil je een bugrapport met de crashgegevens versturen?</value></data>
   <data name="BugReportEmailUnavailable" xml:space="preserve"><value>De e-mailapp kon niet worden geopend. Stel een standaard e-mailapp in en probeer het opnieuw, of stuur je melding naar nodorumsolutio@gmail.com.</value></data>
   <data name="BugReportBodyTemplate" xml:space="preserve"><value>Vul de volgende informatie in:
 

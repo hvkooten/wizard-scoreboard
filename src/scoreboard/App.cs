@@ -281,6 +281,51 @@ public class App : Application
         }
 
         window.Page = shell;
+        shell.Loaded += OnShellLoaded;
+
+        async void OnShellLoaded(object? sender, EventArgs e)
+        {
+            shell.Loaded -= OnShellLoaded;
+            await OfferCrashReportAsync(shell);
+        }
+    }
+
+    // A crash cannot reliably show UI, so the report is offered on the next start instead.
+    private static async Task OfferCrashReportAsync(Page page)
+    {
+        var folder = CrashLogStore.GetFolder();
+        if (folder is null)
+        {
+            return;
+        }
+
+        string? crashLog;
+        try
+        {
+            crashLog = CrashLogStore.TakePendingReport(folder);
+        }
+        catch (IOException ex)
+        {
+            System.Diagnostics.Trace.TraceError("{0}", ex);
+            return;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            System.Diagnostics.Trace.TraceError("{0}", ex);
+            return;
+        }
+
+        if (crashLog is null)
+        {
+            return;
+        }
+
+        var send = await page.DisplayAlertAsync(Localization.GetString("CrashReportTitle"),
+            Localization.GetString("CrashReportMessage"), Localization.GetString("Yes"), Localization.GetString("No"));
+        if (send)
+        {
+            await BugReportService.ComposeAsync(page, crashLog);
+        }
     }
 
 private static ContentPage CreateSplashPage() => new()

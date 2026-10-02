@@ -177,17 +177,13 @@ public class MainActivity : MauiAppCompatActivity
     {
         try
         {
-            var dir = Android.App.Application.Context.GetExternalFilesDir(null)?.AbsolutePath
-                      ?? Android.App.Application.Context.FilesDir?.AbsolutePath;
-            if (string.IsNullOrEmpty(dir))
+            var folder = WizardScoreboard.Services.CrashLogStore.GetFolder();
+            if (folder is null)
             {
                 return;
             }
 
-            var folder = Path.Combine(dir, "crashlogs");
-            Directory.CreateDirectory(folder);
-            var file = Path.Combine(folder, $"crash-{DateTime.Now:yyyyMMdd-HHmmss-fff}.log");
-            File.WriteAllText(file, report);
+            var file = WizardScoreboard.Services.CrashLogStore.Write(folder, report);
             Log.Error(TAG, $"Crash report written to: {file}");
         }
         catch (Exception persistError)

@@ -130,6 +130,9 @@ Betreff: {1}
 
 {2}</value></data>
   <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard {0}</value></data>
+  <data name="BugReportCrashLogHeading" xml:space="preserve"><value>Absturzprotokoll (automatisch hinzugefügt):</value></data>
+  <data name="CrashReportTitle" xml:space="preserve"><value>Die App ist abgestürzt</value></data>
+  <data name="CrashReportMessage" xml:space="preserve"><value>Die App wurde beim letzten Mal unerwartet beendet. Möchtest du einen Fehlerbericht mit den Absturzdetails senden?</value></data>
   <data name="BugReportEmailUnavailable" xml:space="preserve"><value>Die E-Mail-App konnte nicht geöffnet werden. Richten Sie eine Standard-E-Mail-App ein und versuchen Sie es erneut, oder senden Sie Ihren Bericht an nodorumsolutio@gmail.com.</value></data>
   <data name="BugReportBodyTemplate" xml:space="preserve"><value>Bitte ergänzen Sie folgende Informationen:
 

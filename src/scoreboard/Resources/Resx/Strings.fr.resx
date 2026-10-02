@@ -130,6 +130,9 @@ Objet : {1}
 
 {2}</value></data>
   <data name="BugReportSubject" xml:space="preserve"><value>Bug report Wizard Scoreboard {0}</value></data>
+  <data name="BugReportCrashLogHeading" xml:space="preserve"><value>Journal de plantage (ajouté automatiquement) :</value></data>
+  <data name="CrashReportTitle" xml:space="preserve"><value>L'application a planté</value></data>
+  <data name="CrashReportMessage" xml:space="preserve"><value>L'application s'est fermée de manière inattendue la dernière fois. Voulez-vous envoyer un rapport de bug avec les détails du plantage ?</value></data>
   <data name="BugReportEmailUnavailable" xml:space="preserve"><value>Impossible d'ouvrir l'application de messagerie. Configurez une application de messagerie par défaut et réessayez, ou envoyez votre rapport à nodorumsolutio@gmail.com.</value></data>
   <data name="BugReportBodyTemplate" xml:space="preserve"><value>Veuillez compléter les informations suivantes :
 

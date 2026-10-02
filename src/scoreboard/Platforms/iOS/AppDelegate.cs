@@ -70,10 +70,13 @@ public class AppDelegate : MauiUIApplicationDelegate
     {
         try
         {
-            var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "crashlogs");
-            Directory.CreateDirectory(folder);
-            var file = Path.Combine(folder, $"crash-{DateTime.Now:yyyyMMdd-HHmmss-fff}.log");
-            File.WriteAllText(file, report);
+            var folder = WizardScoreboard.Services.CrashLogStore.GetFolder();
+            if (folder is null)
+            {
+                return;
+            }
+
+            var file = WizardScoreboard.Services.CrashLogStore.Write(folder, report);
             Console.Error.WriteLine($"Crash report written to: {file}");
         }
         catch (IOException persistError)
