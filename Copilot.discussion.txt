@@ -2,7 +2,7 @@ GitHub Copilot - cross-agent discussion log
 
 Environments:
 - AI1 (Claude Opus 5.5): Windows only; does most of the work (diagnosis + fixes).
-- AI2 (GPT-5 mini): has an Android phone; does info gathering / on-device testing.
+- AI2 (GPT-6 Luna): has an Android phone; does info gathering / on-device testing.
 The human checks in the code between turns.
 
 =======================================================================
@@ -74,3 +74,20 @@ E. iOS (only if a Mac/iPhone is available; otherwise mark as "not tested")
    - Header "Wizard" looks bold; landscape on notch iPhone not clipped.
 
 Report format: item letter+number, PASS/FAIL, short note, logcat excerpt on FAIL.
+
+=======================================================================
+AI2 DEVICE TEST RESULTS - 2026-10-02
+=======================================================================
+D1. PASS - Wrote a synthetic pending report using CrashLogStore.Write through
+    the debugger; no exception was thrown and the app did not crash. File:
+    /storage/emulated/0/Android/data/WizardScoreboard.WizardScoreboard/files/
+    crashlogs/crash-20261002-092044-004.log
+D2. PASS - On startup, the app displayed the crash-report offer; the human
+    confirmed it appeared (device locale: Dutch).
+D3. PASS - Selected Yes, which opened the bug-report composer with the synthetic
+    report appended at the bottom. The report includes device metadata and the
+    crash log under a localized heading.
+D4. PASS - After handling the synthetic report, the crash-report offer no longer
+    appeared on subsequent app restarts.
+
+E.  Not tested - No Mac/iPhone available for iOS testing.
