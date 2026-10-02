@@ -345,7 +345,7 @@ private static ContentPage CreateSplashPage() => new()
     // Same version format as the About page.
     private static string GetSplashVersionText()
     {
-#if ANDROID
+#if ANDROID || IOS
         var version = $"{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString})";
 #else
         var version = AppInfo.Current.VersionString;

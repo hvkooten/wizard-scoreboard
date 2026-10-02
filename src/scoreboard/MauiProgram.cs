@@ -25,7 +25,7 @@ public static class MauiProgram
             })
             .ConfigureMauiHandlers(handlers =>
             {
-#if ANDROID
+#if ANDROID || IOS
                 handlers.AddHandler<HeaderLabel, HeaderLabelHandler>();
 #endif
             });

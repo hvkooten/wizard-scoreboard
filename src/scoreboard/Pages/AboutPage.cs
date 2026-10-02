@@ -33,7 +33,7 @@ public class AboutPage : ContentPage
             },
             HorizontalTextAlignment = TextAlignment.Center
         };
-#if ANDROID
+#if ANDROID || IOS
         var version = string.Format(Localization.GetString("VersionTemplate"), $"{AppInfo.Current.VersionString} (build {AppInfo.Current.BuildString})");
 #else
         var version = string.Format(Localization.GetString("VersionTemplate"), $"{AppInfo.Current.VersionString}");

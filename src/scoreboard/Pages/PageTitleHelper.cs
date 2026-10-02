@@ -82,14 +82,14 @@ internal static class PageTitleHelper
         grid.Add(titleRow, 0, 0);
 
         // The header stays bold regardless of the "bold all text" setting. The labels are HeaderLabel
-        // instances, which the global bold walk skips; on Android bold is enforced by HeaderLabelHandler.
+        instances, which the global bold walk skips; on Android and iOS bold is enforced by HeaderLabelHandler.
         void SyncTitleWidth()
         {
             if (page.Width > 0)
             {
                 // Keep title view width in sync with window size so the right label stays anchored
                 // and visible. Android reserves extra space on the left for the flyout icon.
-                grid.WidthRequest = Math.Max(240, page.Width - (isAndroid ? 56 : 48));
+                grid.WidthRequest = Math.Max(240, page.Width - (isAndroid ? 56 : 48) - GetHorizontalSystemInsets());
             }
         }
 
@@ -97,5 +97,44 @@ internal static class PageTitleHelper
         SyncTitleWidth();
 
         Shell.SetTitleView(page, grid);
+    }
+
+    // In landscape the navigation bar, display cutout or notch sit at the sides. The page can extend under
+    // them while the toolbar does not, so the title would be pushed off-screen without this correction.
+    private static double GetHorizontalSystemInsets()
+    {
+#if ANDROID
+        var decorView = Platform.CurrentActivity?.Window?.DecorView;
+        if (decorView == null)
+        {
+            return 0;
+        }
+
+        var windowInsets = AndroidX.Core.View.ViewCompat.GetRootWindowInsets(decorView);
+        if (windowInsets == null)
+        {
+            return 0;
+        }
+
+        var insets = windowInsets.GetInsets(
+            AndroidX.Core.View.WindowInsetsCompat.Type.SystemBars()
+            | AndroidX.Core.View.WindowInsetsCompat.Type.DisplayCutout());
+        var density = DeviceDisplay.Current.MainDisplayInfo.Density;
+        return density > 0 ? (insets.Left + insets.Right) / density : 0;
+#elif IOS || MACCATALYST
+        var window = UIKit.UIApplication.SharedApplication.ConnectedScenes
+            .OfType<UIKit.UIWindowScene>()
+            .SelectMany(scene => scene.Windows)
+            .FirstOrDefault(w => w.IsKeyWindow);
+        if (window == null)
+        {
+            return 0;
+        }
+
+        var safeArea = window.SafeAreaInsets;
+        return safeArea.Left + safeArea.Right;
+#else
+        return 0;
+#endif
     }
 }
