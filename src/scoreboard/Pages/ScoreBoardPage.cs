@@ -169,9 +169,28 @@ public class ScoreBoardPage : ContentPage
                 Children = { edit, pause, end }
             };
             end.Margin = new Thickness(0, 0, 0, 8);
-            var textLayout = new VerticalStackLayout
+            var textLayout = new Grid
             {
-                Children = { primaryButtons, secondaryTextButtons }
+                ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) },
+                RowDefinitions = { new RowDefinition(GridLength.Auto), new RowDefinition(GridLength.Auto) }
+            };
+            textLayout.Add(primaryButtons);
+            textLayout.Add(secondaryTextButtons);
+            ApplyTextActionLayout(textLayout, primaryButtons, secondaryTextButtons, singleRow: false);
+            textLayout.SizeChanged += (s, e) =>
+            {
+                if (textLayout.Width <= 0)
+                {
+                    return;
+                }
+
+                var requiredWidth = primaryButtons.Measure(double.PositiveInfinity, double.PositiveInfinity).Width
+                    + secondaryTextButtons.Measure(double.PositiveInfinity, double.PositiveInfinity).Width;
+                var singleRow = requiredWidth <= textLayout.Width;
+                if (Grid.GetRow(secondaryTextButtons) != (singleRow ? 0 : 1))
+                {
+                    ApplyTextActionLayout(textLayout, primaryButtons, secondaryTextButtons, singleRow);
+                }
             };
             return (textLayout, start, nextRound, edit, pause, end);
         }
@@ -191,6 +210,15 @@ public class ScoreBoardPage : ContentPage
         layout.Add(primaryButtons);
         layout.Add(secondaryButtons, 1);
         return (layout, start, nextRound, edit, pause, end);
+    }
+
+    private static void ApplyTextActionLayout(Grid layout, View primaryButtons, View secondaryButtons, bool singleRow)
+    {
+        Grid.SetColumnSpan(primaryButtons, singleRow ? 1 : 2);
+        Grid.SetRow(secondaryButtons, singleRow ? 0 : 1);
+        Grid.SetColumn(secondaryButtons, singleRow ? 1 : 0);
+        Grid.SetColumnSpan(secondaryButtons, singleRow ? 1 : 2);
+        layout.RowDefinitions[1].Height = singleRow ? new GridLength(0) : GridLength.Auto;
     }
 
     private static Button CreateActionButton(string resourceKey, Func<Task> actionAsync, string? icon = null)
