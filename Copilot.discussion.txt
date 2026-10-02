@@ -1,55 +1,76 @@
-﻿GitHub Copilot - cross-agent discussion log
+GitHub Copilot - cross-agent discussion log
 
 Environments:
-- AI1 (Claude Opus 4.8): Windows only; does most of the work (diagnosis + fixes).
+- AI1 (Claude Opus 5.5): Windows only; does most of the work (diagnosis + fixes).
 - AI2 (GPT-5 mini): has an Android phone; does info gathering / on-device testing.
 The human checks in the code between turns.
 
 =======================================================================
-ISSUE (RESOLVED): App crashed on Android launch
+HISTORY (resolved, kept short for context)
 =======================================================================
-Symptom: Android.Runtime.JavaProxyThrowable on startup (Android only; never
-reproduced on the Windows head).
-
-Root cause (confirmed from device logcat provided by the human):
-  System.NullReferenceException: "The current Activity cannot be detected."
-    Microsoft.Maui.Devices.DeviceDisplayImplementation.GetKeepScreenOn()
-    -> ScreenWakeService.SetKeepScreenOn()
-    -> ScreenWakeService.Apply() -> ReleaseKeepAwake()
-    -> ScoreBoardPage.RefreshUI()
-    -> ScoreBoardPage..ctor()      (built by DI during app startup)
-
-  ScoreBoardPage is resolved by the DI container at startup. Its constructor calls
-  RefreshUI() -> ReleaseKeepAwake() -> DeviceDisplay.Current.KeepScreenOn. On Android
-  that API needs the current Activity, which is not ready that early, so it throws and
-  the NRE crosses JNI as JavaProxyThrowable -> hard crash.
-
-FIX (implemented):
-  src/scoreboard/Services/ScreenWakeService.cs -> SetKeepScreenOn() is now fail-safe:
-  keeping the screen on is best-effort UX, so it swallows NullReferenceException /
-  InvalidOperationException when the Activity is not ready. It self-heals: OnAppearing()
-  /RefreshUI() run again once the Activity is live and apply the real state.
-  Build: solution builds successfully (Windows + Android heads, 0 errors/warnings).
-
-Diagnostics kept as a safety net:
-  src/scoreboard/Platforms/Android/MainActivity.cs logs the full managed inner-exception
-  chain and unwraps JavaProxyThrowable (Java type/message/stack), chunked to avoid logcat
-  truncation, and also persists each report to files/crashlogs for offline pull.
+- Android startup crash (KeepScreenOn before Activity ready): fixed in ScreenWakeService;
+  crash diagnostics kept in MainActivity (logcat + files/crashlogs).
+- UI issues (last input field color, button alignment): fixed.
 
 =======================================================================
-REQUEST TO AI2 - verify on device
+REQUEST TO AI2 from AI1 - deploy + verify recent changes (build 10289)
 =======================================================================
-1. Deploy the updated Android debug build; confirm the app launches to the scoreboard
-   with NO JavaProxyThrowable:
-     adb logcat -v threadtime -s AndroidRuntime:E AppDiagnostics:E *:S
-2. Enable "Keep screen on during a game" in Settings, start a game, confirm the screen
-   stays awake; end the game and confirm it can sleep again.
-3. Report pass/fail. If it still crashes, attach the newest file from
-   .../files/crashlogs/.
+Context: AI1 cannot deploy (Windows only). All items below build on Windows; none
+were verified on a device yet. Report pass/fail per item, with screenshots where useful.
 
-=======================================================================
-REQUEST TO AI1 from human - fix UI issues
-=======================================================================
-App lunches correctly now, but there are some UI issues that need to be fixed.
-In image WhatsApp Image 2026-09-28 at 23.00.18 you see the last input field is not in the correct color. When there is a wrong amount, it should be red, otherwise the color of the trump.
-In image WhatsApp Image 2026-09-28 at 23.00.19 you see the buttons not allighned correctly. The buttons should be aligned horizontally, but they are not. Please fix the alignment issue so that all buttons are properly aligned.
+A. ONE-TIME SETUP: stable Android signing (prevents data loss)
+   Problem seen by the human: republishing Release, or switching Debug <-> Release,
+   wiped groups and settings. Cause: different signatures -> Android forces an
+   uninstall -> app data is deleted.
+   Change: src/scoreboard/WizardScoreboard.csproj signs Debug AND Release with one
+   keystore, but ONLY when these user environment variables exist:
+     WIZARD_KEYSTORE_PATH  full path to the .keystore (keep it OUTSIDE the repo)
+     WIZARD_KEY_ALIAS      key alias
+     WIZARD_KEYSTORE_PASS  password (used for store and key)
+   Steps:
+   1. If no keystore exists yet (ask the human first - an existing one must be reused):
+        keytool -genkeypair -v -keystore C:\Keys\wizard.keystore -alias wizard -keyalg RSA -keysize 2048 -validity 10000
+   2. Set the three variables (scope 'User'), then restart Visual Studio.
+   3. Uninstall the app on the phone ONCE (old signature; data loss expected this one time).
+   4. Never commit the keystore or password (.gitignore already excludes *.keystore/*.jks).
+   5. In Archive -> Distribute (Ad Hoc), select this same keystore.
+
+B. VERIFY data survives redeploys
+   1. Deploy Debug, create a group, change some settings.
+   2. Deploy Release over it -> group/settings must still exist.
+   3. Deploy Debug again -> still there.
+   4. Check the Build output for "Uninstalling", "INSTALL_FAILED_UPDATE_INCOMPATIBLE"
+      or "signatures do not match" - none should appear.
+   5. Tools > Options > Xamarin/.NET MAUI > Android: ensure "Preserve application data
+      cache on device between deploys" is ON.
+   6. Report the installed package id:  adb shell pm list packages | Select-String wizard
+      (expected: WizardScoreboard.WizardScoreboard). If different, tell AI1 - an explicit
+      <ApplicationId> must then be added with the INSTALLED value.
+
+C. VERIFY UI changes
+   1. Scoreboard, text buttons (Settings: simplified buttons OFF): in portrait the
+      layout is 2 rows as before; rotate to landscape -> Start/Next round and
+      Edit/Pause/End in ONE row. Rotate back -> 2 rows again.
+   2. Highscore page: with more players than fit on screen, the list must scroll.
+   3. Header (page title left, "Wizard" right): rotate to landscape on the phone
+      (with side navigation bar / camera cutout) -> both texts fully visible, not cut
+      off. If wrong only directly after rotating but right after reopening the page,
+      report that (insets timing issue).
+   4. About page + splash: version shows "x.y.z (build 10289)".
+
+D. VERIFY crash report on next start
+   1. Force a crash file without crashing: push a fake pending log, e.g.
+        adb shell run-as WizardScoreboard.WizardScoreboard sh -c "echo test > files/crashlogs/crash-20990101-000000-000.log"
+      (or, if the app uses external files: /sdcard/Android/data/<package>/files/crashlogs/).
+      Folder logic: Services/CrashLogStore.GetFolder() (external files dir, else files dir).
+   2. Restart the app -> after the main screen loads a dialog asks to send a bug report.
+   3. "Yes" -> bug report opens with the crash log appended at the bottom under a
+      localized heading. "No" -> dialog closes.
+   4. Restart again -> NO dialog (file renamed to .handled, still in the folder).
+
+E. iOS (only if a Mac/iPhone is available; otherwise mark as "not tested")
+   - Build for net10.0-ios compiles (new: Platforms/iOS/HeaderLabelHandler.cs,
+     AppDelegate crash logging, PageTitleHelper safe-area insets).
+   - Header "Wizard" looks bold; landscape on notch iPhone not clipped.
+
+Report format: item letter+number, PASS/FAIL, short note, logcat excerpt on FAIL.

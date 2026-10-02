@@ -9,11 +9,22 @@
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     <ApplicationTitle>WizardScoreboard</ApplicationTitle>
     <ApplicationDisplayVersion>2.2.0</ApplicationDisplayVersion>
-    <ApplicationVersion>10288</ApplicationVersion>
+    <ApplicationVersion>10289</ApplicationVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <!-- Sign Debug and Release with the same keystore so switching configurations or republishing is an
+       in-place update; a signature mismatch forces an uninstall, which wipes groups and settings.
+       Set WIZARD_KEYSTORE_PATH, WIZARD_KEY_ALIAS and WIZARD_KEYSTORE_PASS; the password never lives in the repo. -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' And '$(WIZARD_KEYSTORE_PATH)' != ''">
+    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyStore>$(WIZARD_KEYSTORE_PATH)</AndroidSigningKeyStore>
+    <AndroidSigningKeyAlias>$(WIZARD_KEY_ALIAS)</AndroidSigningKeyAlias>
+    <AndroidSigningStorePass>env:WIZARD_KEYSTORE_PASS</AndroidSigningStorePass>
+    <AndroidSigningKeyPass>env:WIZARD_KEYSTORE_PASS</AndroidSigningKeyPass>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
