@@ -79,7 +79,12 @@ public class GroupsPage : ContentPage
                 FontSize = 16
             };
             var capturedCount = count;
-            btn.Clicked += (s, e) => SetPlayerCount(capturedCount);
+            btn.Clicked += async (s, e) =>
+            {
+                // Entries are rebuilt below; close the keyboard first so it does not stay open without a spacer.
+                await HideKeyboardAsync();
+                SetPlayerCount(capturedCount);
+            };
             playerCountButtons.Add(btn);
             playerCountLayout.Children.Add(btn);
         }
@@ -532,12 +537,27 @@ public class GroupsPage : ContentPage
             return;
         }
 
-        keyboardSpacer.HeightRequest = Math.Max(Height/2, 400);
+        keyboardSpacer.HeightRequest = Math.Max(Height / 2, 400);
         keyboardSpacer.IsVisible = true;
 
         // Wait for the layout to include the spacer before scrolling the entry to the top.
         Dispatcher.Dispatch(async () =>
             await pageScrollView.ScrollToAsync(focusedEntry, ScrollToPosition.Start, true));
+    }
+
+    private async Task HideKeyboardAsync()
+    {
+        foreach (var focusedEntry in playerNameEntries.Where(e => e.IsFocused).ToList())
+        {
+            if (focusedEntry.IsSoftInputShowing())
+            {
+                await focusedEntry.HideSoftInputAsync(CancellationToken.None);
+            }
+
+            focusedEntry.Unfocus();
+        }
+
+        keyboardSpacer.IsVisible = false;
     }
 
     private void HideKeyboardSpacerWhenNoEntryFocused()

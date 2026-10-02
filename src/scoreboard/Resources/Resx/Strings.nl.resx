@@ -31,8 +31,8 @@
   <data name="DeleteSavedGameConfirmMessage" xml:space="preserve"><value>Weet je zeker dat je het opgeslagen spel van {0} wilt verwijderen?</value></data>
   <data name="DeleteSavedGameConfirmTitle" xml:space="preserve"><value>Opgeslagen spel verwijderen?</value></data>
   <data name="Disabled" xml:space="preserve"><value>Uitgeschakeld</value></data>
-  <data name="Player Count" xml:space="preserve"><value>Aantal spelers</value></data>
-  <data name="DoublePlayerCount" xml:space="preserve"><value>2x Aantal spelers</value></data>
+  <data name="Player Count" xml:space="preserve"><value>Na aantal spelers</value></data>
+  <data name="DoublePlayerCount" xml:space="preserve"><value>Na 2x aantal spelers</value></data>
   <data name="Diamonds" xml:space="preserve"><value>Ruiten</value></data>
   <data name="EndGame" xml:space="preserve"><value>Beëindig spel</value></data>
   <data name="ErrorTitle" xml:space="preserve"><value>Fout</value></data>
