@@ -55,7 +55,8 @@ public class HighscorePage : ContentPage
             })
         };
 
-        Content = new StackLayout
+        // A Grid constrains the CollectionView height so it can scroll; a StackLayout gives it unlimited height.
+        Content = new Grid
         {
             Padding = 20,
             Children =
