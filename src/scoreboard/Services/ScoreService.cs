@@ -24,6 +24,16 @@ public class ScoreService : IScoreService
         LoadPausedSessions();
     }
 
+    /// <summary>
+    /// True when the next round is the last one and the dealer does not pick trump:
+    /// all cards are dealt, so no trump card can be turned up.
+    /// </summary>
+    public static bool IsNextRoundWithoutTrump(ScoreSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        return !session.AllowNoTrump && session.CurrentRound + 1 == session.MaxRounds;
+    }
+
     private static int GetMaxRounds(int playerCount)
     {
         return playerCount switch
@@ -152,7 +162,12 @@ public class ScoreService : IScoreService
         if (!IncludesAllPlayers(session, bids))
             throw new ArgumentException(Localization.GetString("BidsMustIncludeAllPlayers"), nameof(bids));
 
-        if (!Enum.IsDefined(trump) || (trump == TrumpSuit.NoTrump && !session.AllowNoTrump))
+        if (IsNextRoundWithoutTrump(session))
+        {
+            if (trump != TrumpSuit.NoTrump)
+                throw new ArgumentOutOfRangeException(nameof(trump), Localization.GetString("TrumpRequiredError"));
+        }
+        else if (!Enum.IsDefined(trump) || (trump == TrumpSuit.NoTrump && !session.AllowNoTrump))
             throw new ArgumentOutOfRangeException(nameof(trump), Localization.GetString("TrumpRequiredError"));
 
         if (bids.Any(b => b.Value < 0 || b.Value > session.CurrentRound + 1))

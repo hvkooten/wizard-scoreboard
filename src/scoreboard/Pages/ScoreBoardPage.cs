@@ -1230,7 +1230,7 @@ public class ScoreBoardPage : ContentPage
         Button? doneButton = null;
         Func<int>? getTrumpIndexAccessor = null;
         Label? trumpHintLabelRef = null;
-        var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector(() => UpdateTrumpSelectionState(), initialTrumpIndex, currentSession.AllowNoTrump);
+        var (trumpSelectorView, getTrumpIndex) = BuildTrumpIconSelector(() => UpdateTrumpSelectionState(), initialTrumpIndex, currentSession.AllowNoTrump, ScoreService.IsNextRoundWithoutTrump(currentSession));
         population.Children.Add(trumpSelectorView);
         // Friendly hint label
         var trumpHintLabel = new Label
@@ -1795,9 +1795,15 @@ public class ScoreBoardPage : ContentPage
         groupService.UpdateGroup(group);
     }
 
-    private (View view, Func<int> getSelectedIndex) BuildTrumpIconSelector(Action? onSelectionChanged = null, int initialSelectedIndex = -1, bool allowNoTrump = false)
+    private (View view, Func<int> getSelectedIndex) BuildTrumpIconSelector(Action? onSelectionChanged = null, int initialSelectedIndex = -1, bool allowNoTrump = false, bool noTrumpOnly = false)
     {
         var mode = trumpPaletteService.GetMode();
+        const int noTrumpIndex = 4;
+        if (noTrumpOnly)
+        {
+            allowNoTrump = true;
+            initialSelectedIndex = noTrumpIndex;
+        }
 
         // (symbol/label, foreground color, background tint, suit index 0=None…4=Spades)
         // None option removed — trump is required.
@@ -1878,7 +1884,8 @@ public class ScoreBoardPage : ContentPage
                 StrokeThickness = 2,
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 10 },
                 Content = label,
-                Padding = new Thickness(0)
+                Padding = new Thickness(0),
+                IsVisible = !noTrumpOnly || idx == noTrumpIndex
             };
 
             var tap = new TapGestureRecognizer();
