@@ -88,6 +88,9 @@ public class GroupsPage : ContentPage
             playerCountButtons.Add(btn);
             playerCountLayout.Children.Add(btn);
         }
+        var clearPlayerNamesButton = UiFactory.CreateDeleteButton(52, 44);
+        clearPlayerNamesButton.Clicked += ClearPlayerNames;
+        playerCountLayout.Children.Add(clearPlayerNamesButton);
         ApplyPlayerCountButtonStyles();
 
         playerNamesLayout = new VerticalStackLayout
@@ -98,6 +101,7 @@ public class GroupsPage : ContentPage
 
         createGroupButton = new Button { Text = Localization.GetString("CreatorGroup"), HeightRequest = 44, HorizontalOptions = LayoutOptions.Fill };
         createGroupButton.Clicked += CreateGroupButton_Clicked;
+        UpdateCreateGroupButtonState();
 
         startGameButton = new Button { Text = Localization.GetString("StartGame"), HeightRequest = 44, HorizontalOptions = LayoutOptions.Fill };
         startGameButton.Clicked += StartGameButton_Clicked;
@@ -321,6 +325,11 @@ public class GroupsPage : ContentPage
 
     private async void CreateGroupButton_Clicked(object? sender, EventArgs e)
     {
+        if (playerNameEntries.Any(entry => string.IsNullOrWhiteSpace(entry.Text)))
+        {
+            return;
+        }
+
         var groupName = groupNameEntry.Text?.Trim();
         if (string.IsNullOrWhiteSpace(groupName))
         {
@@ -393,6 +402,30 @@ public class GroupsPage : ContentPage
         {
             await this.ShowMessageAsync("ErrorTitle", ex.Message);
         }
+    }
+
+    private void ClearPlayerNames(object? sender, EventArgs e)
+    {
+        for (var i = 0; i < allPlayerNames.Count; i++)
+        {
+            allPlayerNames[i] = string.Empty;
+        }
+
+        foreach (var entry in playerNameEntries)
+        {
+            entry.Text = string.Empty;
+        }
+    }
+
+    private void UpdateCreateGroupButtonState()
+    {
+        if (createGroupButton is null)
+        {
+            return;
+        }
+
+        createGroupButton.IsEnabled = playerNameEntries.Count > 0 &&
+            playerNameEntries.All(entry => !string.IsNullOrWhiteSpace(entry.Text));
     }
 
     private void RebuildPlayerNameInputs()
@@ -524,10 +557,13 @@ public class GroupsPage : ContentPage
             };
 
             entry.TextChanged += (s, e) => UpdateGroupNameFromPlayers();
+            entry.TextChanged += (s, e) => UpdateCreateGroupButtonState();
 
             playerNameEntries.Add(entry);
             playerNamesLayout.Children.Add(rowBorder);
         }
+
+        UpdateCreateGroupButtonState();
     }
 
     private void ShowKeyboardSpacer(Entry focusedEntry)
@@ -591,10 +627,7 @@ public class GroupsPage : ContentPage
             .Where(n => !string.IsNullOrWhiteSpace(n))
             .ToList();
 
-        if (names.Count > 0)
-        {
-            SetGroupNameFromCode(string.Join(" & ", names));
-        }
+        SetGroupNameFromCode(string.Join(" & ", names));
     }
 
     private void MovePlayerInput(int fromIndex, int toIndex)
